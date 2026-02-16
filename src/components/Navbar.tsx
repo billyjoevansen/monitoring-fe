@@ -26,18 +26,10 @@ import {
 import { hasPermission, ROLE_LABELS, ROLE_COLORS } from '@/lib/rbac';
 import { logout } from '@/lib/auth';
 import type { User } from '@/types';
-import type { Permission } from '@/types';
+import type { NavItem } from '@/types';
 
 interface NavbarProps {
   user: User;
-}
-
-interface NavItem {
-  href: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  permission?: Permission;
-  children?: NavItem[];
 }
 
 const navItems: NavItem[] = [

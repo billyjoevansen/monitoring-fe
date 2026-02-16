@@ -44,7 +44,7 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div>
+    <div className="grid items-center justify-center">
       <div className="mb-8 flex items-center gap-3">
         <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
           <KeyRound className="w-5 h-5 text-yellow-600" />

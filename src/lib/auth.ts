@@ -1,9 +1,7 @@
 import { createClient } from '@/lib/supabase/client';
 import type { User } from '@/types';
 
-/**
- * Login dengan email & password.
- */
+// Login
 export async function login(email: string, password: string) {
   const supabase = createClient();
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -15,18 +13,14 @@ export async function login(email: string, password: string) {
   return data;
 }
 
-/**
- * Logout.
- */
+// Logout.
 export async function logout() {
   const supabase = createClient();
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
 
-/**
- * Ambil profil user dari tabel public.users.
- */
+// profil user fetch.
 export async function getUserProfile(): Promise<User | null> {
   const supabase = createClient();
   const {
@@ -40,9 +34,7 @@ export async function getUserProfile(): Promise<User | null> {
   return data as User;
 }
 
-/**
- * Kirim email reset password.
- */
+// Kirim email reset password.
 export async function resetPassword(email: string) {
   const supabase = createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -52,9 +44,7 @@ export async function resetPassword(email: string) {
   if (error) throw error;
 }
 
-/**
- * Update password baru.
- */
+// Update password.
 export async function updatePassword(newPassword: string) {
   const supabase = createClient();
   const { error } = await supabase.auth.updateUser({
@@ -64,9 +54,7 @@ export async function updatePassword(newPassword: string) {
   if (error) throw error;
 }
 
-/**
- * Log aktivitas user.
- */
+// Log aktivitas user.
 export async function logActivity(action: string, detail?: string) {
   const supabase = createClient();
   const user = await getUserProfile();

@@ -13,6 +13,15 @@ export type Permission =
   | 'view_logs'
   | 'manage_archives';
 
+// Navbar
+export interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  permission?: Permission;
+  children?: NavItem[];
+}
+
 // USER
 export interface User {
   id: string;
@@ -96,4 +105,30 @@ export interface ClassificationArchive {
   detail: Record<string, unknown>[];
   model_info: ModelInfo | null;
   created_at: string;
+}
+
+// TRAINING RESULT
+export interface ModelPerformance {
+  accuracy: number;
+  f1_score_weighted: number;
+  oob_score?: number;
+  classification_report?: string;
+  confusion_matrix?: number[][];
+}
+
+export interface FeatureSelection {
+  total_fitur_awal: number;
+  total_fitur_terpilih: number;
+  fitur_terpilih?: string[];
+}
+
+export interface ModelFile {
+  path?: string;
+  size_kb?: number;
+}
+
+export interface TrainResult {
+  model_performance: ModelPerformance;
+  feature_selection?: FeatureSelection;
+  model_file?: ModelFile;
 }

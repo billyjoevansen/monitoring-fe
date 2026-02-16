@@ -1,8 +1,6 @@
 import type { Role, Permission } from '@/types';
 
-/**
- * Matriks permission per role.
- */
+// Matriks permission per role.
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   admin: [
     'view_reconciliation',

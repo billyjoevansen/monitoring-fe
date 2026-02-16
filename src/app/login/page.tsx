@@ -127,7 +127,7 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6">
-          © 2025 SimpubesSRG — Dinas Pertanian Kab. Serang
+          © 2025 SimpubesSRG — Dinas Pertanian Kota Serang
         </p>
       </div>
     </div>
