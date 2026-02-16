@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import Sidebar from '@/components/Sidebar';
+import Navbar from '@/components/Navbar';
 import { UserProvider } from '@/lib/UserContext';
 import type { User } from '@/types';
 
@@ -68,9 +68,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <UserProvider user={user}>
-      <div className="flex min-h-screen">
-        <Sidebar user={user} />
-        <main className="flex-1 ml-65 p-8">{children}</main>
+      <div className="min-h-screen bg-gray-50/50">
+        <Navbar user={user} />
+        <main className="pt-16">
+          <div className="max-w-400 mx-auto px-4 sm:px-6 py-8">{children}</div>
+        </main>
       </div>
     </UserProvider>
   );

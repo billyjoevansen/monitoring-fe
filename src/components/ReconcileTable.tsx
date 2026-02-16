@@ -139,11 +139,10 @@ export default function ReconcileTable({ data }: { data: Record<string, unknown>
         </div>
       </div>
 
-      {/* Scrollable table — scroll horizontal DAN vertikal, halaman TIDAK ikut panjang */}
       <div
         ref={tableWrapperRef}
-        className="overflow-auto"
-        style={{ maxHeight: `${tableMaxHeight}px` }}
+        className="overflow-auto h-96"
+        // style={{ maxHeight: `${tableMaxHeight}px` }}
       >
         <table className="w-max min-w-full text-xs border-collapse">
           <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">

@@ -263,7 +263,7 @@ export default function UsersPage() {
                 </select>
               </div>
 
-              {/* Kecamatan (hanya untuk BPP) */}
+              {/* Kecamatan (BPP Daerah) */}
               {formRole === 'bpp' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>

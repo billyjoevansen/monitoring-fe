@@ -1,6 +1,4 @@
-// =====================================================
 // ROLE & PERMISSION
-// =====================================================
 export type Role = 'admin' | 'kabid' | 'kasie' | 'bpp';
 
 export type Permission =
@@ -15,9 +13,7 @@ export type Permission =
   | 'view_logs'
   | 'manage_archives';
 
-// =====================================================
 // USER
-// =====================================================
 export interface User {
   id: string;
   email: string;
@@ -29,18 +25,14 @@ export interface User {
   updated_at: string;
 }
 
-// =====================================================
 // KECAMATAN
-// =====================================================
 export interface Kecamatan {
   id: number;
   nama: string;
   kode: string;
 }
 
-// =====================================================
 // ACTIVITY LOG
-// =====================================================
 export interface ActivityLog {
   id: string;
   user_id: string;
@@ -52,9 +44,7 @@ export interface ActivityLog {
   created_at: string;
 }
 
-// =====================================================
 // ARSIP REKONSILIASI
-// =====================================================
 export interface ReconciliationSummary {
   total_petani: number;
   status_penebusan: {
@@ -80,9 +70,7 @@ export interface ReconciliationArchive {
   created_at: string;
 }
 
-// =====================================================
 // ARSIP KLASIFIKASI
-// =====================================================
 export interface ClassificationSummary {
   total_petani: number;
   normal: number;

@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'SimpubesSRG - Monitoring Pupuk Subsidi',
-  description: 'Sistem Monitoring Pupuk Bersubsidi Kab. Serang',
+  title: 'Simpubes - Serang',
+  description: 'Sistem Monitoring Pupuk Bersubsidi Kota Serang',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
