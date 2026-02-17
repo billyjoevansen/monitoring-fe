@@ -95,11 +95,15 @@ export default function Navbar({ user }: NavbarProps) {
   }, [pathname]);
 
   const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-    router.refresh();
+    try {
+      await logout();
+      sessionStorage.clear();
+      router.refresh();
+      router.replace('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
-
   const visibleItems = navItems.filter((item) => {
     if (!item.permission) return true;
     return hasPermission(user.role, item.permission);
@@ -124,7 +128,7 @@ export default function Navbar({ user }: NavbarProps) {
                 <Wheat className="w-4.5 h-4.5 text-white" />
               </div>
               <span className="text-base font-bold text-gray-900 tracking-tight hidden sm:block">
-                SimpubesSRG
+                SIMPUBES Serang
               </span>
             </Link>
 

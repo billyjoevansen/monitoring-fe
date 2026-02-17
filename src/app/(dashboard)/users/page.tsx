@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Loader2, Pencil, CheckCircle, X, UserPlus, ShieldCheck, ShieldOff } from 'lucide-react';
+import {
+  Loader2,
+  Pencil,
+  CheckCircle,
+  X,
+  UserPlus,
+  ShieldCheck,
+  ShieldOff,
+  Trash2,
+} from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { createClient } from '@/lib/supabase/client';
 import { getCreatableRoles, ROLE_LABELS, ROLE_COLORS } from '@/lib/rbac';
@@ -393,10 +402,21 @@ export default function UsersPage() {
                           className="p-1.5 hover:bg-yellow-50 rounded-lg transition-colors"
                         >
                           {u.is_active ? (
-                            <ShieldOff className="w-4 h-4 text-yellow-600" />
-                          ) : (
                             <ShieldCheck className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <ShieldOff className="w-4 h-4 text-yellow-600" />
                           )}
+                        </button>
+                        <button
+                          onClick={() => handleToggleActive(u)}
+                          title={u.is_active ? '' : 'Hapus?'}
+                          className={
+                            u.is_active
+                              ? 'hidden'
+                              : 'p-1.5 hover:bg-red-50 rounded-lg transition-colors'
+                          }
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
                         </button>
                       </div>
                     )}

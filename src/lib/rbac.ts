@@ -12,6 +12,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'manage_users',
     'view_logs',
     'manage_archives',
+    'view_archives',
   ],
   kabid: [
     'view_reconciliation',
@@ -21,6 +22,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'manage_users',
     'view_logs',
     'manage_archives',
+    'view_archives',
   ],
   kasie: [
     'view_reconciliation',
@@ -29,8 +31,9 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'upload_files',
     'train_model',
     'view_logs',
+    'view_archives',
   ],
-  bpp: ['view_reconciliation', 'view_classification', 'upload_files'],
+  bpp: ['view_reconciliation', 'view_classification', 'upload_files', 'view_archives'],
 };
 
 export function hasPermission(role: Role, permission: Permission): boolean {
@@ -60,4 +63,15 @@ export const ROLE_COLORS: Record<Role, string> = {
   kabid: 'bg-blue-100 text-blue-700',
   kasie: 'bg-purple-100 text-purple-700',
   bpp: 'bg-green-100 text-green-700',
+};
+
+export const ROUTE_PERMISSIONS: Record<string, Permission> = {
+  '/reconcile': 'upload_files',
+  '/classify': 'view_classification',
+  '/training': 'view_training',
+  '/settings': 'edit_model_config',
+  '/users': 'manage_users',
+  '/logs': 'view_logs',
+  '/archives/reconciliation': 'view_archives',
+  '/archives/classification': 'view_archives',
 };

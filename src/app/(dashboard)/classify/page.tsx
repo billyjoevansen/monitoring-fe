@@ -18,25 +18,14 @@ import { classify } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 import { createClient } from '@/lib/supabase/client';
 import ResultTable from '@/components/ResultTable';
-import type { ReconciliationArchive, ClassificationSummary } from '@/types';
+import SummaryCard from '@/components/SummaryCard';
+import MiniCard from '@/components/MiniCard';
+import { ReconciliationArchive, ClassifyResult, CLASSIFY_COLUMNS } from '@/types';
 
-const classifyColumns = [
-  { key: 'nama_petani', label: 'Nama Petani' },
-  { key: 'nik', label: 'NIK' },
-  { key: 'poktan', label: 'Poktan' },
-  { key: 'status', label: 'Status' },
-  { key: 'confidence', label: 'Confidence' },
-  { key: 'kios_sesuai', label: 'Kios Sesuai' },
-  { key: 'total_pupuk_diajukan_kg', label: 'Diajukan (kg)' },
-  { key: 'total_pupuk_ditebus_kg', label: 'Ditebus (kg)' },
-  { key: 'selisih_total_kg', label: 'Selisih (kg)' },
-];
-
-interface ClassifyResult {
-  summary: ClassificationSummary;
-  detail: Record<string, unknown>[];
-}
-
+/**
+ * Halaman untuk klasifikasi data rekonsiliasi
+ * menggunakan model Random Forest
+ */
 export default function ClassifyPage() {
   const user = useUser();
   const canClassify = hasPermission(user.role, 'view_classification');
@@ -57,6 +46,9 @@ export default function ClassifyPage() {
     loadArchives();
   }, []);
 
+  /**
+   * Memuat daftar arsip rekonsiliasi dari database
+   */
   const loadArchives = async () => {
     const supabase = createClient();
     const { data } = await supabase
@@ -68,6 +60,9 @@ export default function ClassifyPage() {
     setLoading(false);
   };
 
+  /**
+   * Menjalankan klasifikasi pada arsip yang dipilih
+   */
   const handleClassify = async (archive: ReconciliationArchive) => {
     setSelectedArchive(archive);
     setClassifying(true);
@@ -95,6 +90,9 @@ export default function ClassifyPage() {
     }
   };
 
+  /**
+   * Menyimpan hasil klasifikasi ke arsip
+   */
   const handleSaveToArchive = async () => {
     if (!result || !namaArsip.trim() || !selectedArchive) return;
 
@@ -124,6 +122,9 @@ export default function ClassifyPage() {
     }
   };
 
+  /**
+   * Reset state ke kondisi awal
+   */
   const handleReset = () => {
     setResult(null);
     setSelectedArchive(null);
@@ -132,6 +133,9 @@ export default function ClassifyPage() {
     setNamaArsip('');
   };
 
+  /**
+   * Format tanggal untuk tampilan
+   */
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('id-ID', {
       day: '2-digit',
@@ -142,6 +146,7 @@ export default function ClassifyPage() {
     });
   };
 
+  // Render jika tidak memiliki akses
   if (!canClassify) {
     return (
       <div>
@@ -161,6 +166,7 @@ export default function ClassifyPage() {
 
   return (
     <div>
+      {/* Header */}
       <div className="mb-8 flex items-center gap-3">
         <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
           <Tags className="w-5 h-5 text-indigo-600" />
@@ -173,6 +179,7 @@ export default function ClassifyPage() {
         </div>
       </div>
 
+      {/* Error Alert */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-3">
           <XCircle className="w-5 h-5 shrink-0" />
@@ -205,61 +212,17 @@ export default function ClassifyPage() {
           ) : (
             <div className="divide-y divide-gray-100">
               {archives.map((archive) => (
-                <div key={archive.id}>
-                  <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-3 flex-1">
-                      <button
-                        onClick={() => setExpandedId(expandedId === archive.id ? null : archive.id)}
-                        className="p-1 hover:bg-gray-200 rounded"
-                      >
-                        {expandedId === archive.id ? (
-                          <ChevronDown className="w-4 h-4 text-gray-500" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-gray-500" />
-                        )}
-                      </button>
-                      <div>
-                        <p className="font-semibold text-gray-800">{archive.nama_arsip}</p>
-                        <p className="text-xs text-gray-500">
-                          {archive.user_nama} · {formatDate(archive.created_at)} ·{' '}
-                          {archive.summary.total_petani} petani
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleClassify(archive)}
-                      disabled={classifying}
-                      className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium disabled:opacity-50"
-                    >
-                      {classifying && selectedArchive?.id === archive.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Tags className="w-4 h-4" />
-                      )}
-                      Klasifikasi
-                    </button>
-                  </div>
-
-                  {expandedId === archive.id && (
-                    <div className="px-12 pb-4">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                        <MiniCard label="Total Petani" value={archive.summary.total_petani} />
-                        <MiniCard
-                          label="Tebus Lengkap"
-                          value={archive.summary.status_penebusan.tebus_lengkap}
-                        />
-                        <MiniCard
-                          label="Tebus Sebagian"
-                          value={archive.summary.status_penebusan.tebus_sebagian}
-                        />
-                        <MiniCard
-                          label="Kios Sesuai"
-                          value={`${archive.summary.kios.persentase_sesuai}%`}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <ArchiveItem
+                  key={archive.id}
+                  archive={archive}
+                  isExpanded={expandedId === archive.id}
+                  isClassifying={classifying && selectedArchive?.id === archive.id}
+                  onToggleExpand={() =>
+                    setExpandedId(expandedId === archive.id ? null : archive.id)
+                  }
+                  onClassify={() => handleClassify(archive)}
+                  formatDate={formatDate}
+                />
               ))}
             </div>
           )}
@@ -282,7 +245,7 @@ export default function ClassifyPage() {
             </button>
           </div>
 
-          {/* Summary */}
+          {/* Summary Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             <SummaryCard label="Total Petani" value={result.summary.total_petani} color="blue" />
             <SummaryCard
@@ -299,7 +262,7 @@ export default function ClassifyPage() {
             />
           </div>
 
-          {/* Save */}
+          {/* Save Section */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
             {saved ? (
               <div className="flex items-center gap-2 text-green-700">
@@ -332,44 +295,86 @@ export default function ClassifyPage() {
             )}
           </div>
 
-          <ResultTable columns={classifyColumns} data={result.detail} />
+          {/* Result Table */}
+          <ResultTable columns={CLASSIFY_COLUMNS} data={result.detail} />
         </>
       )}
     </div>
   );
 }
 
-function MiniCard({ label, value }: { label: string; value: number | string }) {
-  return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-      <p className="text-xs text-gray-500">{label}</p>
-      <p className="text-lg font-bold text-gray-800">{String(value)}</p>
-    </div>
-  );
+/**
+ * Props untuk komponen ArchiveItem
+ */
+interface ArchiveItemProps {
+  archive: ReconciliationArchive;
+  isExpanded: boolean;
+  isClassifying: boolean;
+  onToggleExpand: () => void;
+  onClassify: () => void;
+  formatDate: (dateStr: string) => string;
 }
 
-function SummaryCard({
-  label,
-  value,
-  sub,
-  color,
-}: {
-  label: string;
-  value: number;
-  sub?: string;
-  color: string;
-}) {
-  const colorMap: Record<string, string> = {
-    blue: 'bg-blue-50 border-blue-200 text-blue-700',
-    green: 'bg-green-50 border-green-200 text-green-700',
-    red: 'bg-red-50 border-red-200 text-red-700',
-  };
-
+/**
+ * Komponen untuk menampilkan item arsip dalam daftar
+ */
+function ArchiveItem({
+  archive,
+  isExpanded,
+  isClassifying,
+  onToggleExpand,
+  onClassify,
+  formatDate,
+}: ArchiveItemProps) {
   return (
-    <div className={`p-4 rounded-xl border ${colorMap[color]}`}>
-      <p className="text-xs font-medium opacity-75">{label}</p>
-      <p className="text-2xl font-bold mt-1">{value}</p>
-      {sub && <p className="text-xs opacity-75 mt-0.5">{sub}</p>}
+    <div>
+      <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+        <div className="flex items-center gap-3 flex-1">
+          <button onClick={onToggleExpand} className="p-1 hover:bg-gray-200 rounded">
+            {isExpanded ? (
+              <ChevronDown className="w-4 h-4 text-gray-500" />
+            ) : (
+              <ChevronRight className="w-4 h-4 text-gray-500" />
+            )}
+          </button>
+          <div>
+            <p className="font-semibold text-gray-800">{archive.nama_arsip}</p>
+            <p className="text-xs text-gray-500">
+              {archive.user_nama} · {formatDate(archive.created_at)} ·{' '}
+              {archive.summary.total_petani} petani
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onClassify}
+          disabled={isClassifying}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium disabled:opacity-50"
+        >
+          {isClassifying ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <Tags className="w-4 h-4" />
+          )}
+          Klasifikasi
+        </button>
+      </div>
+
+      {isExpanded && (
+        <div className="px-12 pb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <MiniCard label="Total Petani" value={archive.summary.total_petani} />
+            <MiniCard
+              label="Tebus Lengkap"
+              value={archive.summary.status_penebusan.tebus_lengkap}
+            />
+            <MiniCard
+              label="Tebus Sebagian"
+              value={archive.summary.status_penebusan.tebus_sebagian}
+            />
+            <MiniCard label="Kios Sesuai" value={`${archive.summary.kios.persentase_sesuai}%`} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

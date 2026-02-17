@@ -1,25 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  Loader2,
-  FileStack,
-  Trash2,
-  Eye,
-  ChevronDown,
-  ChevronRight,
-  Search,
-  AlertTriangle,
-} from 'lucide-react';
+import { Loader2, FileStack, Trash2, Eye, ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { createClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth';
 import ReconcileTable from '@/components/ReconcileTable';
 import type { ReconciliationArchive } from '@/types';
+import { hasPermission } from '@/lib/rbac';
 
 export default function ReconciliationArchivesPage() {
   const user = useUser();
-
+  const canEdit = hasPermission(user.role, 'manage_archives');
   const [archives, setArchives] = useState<ReconciliationArchive[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -211,7 +203,7 @@ export default function ReconciliationArchivesPage() {
                     <button
                       onClick={() => handleDelete(archive)}
                       disabled={deleting === archive.id}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium disabled:opacity-50"
+                      className={`${canEdit ? 'flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium' : 'hidden'}`}
                     >
                       {deleting === archive.id ? (
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />

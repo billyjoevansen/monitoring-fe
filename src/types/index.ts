@@ -1,3 +1,8 @@
+export * from './rekonsiliasi';
+export * from './klasifikasi';
+export * from './petani';
+export * from './props';
+
 // ROLE & PERMISSION
 export type Role = 'admin' | 'kabid' | 'kasie' | 'bpp';
 
@@ -11,6 +16,7 @@ export type Permission =
   | 'edit_model_config'
   | 'manage_users'
   | 'view_logs'
+  | 'view_archives'
   | 'manage_archives';
 
 // Navbar
@@ -50,32 +56,6 @@ export interface ActivityLog {
   user_role: string;
   action: string;
   detail: string | null;
-  created_at: string;
-}
-
-// ARSIP REKONSILIASI
-export interface ReconciliationSummary {
-  total_petani: number;
-  status_penebusan: {
-    tebus_lengkap: number;
-    tebus_sebagian: number;
-    tebus_melebihi: number;
-    belum_menebus: number;
-  };
-  kios: {
-    sesuai: number;
-    tidak_sesuai: number;
-    persentase_sesuai: number;
-  };
-}
-
-export interface ReconciliationArchive {
-  id: string;
-  user_id: string;
-  user_nama: string;
-  nama_arsip: string;
-  summary: ReconciliationSummary;
-  detail: Record<string, unknown>[];
   created_at: string;
 }
 

@@ -107,46 +107,46 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 flex items-center gap-3">
-        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-          <LayoutDashboard className="w-5 h-5 text-green-600" />
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+            <LayoutDashboard className="w-5 h-5 text-green-600" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
+            <p className="text-gray-500 mt-1">
+              Selamat datang, <strong>{user.nama}</strong> — {ROLE_LABELS[user.role]}
+              {user.kecamatan && ` · Kec. ${user.kecamatan}`}
+            </p>
+          </div>
         </div>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-          <p className="text-gray-500 mt-1">
-            Selamat datang, <strong>{user.nama}</strong> — {ROLE_LABELS[user.role]}
-            {user.kecamatan && ` · Kec. ${user.kecamatan}`}
-          </p>
-        </div>
-      </div>
-
-      {/* Server Status */}
-      <div
-        className={`mb-8 p-4 rounded-xl border flex items-center gap-3 ${
-          serverStatus === 'online'
-            ? 'bg-green-50 border-green-200'
-            : serverStatus === 'offline'
-              ? 'bg-red-50 border-red-200'
-              : 'bg-gray-50 border-gray-200'
-        }`}
-      >
-        {serverStatus === 'loading' && <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />}
-        {serverStatus === 'online' && <CheckCircle className="w-5 h-5 text-green-600" />}
-        {serverStatus === 'offline' && <XCircle className="w-5 h-5 text-red-600" />}
-        <p
-          className={`text-sm font-semibold ${
+        {/* Server Status */}
+        <div
+          className={`p-4 rounded-xl border flex items-center gap-3 ${
             serverStatus === 'online'
-              ? 'text-green-700'
+              ? 'bg-green-50 border-green-200'
               : serverStatus === 'offline'
-                ? 'text-red-700'
-                : 'text-gray-700'
+                ? 'bg-red-50 border-red-200'
+                : 'bg-gray-50 border-gray-200'
           }`}
         >
-          {serverStatus === 'loading' && 'Memeriksa koneksi server...'}
-          {serverStatus === 'online' && 'Backend API aktif dan terhubung'}
-          {serverStatus === 'offline' &&
-            'Backend API tidak terhubung — pastikan Flask berjalan di port 5000'}
-        </p>
+          {serverStatus === 'loading' && <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />}
+          {serverStatus === 'online' && <CheckCircle className="w-5 h-5 text-green-600" />}
+          {serverStatus === 'offline' && <XCircle className="w-5 h-5 text-red-600" />}
+          <p
+            className={`text-sm font-semibold ${
+              serverStatus === 'online'
+                ? 'text-green-700'
+                : serverStatus === 'offline'
+                  ? 'text-red-700'
+                  : 'text-gray-700'
+            }`}
+          >
+            {serverStatus === 'loading' && 'Memeriksa koneksi server...'}
+            {serverStatus === 'online' && 'Backend API aktif dan terhubung'}
+            {serverStatus === 'offline' && 'API tidak terhubung '}
+          </p>
+        </div>
       </div>
 
       {/* Feature Cards */}

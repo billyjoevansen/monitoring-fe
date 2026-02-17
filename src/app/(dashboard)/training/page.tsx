@@ -43,8 +43,8 @@ export default function TrainingPage() {
       try {
         const vizData = await visualizeTraining(data);
         setCharts(vizData.charts || {});
-      } catch {
-        // Visualisasi gagal bukan error fatal
+      } catch (err) {
+        console.warn('Visualisasi gagal bukan error fatal', err);
       }
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
