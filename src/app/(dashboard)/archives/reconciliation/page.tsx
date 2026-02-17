@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2, FileStack, Trash2, Eye, ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
-import { createClient } from '@/lib/supabase/client';
+import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth';
 import ReconcileTable from '@/components/ReconcileTable';
 import type { ReconciliationArchive } from '@/types';
@@ -24,7 +24,7 @@ export default function ReconciliationArchivesPage() {
   }, []);
 
   const loadArchives = async () => {
-    const supabase = createClient();
+    const supabase = manageClient();
     const { data } = await supabase
       .from('reconciliation_archives')
       .select('*')
@@ -39,7 +39,7 @@ export default function ReconciliationArchivesPage() {
       return;
 
     setDeleting(archive.id);
-    const supabase = createClient();
+    const supabase = manageClient();
 
     const { error } = await supabase.from('reconciliation_archives').delete().eq('id', archive.id);
 

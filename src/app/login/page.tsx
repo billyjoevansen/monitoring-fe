@@ -40,7 +40,7 @@ export default function LoginPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-800">SimpubesSRG</h1>
           <p className="text-gray-500 text-sm mt-1">
-            Sistem Monitoring Pupuk Bersubsidi — Kab. Serang
+            Sistem Monitoring Pupuk Bersubsidi — Kota Serang
           </p>
         </div>
 

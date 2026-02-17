@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { manageClient } from '@/lib/supabase/client';
 import Navbar from '@/components/Navbar';
 import { UserProvider } from '@/lib/UserContext';
 import { hasPermission, ROUTE_PERMISSIONS } from '@/lib/rbac';
@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createClient();
+    const supabase = manageClient();
 
     const checkAuth = async () => {
       const {

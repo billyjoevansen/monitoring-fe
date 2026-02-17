@@ -14,7 +14,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
-import { createClient } from '@/lib/supabase/client';
+import { manageClient } from '@/lib/supabase/client';
 import { ROLE_LABELS, ROLE_COLORS } from '@/lib/rbac';
 import type { ActivityLog, Role } from '@/types';
 
@@ -54,7 +54,7 @@ export default function LogsPage() {
 
   const loadLogs = async () => {
     setLoading(true);
-    const supabase = createClient();
+    const supabase = manageClient();
 
     let query = supabase
       .from('activity_logs')

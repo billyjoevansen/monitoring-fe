@@ -16,16 +16,12 @@ import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
 import { classify } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
-import { createClient } from '@/lib/supabase/client';
+import { manageClient } from '@/lib/supabase/client';
 import ResultTable from '@/components/ResultTable';
 import SummaryCard from '@/components/SummaryCard';
 import MiniCard from '@/components/MiniCard';
 import { ReconciliationArchive, ClassifyResult, CLASSIFY_COLUMNS } from '@/types';
 
-/**
- * Halaman untuk klasifikasi data rekonsiliasi
- * menggunakan model Random Forest
- */
 export default function ClassifyPage() {
   const user = useUser();
   const canClassify = hasPermission(user.role, 'view_classification');
@@ -46,11 +42,8 @@ export default function ClassifyPage() {
     loadArchives();
   }, []);
 
-  /**
-   * Memuat daftar arsip rekonsiliasi dari database
-   */
   const loadArchives = async () => {
-    const supabase = createClient();
+    const supabase = manageClient();
     const { data } = await supabase
       .from('reconciliation_archives')
       .select('*')
@@ -60,9 +53,6 @@ export default function ClassifyPage() {
     setLoading(false);
   };
 
-  /**
-   * Menjalankan klasifikasi pada arsip yang dipilih
-   */
   const handleClassify = async (archive: ReconciliationArchive) => {
     setSelectedArchive(archive);
     setClassifying(true);
@@ -100,7 +90,7 @@ export default function ClassifyPage() {
     setError(null);
 
     try {
-      const supabase = createClient();
+      const supabase = manageClient();
       const { error: insertErr } = await supabase.from('classification_archives').insert({
         user_id: user.id,
         user_nama: user.nama,

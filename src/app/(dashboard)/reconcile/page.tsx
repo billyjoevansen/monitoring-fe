@@ -6,7 +6,7 @@ import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
 import { reconcile } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
-import { createClient } from '@/lib/supabase/client';
+import { manageClient } from '@/lib/supabase/client';
 import FileUploader from '@/components/FileUploader';
 import ReconcileTable from '@/components/ReconcileTable';
 import SummaryCard from '@/components/SummaryCard';
@@ -65,7 +65,7 @@ export default function ReconcilePage() {
     setError(null);
 
     try {
-      const supabase = createClient();
+      const supabase = manageClient();
       const { error: insertErr } = await supabase.from('reconciliation_archives').insert({
         user_id: user.id,
         user_nama: user.nama,

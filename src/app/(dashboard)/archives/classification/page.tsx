@@ -11,7 +11,7 @@ import {
   Search,
 } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
-import { createClient } from '@/lib/supabase/client';
+import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth';
 import ResultTable from '@/components/ResultTable';
 import type { ClassificationSummary } from '@/types';
@@ -55,7 +55,7 @@ export default function ClassificationArchivesPage() {
   }, []);
 
   const loadArchives = async () => {
-    const supabase = createClient();
+    const supabase = manageClient();
     const { data } = await supabase
       .from('classification_archives')
       .select('*')
@@ -70,7 +70,7 @@ export default function ClassificationArchivesPage() {
       return;
 
     setDeleting(archive.id);
-    const supabase = createClient();
+    const supabase = manageClient();
 
     const { error } = await supabase.from('classification_archives').delete().eq('id', archive.id);
 

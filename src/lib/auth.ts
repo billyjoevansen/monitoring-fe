@@ -1,9 +1,9 @@
-import { createClient } from '@/lib/supabase/client';
+import { manageClient } from '@/lib/supabase/client';
 import type { User } from '@/types';
 
 // Login
 export async function login(email: string, password: string) {
-  const supabase = createClient();
+  const supabase = manageClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -15,14 +15,14 @@ export async function login(email: string, password: string) {
 
 // Logout.
 export async function logout() {
-  const supabase = createClient();
+  const supabase = manageClient();
   const { error } = await supabase.auth.signOut();
   if (error) throw error;
 }
 
 // profil user fetch.
 export async function getUserProfile(): Promise<User | null> {
-  const supabase = createClient();
+  const supabase = manageClient();
   const {
     data: { user: authUser },
   } = await supabase.auth.getUser();
@@ -36,7 +36,7 @@ export async function getUserProfile(): Promise<User | null> {
 
 // Kirim email reset password.
 export async function resetPassword(email: string) {
-  const supabase = createClient();
+  const supabase = manageClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/change-password`,
   });
@@ -46,7 +46,7 @@ export async function resetPassword(email: string) {
 
 // Update password.
 export async function updatePassword(newPassword: string) {
-  const supabase = createClient();
+  const supabase = manageClient();
   const { error } = await supabase.auth.updateUser({
     password: newPassword,
   });
@@ -56,7 +56,7 @@ export async function updatePassword(newPassword: string) {
 
 // Log aktivitas user.
 export async function logActivity(action: string, detail?: string) {
-  const supabase = createClient();
+  const supabase = manageClient();
   const user = await getUserProfile();
   if (!user) return;
 
