@@ -189,41 +189,87 @@ export default function TrainingPage() {
                 🎯 Feature Selection: {trainResult.feature_selection.total_fitur_terpilih} dari{' '}
                 {trainResult.feature_selection.total_fitur_awal} fitur digunakan
               </p>
+              {trainResult.feature_selection.fitur_terpilih && (
+                <p className="text-purple-600 mt-1">
+                  Fitur: {trainResult.feature_selection.fitur_terpilih.join(', ')}
+                </p>
+              )}
             </div>
           )}
 
-          {/* Classification Report */}
+          {/* Classification Report — render as table from object */}
           {trainResult.model_performance.classification_report && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Classification Report</h3>
-              <pre className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-xs font-mono overflow-x-auto whitespace-pre">
-                {trainResult.model_performance.classification_report}
-              </pre>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">
+                        Kelas
+                      </th>
+                      <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase">
+                        Precision
+                      </th>
+                      <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase">
+                        Recall
+                      </th>
+                      <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase">
+                        F1-Score
+                      </th>
+                      <th className="px-4 py-2 text-center text-xs font-semibold text-gray-500 uppercase">
+                        Support
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {Object.entries(trainResult.model_performance.classification_report).map(
+                      ([kelas, metrics]) => (
+                        <tr key={kelas}>
+                          <td className="px-4 py-2 font-medium text-gray-800">{kelas}</td>
+                          <td className="px-4 py-2 text-center text-gray-700">
+                            {(metrics.precision * 100).toFixed(1)}%
+                          </td>
+                          <td className="px-4 py-2 text-center text-gray-700">
+                            {(metrics.recall * 100).toFixed(1)}%
+                          </td>
+                          <td className="px-4 py-2 text-center text-gray-700">
+                            {(metrics.f1_score * 100).toFixed(1)}%
+                          </td>
+                          <td className="px-4 py-2 text-center text-gray-700">{metrics.support}</td>
+                        </tr>
+                      ),
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
-          {/* Confusion Matrix */}
+          {/* Confusion Matrix — read .matrix from the object */}
           {trainResult.model_performance.confusion_matrix && (
-            <div>
+            <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Confusion Matrix</h3>
               <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 inline-block">
                 <table className="text-sm">
                   <thead>
                     <tr>
                       <th className="px-4 py-2" />
-                      <th className="px-4 py-2 text-center text-xs font-medium text-gray-500">
-                        Pred: Normal
-                      </th>
-                      <th className="px-4 py-2 text-center text-xs font-medium text-gray-500">
-                        Pred: Tidak Normal
-                      </th>
+                      {trainResult.model_performance.confusion_matrix.labels.map((label) => (
+                        <th
+                          key={`cm-head-${label}`}
+                          className="px-4 py-2 text-center text-xs font-medium text-gray-500"
+                        >
+                          Pred: {label}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {trainResult.model_performance.confusion_matrix.map((row, i) => (
+                    {trainResult.model_performance.confusion_matrix.matrix.map((row, i) => (
                       <tr key={`cm-row-${i}`}>
                         <td className="px-4 py-2 text-xs font-medium text-gray-500">
-                          {i === 0 ? 'Act: Normal' : 'Act: Tidak Normal'}
+                          Act: {trainResult.model_performance.confusion_matrix!.labels[i]}
                         </td>
                         {row.map((val, j) => (
                           <td
@@ -239,6 +285,55 @@ export default function TrainingPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Penjelasan */}
+              {trainResult.model_performance.confusion_matrix.penjelasan && (
+                <div className="mt-3 text-xs text-gray-500 space-y-1">
+                  <p>
+                    ✅ True Negative (NORMAL → NORMAL):{' '}
+                    {trainResult.model_performance.confusion_matrix.penjelasan.true_negative}
+                  </p>
+                  <p>
+                    ⚠️ False Positive (NORMAL → TIDAK NORMAL):{' '}
+                    {trainResult.model_performance.confusion_matrix.penjelasan.false_positive}
+                  </p>
+                  <p>
+                    ❌ False Negative (TIDAK NORMAL → NORMAL):{' '}
+                    {trainResult.model_performance.confusion_matrix.penjelasan.false_negative}
+                  </p>
+                  <p>
+                    ✅ True Positive (TIDAK NORMAL → TIDAK NORMAL):{' '}
+                    {trainResult.model_performance.confusion_matrix.penjelasan.true_positive}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Feature Importance */}
+          {trainResult.model_performance.feature_importance && (
+            <div>
+              <h3 className="text-sm font-semibold text-gray-700 mb-2">Feature Importance</h3>
+              <div className="space-y-2">
+                {Object.entries(trainResult.model_performance.feature_importance).map(
+                  ([feature, importance]) => (
+                    <div key={feature} className="flex items-center gap-3">
+                      <span className="text-xs text-gray-600 w-48 truncate" title={feature}>
+                        {feature}
+                      </span>
+                      <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+                        <div
+                          className="bg-purple-500 h-full rounded-full transition-all"
+                          style={{ width: `${(importance * 100).toFixed(0)}%` }}
+                        />
+                      </div>
+                      <span className="text-xs text-gray-500 w-14 text-right">
+                        {(importance * 100).toFixed(1)}%
+                      </span>
+                    </div>
+                  ),
+                )}
               </div>
             </div>
           )}

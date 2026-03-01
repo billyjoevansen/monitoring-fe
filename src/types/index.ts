@@ -88,18 +88,44 @@ export interface ClassificationArchive {
 }
 
 // TRAINING RESULT
+export interface ClassReportMetrics {
+  precision: number;
+  recall: number;
+  f1_score: number;
+  support: number;
+}
+
+export interface ClassificationReportData {
+  NORMAL: ClassReportMetrics;
+  TIDAK_NORMAL: ClassReportMetrics;
+}
+
+export interface ConfusionMatrixData {
+  labels: string[];
+  matrix: number[][];
+  penjelasan?: {
+    true_negative: number;
+    false_positive: number;
+    false_negative: number;
+    true_positive: number;
+    keterangan?: Record<string, string>;
+  };
+}
+
 export interface ModelPerformance {
   accuracy: number;
   f1_score_weighted: number;
-  oob_score?: number;
-  classification_report?: string;
-  confusion_matrix?: number[][];
+  oob_score?: number | null;
+  classification_report?: ClassificationReportData;
+  confusion_matrix?: ConfusionMatrixData;
+  feature_importance?: Record<string, number>;
 }
 
 export interface FeatureSelection {
   total_fitur_awal: number;
   total_fitur_terpilih: number;
   fitur_terpilih?: string[];
+  fitur_dibuang?: string[];
 }
 
 export interface ModelFile {
@@ -107,8 +133,15 @@ export interface ModelFile {
   size_kb?: number;
 }
 
+// Label distribution returned by BE /api/train
+export interface LabelDistribution {
+  [label: string]: number;
+}
+
 export interface TrainResult {
   model_performance: ModelPerformance;
   feature_selection?: FeatureSelection;
   model_file?: ModelFile;
+  label_distribution?: LabelDistribution;
+  massage?: string;
 }
