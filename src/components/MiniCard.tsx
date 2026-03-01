@@ -1,9 +1,8 @@
-import { MiniCardProps } from '@/types';
+interface MiniCardProps {
+  label: string;
+  value: number | string;
+}
 
-/**
- * Komponen kartu kecil untuk menampilkan informasi ringkas
- * Biasanya digunakan di dalam list atau panel
- */
 export default function MiniCard({ label, value }: MiniCardProps) {
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">

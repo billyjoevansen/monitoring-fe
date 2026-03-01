@@ -64,10 +64,6 @@ export interface ReconcileResult {
   detail: ReconcileDetailItem[];
 }
 
-// =====================
-// Constants
-// =====================
-
 // Key pupuk yang digunakan dalam proses rekonsiliasi
 export const PUPUK_KEYS = ['urea', 'npk', 'za', 'npk_formula', 'organik'] as const;
 // Type untuk key pupuk

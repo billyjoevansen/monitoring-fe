@@ -39,7 +39,7 @@ export interface ClassificationArchive {
   created_at: string;
 }
 
-// Kolom;tabel hasil klasifikasi
+// Kolom tabel hasil klasifikasi
 export interface ClassifyColumn {
   key: string;
   label: string;

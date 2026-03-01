@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { healthCheck } from '@/lib/api';
-import { hasPermission } from '@/lib/rbac';
-import { ROLE_LABELS } from '@/lib/rbac';
+import { hasPermission, ROLE_LABELS } from '@/lib/rbac';
 import {
   FileSearch,
   BrainCircuit,
@@ -27,68 +26,58 @@ interface FeatureCard {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   desc: string;
-  color: string;
   permission?: Permission;
+  cardClass: string;
+  iconClass: string;
 }
 
-const features: FeatureCard[] = [
+export const features: FeatureCard[] = [
   {
     href: '/reconcile',
     icon: FileSearch,
     title: 'Rekonsiliasi',
     desc: 'Bandingkan data RDKK dengan SIVERVAL. Lihat selisih pupuk, kesesuaian kios, dan status penebusan.',
-    color: 'blue',
     permission: 'view_reconciliation',
+    cardClass: 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100',
+    iconClass: 'bg-blue-100',
   },
   {
     href: '/predict',
     icon: BrainCircuit,
     title: 'Prediksi & Training',
     desc: 'Latih model Random Forest dan prediksi petani NORMAL / TIDAK NORMAL.',
-    color: 'purple',
     permission: 'view_prediction',
+    cardClass: 'bg-purple-50 text-purple-600 border-purple-200 hover:bg-purple-100',
+    iconClass: 'bg-purple-100',
   },
   {
     href: '/settings',
     icon: Settings,
     title: 'Pengaturan Model',
     desc: 'Ubah hyperparameter Random Forest (n_estimators, max_depth, dll).',
-    color: 'gray',
     permission: 'edit_model_config',
+    cardClass: 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100',
+    iconClass: 'bg-gray-200',
   },
   {
     href: '/users',
     icon: Users,
     title: 'Kelola User',
     desc: 'Tambah, edit, dan nonaktifkan akun pengguna sistem.',
-    color: 'orange',
     permission: 'manage_users',
+    cardClass: 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100',
+    iconClass: 'bg-orange-100',
   },
   {
     href: '/logs',
     icon: ScrollText,
     title: 'Log Aktivitas',
     desc: 'Pantau seluruh aktivitas pengguna dalam sistem.',
-    color: 'teal',
     permission: 'view_logs',
+    cardClass: 'bg-teal-50 text-teal-600 border-teal-200 hover:bg-teal-100',
+    iconClass: 'bg-teal-100',
   },
 ];
-
-const colorMap: Record<string, string> = {
-  blue: 'bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100',
-  purple: 'bg-purple-50 text-purple-600 border-purple-200 hover:bg-purple-100',
-  gray: 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100',
-  orange: 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100',
-  teal: 'bg-teal-50 text-teal-600 border-teal-200 hover:bg-teal-100',
-};
-
-const iconBgMap: Record<string, string> = {
-  blue: 'bg-blue-100',
-  purple: 'bg-purple-100',
-  gray: 'bg-gray-200',
-  orange: 'bg-orange-100',
-  teal: 'bg-teal-100',
-};
 
 export default function DashboardClient({ user }: DashboardClientProps) {
   const [serverStatus, setServerStatus] = useState<'loading' | 'online' | 'offline'>('loading');
@@ -105,7 +94,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
   });
 
   return (
-    <div>
+    <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -120,7 +109,8 @@ export default function DashboardClient({ user }: DashboardClientProps) {
             </p>
           </div>
         </div>
-        {/* Server Status */}
+
+        {/* Server Status — tetap client-side karena healthCheck adalah live ping */}
         <div
           className={`p-4 rounded-xl border flex items-center gap-3 ${
             serverStatus === 'online'
@@ -144,7 +134,7 @@ export default function DashboardClient({ user }: DashboardClientProps) {
           >
             {serverStatus === 'loading' && 'Memeriksa koneksi server...'}
             {serverStatus === 'online' && 'Backend API aktif dan terhubung'}
-            {serverStatus === 'offline' && 'API tidak terhubung '}
+            {serverStatus === 'offline' && 'API tidak terhubung'}
           </p>
         </div>
       </div>
@@ -157,10 +147,10 @@ export default function DashboardClient({ user }: DashboardClientProps) {
             <Link
               key={feature.href}
               href={feature.href}
-              className={`p-6 rounded-xl border-2 transition-all duration-200 ${colorMap[feature.color]}`}
+              className={`p-6 rounded-xl border-2 transition-all duration-200 ${feature.cardClass}`}
             >
               <div
-                className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${iconBgMap[feature.color]}`}
+                className={`w-12 h-12 rounded-lg flex items-center justify-center mb-4 ${feature.iconClass}`}
               >
                 <Icon className="w-6 h-6" />
               </div>

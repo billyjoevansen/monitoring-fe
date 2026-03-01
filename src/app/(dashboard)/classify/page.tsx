@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
   Loader2,
   Tags,
@@ -12,140 +11,37 @@ import {
   ChevronRight,
   Info,
 } from 'lucide-react';
-import { useUser } from '@/lib/UserContext';
-import { hasPermission } from '@/lib/rbac';
-import { classify } from '@/lib/api';
-import { logActivity } from '@/lib/auth';
-import { manageClient } from '@/lib/supabase/client';
 import ResultTable from '@/components/ResultTable';
 import SummaryCard from '@/components/SummaryCard';
 import MiniCard from '@/components/MiniCard';
-import { ReconciliationArchive, ClassifyResult, CLASSIFY_COLUMNS } from '@/types';
+import { ReconciliationArchive, CLASSIFY_COLUMNS } from '@/types';
+import { useClassify } from '@/hooks/useClassify';
 
 export default function ClassifyPage() {
-  const user = useUser();
-  const canClassify = hasPermission(user.role, 'view_classification');
+  const {
+    canClassify,
+    archives,
+    selectedArchive,
+    expandedId,
+    loading,
+    classifying,
+    result,
+    error,
+    namaArsip,
+    saving,
+    saved,
+    setNamaArsip,
+    handleClassify,
+    handleSaveToArchive,
+    handleReset,
+    toggleExpand,
+    formatDate,
+  } = useClassify();
 
-  const [archives, setArchives] = useState<ReconciliationArchive[]>([]);
-  const [selectedArchive, setSelectedArchive] = useState<ReconciliationArchive | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [classifying, setClassifying] = useState(false);
-  const [result, setResult] = useState<ClassifyResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const [namaArsip, setNamaArsip] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  useEffect(() => {
-    loadArchives();
-  }, []);
-
-  const loadArchives = async () => {
-    const supabase = manageClient();
-    const { data } = await supabase
-      .from('reconciliation_archives')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (data) setArchives(data as ReconciliationArchive[]);
-    setLoading(false);
-  };
-
-  const handleClassify = async (archive: ReconciliationArchive) => {
-    setSelectedArchive(archive);
-    setClassifying(true);
-    setError(null);
-    setResult(null);
-    setSaved(false);
-    setNamaArsip(`Klasifikasi - ${archive.nama_arsip}`);
-
-    try {
-      const data = await classify(archive.detail);
-      setResult(data);
-      await logActivity(
-        'classify',
-        `Klasifikasi dari arsip "${archive.nama_arsip}" — ${data.summary.total_petani} petani`,
-      );
-    } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setError(axiosErr.response?.data?.error || 'Terjadi kesalahan.');
-      } else {
-        setError('Gagal terhubung ke server.');
-      }
-    } finally {
-      setClassifying(false);
-    }
-  };
-
-  /**
-   * Menyimpan hasil klasifikasi ke arsip
-   */
-  const handleSaveToArchive = async () => {
-    if (!result || !namaArsip.trim() || !selectedArchive) return;
-
-    setSaving(true);
-    setError(null);
-
-    try {
-      const supabase = manageClient();
-      const { error: insertErr } = await supabase.from('classification_archives').insert({
-        user_id: user.id,
-        user_nama: user.nama,
-        reconciliation_id: selectedArchive.id,
-        nama_arsip: namaArsip.trim(),
-        summary: result.summary,
-        detail: result.detail,
-      });
-
-      if (insertErr) throw insertErr;
-
-      await logActivity('save_classification', `Menyimpan arsip klasifikasi: ${namaArsip}`);
-      setSaved(true);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Gagal menyimpan.';
-      setError(message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  /**
-   * Reset state ke kondisi awal
-   */
-  const handleReset = () => {
-    setResult(null);
-    setSelectedArchive(null);
-    setError(null);
-    setSaved(false);
-    setNamaArsip('');
-  };
-
-  /**
-   * Format tanggal untuk tampilan
-   */
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  // Render jika tidak memiliki akses
   if (!canClassify) {
     return (
       <div>
-        <div className="mb-8 flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-            <Tags className="w-5 h-5 text-indigo-600" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-800">Klasifikasi</h1>
-        </div>
+        <PageHeader />
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-xl flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 shrink-0" />
           <span>Role Anda tidak memiliki akses ke halaman ini.</span>
@@ -156,20 +52,8 @@ export default function ClassifyPage() {
 
   return (
     <div>
-      {/* Header */}
-      <div className="mb-8 flex items-center gap-3">
-        <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-          <Tags className="w-5 h-5 text-indigo-600" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Klasifikasi</h1>
-          <p className="text-gray-500 mt-1">
-            Pilih arsip rekonsiliasi untuk diklasifikasikan NORMAL / TIDAK NORMAL
-          </p>
-        </div>
-      </div>
+      <PageHeader />
 
-      {/* Error Alert */}
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-3">
           <XCircle className="w-5 h-5 shrink-0" />
@@ -177,7 +61,6 @@ export default function ClassifyPage() {
         </div>
       )}
 
-      {/* Pilih Arsip */}
       {!result && (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
           <div className="p-4 border-b border-gray-100">
@@ -192,13 +75,7 @@ export default function ClassifyPage() {
               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
             </div>
           ) : archives.length === 0 ? (
-            <div className="p-8 text-center">
-              <Tags className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-              <p className="text-gray-500 font-medium">Belum ada arsip rekonsiliasi.</p>
-              <p className="text-gray-400 text-sm mt-1">
-                Lakukan rekonsiliasi terlebih dahulu dan simpan hasilnya.
-              </p>
-            </div>
+            <EmptyArchiveState />
           ) : (
             <div className="divide-y divide-gray-100">
               {archives.map((archive) => (
@@ -207,9 +84,7 @@ export default function ClassifyPage() {
                   archive={archive}
                   isExpanded={expandedId === archive.id}
                   isClassifying={classifying && selectedArchive?.id === archive.id}
-                  onToggleExpand={() =>
-                    setExpandedId(expandedId === archive.id ? null : archive.id)
-                  }
+                  onToggleExpand={() => toggleExpand(archive.id)}
                   onClassify={() => handleClassify(archive)}
                   formatDate={formatDate}
                 />
@@ -219,7 +94,6 @@ export default function ClassifyPage() {
         </div>
       )}
 
-      {/* Hasil Klasifikasi */}
       {result && selectedArchive && (
         <>
           <div className="bg-indigo-50 border border-indigo-200 text-indigo-700 p-3 rounded-xl mb-4 flex items-center gap-2 text-sm">
@@ -235,7 +109,6 @@ export default function ClassifyPage() {
             </button>
           </div>
 
-          {/* Summary Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
             <SummaryCard label="Total Petani" value={result.summary.total_petani} color="blue" />
             <SummaryCard
@@ -252,7 +125,6 @@ export default function ClassifyPage() {
             />
           </div>
 
-          {/* Save Section */}
           <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
             {saved ? (
               <div className="flex items-center gap-2 text-green-700">
@@ -285,7 +157,6 @@ export default function ClassifyPage() {
             )}
           </div>
 
-          {/* Result Table */}
           <ResultTable columns={CLASSIFY_COLUMNS} data={result.detail} />
         </>
       )}
@@ -293,9 +164,36 @@ export default function ClassifyPage() {
   );
 }
 
-/**
- * Props untuk komponen ArchiveItem
- */
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+function PageHeader() {
+  return (
+    <div className="mb-8 flex items-center gap-3">
+      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+        <Tags className="w-5 h-5 text-indigo-600" />
+      </div>
+      <div>
+        <h1 className="text-3xl font-bold text-gray-800">Klasifikasi</h1>
+        <p className="text-gray-500 mt-1">
+          Pilih arsip rekonsiliasi untuk diklasifikasikan NORMAL / TIDAK NORMAL
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function EmptyArchiveState() {
+  return (
+    <div className="p-8 text-center">
+      <Tags className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+      <p className="text-gray-500 font-medium">Belum ada arsip rekonsiliasi.</p>
+      <p className="text-gray-400 text-sm mt-1">
+        Lakukan rekonsiliasi terlebih dahulu dan simpan hasilnya.
+      </p>
+    </div>
+  );
+}
+
 interface ArchiveItemProps {
   archive: ReconciliationArchive;
   isExpanded: boolean;
@@ -305,9 +203,6 @@ interface ArchiveItemProps {
   formatDate: (dateStr: string) => string;
 }
 
-/**
- * Komponen untuk menampilkan item arsip dalam daftar
- */
 function ArchiveItem({
   archive,
   isExpanded,

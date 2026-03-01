@@ -4,21 +4,11 @@ import { useMemo, useState } from 'react';
 import { ChevronUp, ChevronDown, Search } from 'lucide-react';
 import type { ResultTableProps, ClassifyDetailItem, SortDirection, SortConfig } from '@/types';
 
-/**
- * Tipe untuk sorting
- */
-
-/**
- * Status color mapping untuk klasifikasi
- */
 const STATUS_COLORS: Record<string, string> = {
   NORMAL: 'bg-green-100 text-green-800',
   TIDAK_NORMAL: 'bg-red-100 text-red-800',
 };
 
-/**
- * Komponen tabel untuk menampilkan hasil klasifikasi
- */
 export default function ResultTable({ columns, data }: ResultTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({
@@ -26,7 +16,6 @@ export default function ResultTable({ columns, data }: ResultTableProps) {
     direction: 'asc',
   });
 
-  // Filter data berdasarkan search term
   const filteredData = useMemo(() => {
     if (!searchTerm) return data;
 
@@ -40,7 +29,6 @@ export default function ResultTable({ columns, data }: ResultTableProps) {
     );
   }, [data, searchTerm]);
 
-  // Sort data
   const sortedData = useMemo(() => {
     if (!sortConfig.direction) return filteredData;
 
@@ -57,7 +45,6 @@ export default function ResultTable({ columns, data }: ResultTableProps) {
     });
   }, [filteredData, sortConfig]);
 
-  // Handle sort
   const handleSort = (key: string) => {
     setSortConfig((prev) => ({
       key,
@@ -70,7 +57,6 @@ export default function ResultTable({ columns, data }: ResultTableProps) {
     }));
   };
 
-  // Render sort icon
   const renderSortIcon = (key: string) => {
     if (sortConfig.key !== key) {
       return <ChevronUp className="w-3 h-3 text-gray-300" />;
@@ -82,7 +68,6 @@ export default function ResultTable({ columns, data }: ResultTableProps) {
     );
   };
 
-  // Format cell value
   const formatCellValue = (item: ClassifyDetailItem, key: string): React.ReactNode => {
     const value = item[key];
 
