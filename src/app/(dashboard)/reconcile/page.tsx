@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import { FileSearch, AlertTriangle, XCircle } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
@@ -7,7 +8,7 @@ import { useReconcile } from '@/hooks/useReconcile';
 import ReconcileUploadSection from '@/components/reconcile/ReconcileUploadSection';
 import ReconcileArchiveSection from '@/components/reconcile/ReconcileArchiveSection';
 import SummaryCard from '@/components/SummaryCard';
-import ReconcileTable from '@/components/ReconcileTable';
+import ReconcileTable from '@/components/reconcile/ReconcileTable';
 
 export default function ReconcilePage() {
   const user = useUser();
@@ -29,6 +30,18 @@ export default function ReconcilePage() {
     handleSaveToArchive,
     handleReset,
   } = useReconcile();
+
+  // Track filtered data from the table's search
+  const [filteredDetail, setFilteredDetail] = useState<Record<string, unknown>[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleFilteredDataChange = useCallback(
+    (filtered: Record<string, unknown>[], query: string) => {
+      setFilteredDetail(filtered);
+      setSearchQuery(query);
+    },
+    [],
+  );
 
   if (!canUpload) {
     return (
@@ -102,9 +115,11 @@ export default function ReconcilePage() {
             saved={saved}
             onNamaArsipChange={setNamaArsip}
             onSave={handleSaveToArchive}
+            filteredDetail={filteredDetail}
+            searchQuery={searchQuery}
           />
 
-          <ReconcileTable data={result.detail} />
+          <ReconcileTable data={result.detail} onFilteredDataChange={handleFilteredDataChange} />
         </>
       )}
     </div>

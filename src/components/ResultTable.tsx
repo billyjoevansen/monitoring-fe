@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { ChevronUp, ChevronDown, Search } from 'lucide-react';
 import type { ResultTableProps, ClassifyDetailItem, SortDirection, SortConfig } from '@/types';
 
@@ -9,7 +9,15 @@ const STATUS_COLORS: Record<string, string> = {
   TIDAK_NORMAL: 'bg-red-100 text-red-800',
 };
 
-export default function ResultTable({ columns, data }: ResultTableProps) {
+interface ExtendedResultTableProps extends ResultTableProps {
+  onFilteredDataChange?: (filtered: ClassifyDetailItem[], searchQuery: string) => void;
+}
+
+export default function ResultTable({
+  columns,
+  data,
+  onFilteredDataChange,
+}: ExtendedResultTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: 'nama_petani',
@@ -44,6 +52,11 @@ export default function ResultTable({ columns, data }: ResultTableProps) {
       return sortConfig.direction === 'asc' ? comparison : -comparison;
     });
   }, [filteredData, sortConfig]);
+
+  // Notify parent whenever filtered data changes
+  useEffect(() => {
+    onFilteredDataChange?.(filteredData, searchTerm);
+  }, [searchTerm, data]);
 
   const handleSort = (key: string) => {
     setSortConfig((prev) => ({

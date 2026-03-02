@@ -1,4 +1,4 @@
-import { Loader2, Save, CheckCircle } from 'lucide-react';
+import { Loader2, Save, CheckCircle, Filter } from 'lucide-react';
 import DownloadButtons from '@/components/DownloadButtons';
 import { ReconcileResult } from '@/types';
 
@@ -9,6 +9,8 @@ interface ReconcileArchiveSectionProps {
   saved: boolean;
   onNamaArsipChange: (value: string) => void;
   onSave: () => void;
+  filteredDetail?: Record<string, unknown>[];
+  searchQuery?: string;
 }
 
 export default function ReconcileArchiveSection({
@@ -18,7 +20,13 @@ export default function ReconcileArchiveSection({
   saved,
   onNamaArsipChange,
   onSave,
+  filteredDetail,
+  searchQuery,
 }: ReconcileArchiveSectionProps) {
+  // Use filtered data if available and search is active, otherwise use full data
+  const isFiltered = searchQuery && searchQuery.trim().length > 0 && filteredDetail;
+  const downloadDetail = isFiltered ? filteredDetail : result.detail;
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
       {saved ? (
@@ -27,7 +35,18 @@ export default function ReconcileArchiveSection({
             <CheckCircle className="w-5 h-5" />
             <span className="font-semibold">Tersimpan ke arsip!</span>
           </div>
-          <DownloadButtons detail={result.detail} summary={result.summary} />
+          <div className="flex items-center gap-3">
+            {isFiltered && (
+              <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-lg">
+                <Filter className="w-3.5 h-3.5" />
+                <span>
+                  Download {filteredDetail.length} dari {result.detail.length} data
+                  {searchQuery ? ` (filter: "${searchQuery}")` : ''}
+                </span>
+              </div>
+            )}
+            <DownloadButtons detail={downloadDetail} summary={result.summary} />
+          </div>
         </div>
       ) : (
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -39,7 +58,7 @@ export default function ReconcileArchiveSection({
             autoComplete="off"
             className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <button
               onClick={onSave}
               disabled={saving || !namaArsip.trim()}
@@ -48,7 +67,17 @@ export default function ReconcileArchiveSection({
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Simpan
             </button>
-            <DownloadButtons detail={result.detail} summary={result.summary} />
+            <div className="flex items-center gap-2">
+              {isFiltered && (
+                <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-lg">
+                  <Filter className="w-3.5 h-3.5" />
+                  <span>
+                    {filteredDetail.length}/{result.detail.length}
+                  </span>
+                </div>
+              )}
+              <DownloadButtons detail={downloadDetail} summary={result.summary} />
+            </div>
           </div>
         </div>
       )}

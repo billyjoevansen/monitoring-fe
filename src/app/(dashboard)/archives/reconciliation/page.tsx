@@ -7,7 +7,7 @@ import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import MiniCard from '@/components/MiniCard';
 import SummaryCard from '@/components/SummaryCard';
-import ReconcileTable from '@/components/ReconcileTable';
+import ReconcileTable from '@/components/reconcile/ReconcileTable';
 import type { ReconciliationArchive } from '@/types';
 
 export default function ReconciliationArchivesPage() {

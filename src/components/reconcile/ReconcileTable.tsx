@@ -14,7 +14,12 @@ const PUPUK_TYPES = [
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
-export default function ReconcileTable({ data }: { data: Record<string, unknown>[] }) {
+interface ReconcileTableProps {
+  data: Record<string, unknown>[];
+  onFilteredDataChange?: (filtered: Record<string, unknown>[], searchQuery: string) => void;
+}
+
+export default function ReconcileTable({ data, onFilteredDataChange }: ReconcileTableProps) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState('');
@@ -26,7 +31,6 @@ export default function ReconcileTable({ data }: { data: Record<string, unknown>
     const calculateHeight = () => {
       if (tableWrapperRef.current) {
         const rect = tableWrapperRef.current.getBoundingClientRect();
-        // Sisa viewport dikurangi padding bawah (pagination ~56px + margin 32px)
         const available = window.innerHeight - rect.top - 88;
         setTableMaxHeight(Math.max(300, available));
       }
@@ -50,6 +54,11 @@ export default function ReconcileTable({ data }: { data: Record<string, unknown>
       row.catatan?.some((c) => c.toLowerCase().includes(q))
     );
   });
+
+  // Notify parent whenever filtered data changes
+  useEffect(() => {
+    onFilteredDataChange?.(filtered as unknown as Record<string, unknown>[], search);
+  }, [search, data]);
 
   const totalPages = Math.ceil(filtered.length / pageSize);
   const start = (page - 1) * pageSize;
@@ -110,11 +119,7 @@ export default function ReconcileTable({ data }: { data: Record<string, unknown>
         </div>
       </div>
 
-      <div
-        ref={tableWrapperRef}
-        className="overflow-auto h-96"
-        // style={{ maxHeight: `${tableMaxHeight}px` }}
-      >
+      <div ref={tableWrapperRef} className="overflow-auto h-96">
         <table className="w-max min-w-full text-xs border-collapse">
           <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
             <tr>

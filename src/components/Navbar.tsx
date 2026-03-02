@@ -27,6 +27,7 @@ import { hasPermission, ROLE_LABELS, ROLE_COLORS } from '@/lib/rbac';
 import { logout } from '@/lib/auth';
 import type { User } from '@/types';
 import type { NavItem } from '@/types';
+import Image from 'next/image';
 
 interface NavbarProps {
   user: User;
@@ -124,11 +125,15 @@ export default function Navbar({ user }: NavbarProps) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
-              <div className="w-8 h-8 bg-linear-to-br from-green-500 to-green-700 rounded-lg flex items-center justify-center shadow-sm">
-                <Wheat className="w-4.5 h-4.5 text-white" />
-              </div>
+              <Image
+                src="/Lambang_Kota_Serang.webp"
+                alt="Simpubes Serang"
+                width={55}
+                height={55}
+                className="object-contain"
+              />
               <span className="text-base font-bold text-gray-900 tracking-tight hidden sm:block">
-                SIMPUBES Serang
+                Simpubes Serang
               </span>
             </Link>
 

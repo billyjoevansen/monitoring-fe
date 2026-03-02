@@ -1,4 +1,4 @@
-import { ReconcileSummary, ReconcileDetailItem } from './rekonsiliasi';
+import { ReconcileSummary, ReconcileDetailItem, ReconciliationSummary } from './rekonsiliasi';
 import { ClassifyDetailItem, ClassifyColumn } from './klasifikasi';
 
 export interface MiniCardProps {

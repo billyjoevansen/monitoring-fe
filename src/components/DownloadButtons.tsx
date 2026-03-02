@@ -3,9 +3,6 @@
 import { FileSpreadsheet, FileText } from 'lucide-react';
 import { DownloadButtonsProps, PUPUK_KEYS, ReconcileDetailItem } from '@/types';
 
-/**
- * Komponen untuk mengunduh hasil rekonsiliasi dalam format Excel atau PDF
- */
 export default function DownloadButtons({ detail, summary }: DownloadButtonsProps) {
   /**
    * Handle ekspor ke format Excel (.xlsx)
