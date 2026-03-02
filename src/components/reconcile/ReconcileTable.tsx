@@ -97,7 +97,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-500">Tampil:</label>
+            <label className="text-xs text-gray-500">Tampilkan:</label>
             <select
               value={pageSize}
               onChange={(e) => {
@@ -114,12 +114,12 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
             </select>
           </div>
           <p className="text-xs text-gray-500">
-            <span className="font-semibold text-gray-700">{filtered.length}</span> data
+            dari <span className="font-semibold text-gray-700">{filtered.length}</span> data
           </p>
         </div>
       </div>
 
-      <div ref={tableWrapperRef} className="overflow-auto h-96">
+      <div ref={tableWrapperRef} className="overflow-x-auto">
         <table className="w-max min-w-full text-xs border-collapse">
           <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
             <tr>
@@ -247,7 +247,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                     {row.poktan}
                   </td>
                   <td className="px-3 py-2.5 text-gray-600 border-r border-gray-100">
-                    {row.gapoktan}
+                    {row.gapoktan || <span className="text-gray-300">-</span>}
                   </td>
                   <td className="px-3 py-2.5 text-gray-600 border-r border-gray-100">
                     <div className="truncate max-w-25" title={row.kios_rdkk}>

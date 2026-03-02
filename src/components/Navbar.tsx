@@ -120,13 +120,13 @@ export default function Navbar({ user }: NavbarProps) {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-white/80 backdrop-blur-xl supports-backdrop-filter:bg-white/60">
-        <div className="max-w-400 mx-auto px-4 sm:px-6 outline-2 outline-black">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-white/80 backdrop-blur-xl supports-backdrop-filter:bg-white/60 rounded-md outline-2 outline-black">
+        <div className="max-w-400 mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
               <Image
-                src="/Lambang_Kota_Serang.webp"
+                src="/Logo_Kota_Serang.webp"
                 alt="Simpubes Serang"
                 width={55}
                 height={55}
