@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { FileSearch, AlertTriangle, XCircle } from 'lucide-react';
+import { FileSearch, AlertTriangle } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
 import { useReconcile } from '@/hooks/useReconcile';
@@ -9,6 +9,7 @@ import ReconcileUploadSection from '@/components/reconcile/ReconcileUploadSectio
 import ReconcileArchiveSection from '@/components/reconcile/ReconcileArchiveSection';
 import SummaryCard from '@/components/SummaryCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
+import ErrorBanner from '@/components/ErrorBanner';
 
 export default function ReconcilePage() {
   const user = useUser();
@@ -70,12 +71,7 @@ export default function ReconcilePage() {
         onReset={handleReset}
       />
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-3">
-          <XCircle className="w-5 h-5 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      <ErrorBanner message={error} />
 
       {result && (
         <>

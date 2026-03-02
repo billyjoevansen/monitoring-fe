@@ -7,6 +7,14 @@ export interface ClassificationSummary {
   persentase_tidak_normal: number;
 }
 
+// Informasi model yang digunakan
+export interface ModelInfo {
+  accuracy: number;
+  f1_score_weighted: number;
+  oob_score?: number;
+  model_file?: string;
+}
+
 // Detail item hasil klasifikasi
 export interface ClassifyDetailItem {
   nama_petani?: string;
@@ -25,18 +33,6 @@ export interface ClassifyDetailItem {
 export interface ClassifyResult {
   summary: ClassificationSummary;
   detail: ClassifyDetailItem[];
-}
-
-//  Arsip klasifikasi dari database
-export interface ClassificationArchive {
-  id: string;
-  user_id: string;
-  user_nama: string;
-  reconciliation_id: string;
-  nama_arsip: string;
-  summary: ClassificationSummary;
-  detail: ClassifyDetailItem[];
-  created_at: string;
 }
 
 // Kolom tabel hasil klasifikasi

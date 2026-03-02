@@ -3,6 +3,7 @@ import { useUser } from '@/lib/UserContext';
 import { reconcile } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 import { manageClient } from '@/lib/supabase/client';
+import { getApiErrorMessage } from '@/lib/errors';
 import { ReconcileResult } from '@/types';
 
 export function useReconcile() {
@@ -35,12 +36,7 @@ export function useReconcile() {
       setNamaArsip(rdkkFile.name.replace(/\.[^/.]+$/, ''));
       await logActivity('reconcile', `Rekonsiliasi ${data.summary.total_petani} petani`);
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setError(axiosErr.response?.data?.error || 'Terjadi kesalahan.');
-      } else {
-        setError('Gagal terhubung ke server.');
-      }
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }

@@ -4,7 +4,6 @@ import {
   Loader2,
   Tags,
   AlertTriangle,
-  XCircle,
   CheckCircle,
   Save,
   ChevronDown,
@@ -14,6 +13,7 @@ import {
 import ResultTable from '@/components/ResultTable';
 import SummaryCard from '@/components/SummaryCard';
 import MiniCard from '@/components/MiniCard';
+import ErrorBanner from '@/components/ErrorBanner';
 import { ReconciliationArchive, CLASSIFY_COLUMNS } from '@/types';
 import { useClassify } from '@/hooks/useClassify';
 
@@ -54,12 +54,7 @@ export default function ClassifyPage() {
     <div>
       <PageHeader />
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-3">
-          <XCircle className="w-5 h-5 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      <ErrorBanner message={error} />
 
       {!result && (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">

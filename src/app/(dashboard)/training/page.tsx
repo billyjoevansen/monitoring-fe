@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, FlaskConical, AlertTriangle, Sparkles, XCircle } from 'lucide-react';
+import { Loader2, FlaskConical, AlertTriangle, Sparkles } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
 import { trainModel, visualizeTraining } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
+import { getApiErrorMessage } from '@/lib/errors';
 import FileUploader from '@/components/FileUploader';
 import ChartViewer from '@/components/ChartViewer';
+import ErrorBanner from '@/components/ErrorBanner';
 import type { TrainResult } from '@/types';
 
 export default function TrainingPage() {
@@ -47,12 +49,7 @@ export default function TrainingPage() {
         console.warn('Visualisasi gagal bukan error fatal', err);
       }
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setError(axiosErr.response?.data?.error || 'Terjadi kesalahan.');
-      } else {
-        setError('Gagal terhubung ke server.');
-      }
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
       setStep('');
@@ -143,12 +140,7 @@ export default function TrainingPage() {
         </div>
       </div>
 
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6 flex items-center gap-3">
-          <XCircle className="w-5 h-5 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      <ErrorBanner message={error} />
 
       {/* Training Result */}
       {trainResult && (

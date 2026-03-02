@@ -2,6 +2,7 @@ export * from './rekonsiliasi';
 export * from './klasifikasi';
 export * from './petani';
 export * from './props';
+export * from './archive';
 
 // ROLE & PERMISSION
 export type Role = 'admin' | 'kabid' | 'kasie' | 'bpp';
@@ -56,34 +57,6 @@ export interface ActivityLog {
   user_role: string;
   action: string;
   detail: string | null;
-  created_at: string;
-}
-
-// ARSIP KLASIFIKASI
-export interface ClassificationSummary {
-  total_petani: number;
-  normal: number;
-  tidak_normal: number;
-  persentase_normal: number;
-  persentase_tidak_normal: number;
-}
-
-export interface ModelInfo {
-  accuracy: number;
-  f1_score_weighted: number;
-  oob_score?: number;
-  model_file?: string;
-}
-
-export interface ClassificationArchive {
-  id: string;
-  user_id: string;
-  user_nama: string;
-  reconciliation_id: string | null;
-  nama_arsip: string;
-  summary: ClassificationSummary;
-  detail: Record<string, unknown>[];
-  model_info: ModelInfo | null;
   created_at: string;
 }
 
