@@ -1,50 +1,5 @@
-// ─── Reconciliation ──────────────────────────────────────────────────────────
-
-export interface ReconciliationSummary {
-  total_petani: number;
-  status_penebusan: {
-    tebus_lengkap: number;
-    tebus_sebagian: number;
-    tebus_melebihi: number;
-    belum_menebus: number;
-  };
-  kios: {
-    sesuai: number;
-    tidak_sesuai: number;
-    persentase_sesuai: number;
-  };
-}
-
-export interface ReconciliationArchive {
-  id: string;
-  user_id: string;
-  user_nama: string;
-  nama_arsip: string;
-  summary: ReconciliationSummary;
-  detail: Record<string, unknown>[];
-  created_at: string;
-}
-
-// ─── Classification ───────────────────────────────────────────────────────────
-
-export interface ClassificationSummary {
-  total_petani: number;
-  normal: number;
-  tidak_normal: number;
-  persentase_normal: number;
-  persentase_tidak_normal: number;
-}
-
-export interface ClassificationArchive {
-  id: string;
-  user_id: string;
-  user_nama: string;
-  reconciliation_id: string;
-  nama_arsip: string;
-  summary: ClassificationSummary;
-  detail: Record<string, unknown>[];
-  created_at: string;
-}
+import type { StatusPenebusan, KiosSummary } from './rekonsiliasi';
+import type { ClassificationSummary, ModelInfo } from './klasifikasi';
 
 // ─── Base (useArchive & ArchiveListLayout) ──────────────────────────────
 
@@ -61,4 +16,21 @@ export interface BaseArchive<TSummary extends BaseSummary = BaseSummary> {
   summary: TSummary;
   detail: Record<string, unknown>[];
   created_at: string;
+}
+
+// ─── Reconciliation ──────────────────────────────────────────────────────────
+
+export interface ReconciliationSummary {
+  total_petani: number;
+  status_penebusan: StatusPenebusan;
+  kios: KiosSummary;
+}
+
+export interface ReconciliationArchive extends BaseArchive<ReconciliationSummary> {}
+
+// ─── Classification ───────────────────────────────────────────────────────────
+
+export interface ClassificationArchive extends BaseArchive<ClassificationSummary> {
+  reconciliation_id: string | null;
+  model_info: ModelInfo | null;
 }

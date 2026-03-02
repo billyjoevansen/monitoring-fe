@@ -68,29 +68,3 @@ export interface ReconcileResult {
 export const PUPUK_KEYS = ['urea', 'npk', 'za', 'npk_formula', 'organik'] as const;
 // Type untuk key pupuk
 export type PupukKey = (typeof PUPUK_KEYS)[number];
-
-// ARSIP REKONSILIASI
-export interface ReconciliationSummary {
-  total_petani: number;
-  status_penebusan: {
-    tebus_lengkap: number;
-    tebus_sebagian: number;
-    tebus_melebihi: number;
-    belum_menebus: number;
-  };
-  kios: {
-    sesuai: number;
-    tidak_sesuai: number;
-    persentase_sesuai: number;
-  };
-}
-
-export interface ReconciliationArchive {
-  id: string;
-  user_id: string;
-  user_nama: string;
-  nama_arsip: string;
-  summary: ReconciliationSummary;
-  detail: Record<string, unknown>[];
-  created_at: string;
-}

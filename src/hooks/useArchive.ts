@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth';
+import { formatDate } from '@/lib/format';
 import type { BaseArchive, BaseSummary } from '@/types/archive';
 
 interface UseArchiveOptions<T extends BaseArchive> {
@@ -66,15 +67,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     const q = search.toLowerCase();
     return a.nama_arsip.toLowerCase().includes(q) || a.user_nama.toLowerCase().includes(q);
   });
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
 
   return {
     archives,

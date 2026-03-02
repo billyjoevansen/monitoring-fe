@@ -4,6 +4,8 @@ import { hasPermission } from '@/lib/rbac';
 import { classify } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 import { manageClient } from '@/lib/supabase/client';
+import { getApiErrorMessage } from '@/lib/errors';
+import { formatDate } from '@/lib/format';
 import { ReconciliationArchive, ClassifyResult } from '@/types';
 
 export function useClassify() {
@@ -52,12 +54,7 @@ export function useClassify() {
         `Klasifikasi dari arsip "${archive.nama_arsip}" — ${data.summary.total_petani} petani`,
       );
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { error?: string } } };
-        setError(axiosErr.response?.data?.error || 'Terjadi kesalahan.');
-      } else {
-        setError('Gagal terhubung ke server.');
-      }
+      setError(getApiErrorMessage(err));
     } finally {
       setClassifying(false);
     }
@@ -103,15 +100,6 @@ export function useClassify() {
   const toggleExpand = (id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
   };
-
-  const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
 
   return {
     // state
