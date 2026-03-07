@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useCallback } from 'react';
 import { FileSearch, AlertTriangle } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
@@ -30,19 +29,10 @@ export default function ReconcilePage() {
     handleProcess,
     handleSaveToArchive,
     handleReset,
+    filteredDetail,
+    searchQuery,
+    handleFilteredDataChange,
   } = useReconcile();
-
-  // Track filtered data from the table's search
-  const [filteredDetail, setFilteredDetail] = useState<Record<string, unknown>[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleFilteredDataChange = useCallback(
-    (filtered: Record<string, unknown>[], query: string) => {
-      setFilteredDetail(filtered);
-      setSearchQuery(query);
-    },
-    [],
-  );
 
   if (!canUpload) {
     return (

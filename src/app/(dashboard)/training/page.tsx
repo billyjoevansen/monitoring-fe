@@ -1,68 +1,29 @@
 'use client';
 
-import { useState } from 'react';
 import { Loader2, FlaskConical, AlertTriangle, Sparkles } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
-import { trainModel, visualizeTraining } from '@/lib/api';
-import { logActivity } from '@/lib/auth';
-import { getApiErrorMessage } from '@/lib/errors';
 import FileUploader from '@/components/FileUploader';
 import ChartViewer from '@/components/ChartViewer';
 import ErrorBanner from '@/components/ErrorBanner';
-import type { TrainResult } from '@/types';
+import { useTrain } from '@/hooks/useTrain';
 
 export default function TrainingPage() {
   const user = useUser();
   const canTrain = hasPermission(user.role, 'train_model');
-
-  const [rdkkFile, setRdkkFile] = useState<File | null>(null);
-  const [sivervalFile, setSivervalFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState('');
-  const [trainResult, setTrainResult] = useState<TrainResult | null>(null);
-  const [charts, setCharts] = useState<Record<string, string>>({});
-  const [error, setError] = useState<string | null>(null);
-
-  const handleTrain = async () => {
-    if (!rdkkFile || !sivervalFile) {
-      setError('Upload kedua file terlebih dahulu.');
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    setTrainResult(null);
-    setCharts({});
-
-    try {
-      setStep('Melatih model Random Forest...');
-      const data = await trainModel(rdkkFile, sivervalFile);
-      setTrainResult(data as TrainResult);
-      await logActivity('train_model', 'Training model selesai');
-
-      setStep('Membuat visualisasi...');
-      try {
-        const vizData = await visualizeTraining(data);
-        setCharts(vizData.charts || {});
-      } catch (err) {
-        console.warn('Visualisasi gagal bukan error fatal', err);
-      }
-    } catch (err: unknown) {
-      setError(getApiErrorMessage(err));
-    } finally {
-      setLoading(false);
-      setStep('');
-    }
-  };
-
-  const handleReset = () => {
-    setTrainResult(null);
-    setCharts({});
-    setRdkkFile(null);
-    setSivervalFile(null);
-    setError(null);
-  };
+  const {
+    rdkkFile,
+    sivervalFile,
+    loading,
+    step,
+    trainResult,
+    charts,
+    error,
+    handleTrain,
+    handleReset,
+    setSivervalFile,
+    setRdkkFile,
+  } = useTrain();
 
   if (!canTrain) {
     return (
@@ -189,7 +150,7 @@ export default function TrainingPage() {
             </div>
           )}
 
-          {/* Classification Report — render as table from object */}
+          {/* Classification Report */}
           {trainResult.model_performance.classification_report && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Classification Report</h3>
@@ -238,7 +199,7 @@ export default function TrainingPage() {
             </div>
           )}
 
-          {/* Confusion Matrix — read .matrix from the object */}
+          {/* Confusion Matrix */}
           {trainResult.model_performance.confusion_matrix && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Confusion Matrix</h3>

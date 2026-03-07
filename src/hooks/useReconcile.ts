@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useUser } from '@/lib/UserContext';
 import { reconcile } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
@@ -73,14 +73,26 @@ export function useReconcile() {
     }
   };
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setResult(null);
     setRdkkFile(null);
     setSivervalFile(null);
     setError(null);
     setSaved(false);
     setNamaArsip('');
-  };
+  }, []);
+
+  // Track filtered data from the table's search
+  const [filteredDetail, setFilteredDetail] = useState<Record<string, unknown>[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleFilteredDataChange = useCallback(
+    (filtered: Record<string, unknown>[], query: string) => {
+      setFilteredDetail(filtered);
+      setSearchQuery(query);
+    },
+    [],
+  );
 
   return {
     // File state
@@ -101,5 +113,9 @@ export function useReconcile() {
     handleProcess,
     handleSaveToArchive,
     handleReset,
+    // Filtered data for table
+    filteredDetail,
+    searchQuery,
+    handleFilteredDataChange,
   };
 }

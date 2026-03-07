@@ -5,11 +5,8 @@ import { formatDate } from '@/lib/format';
 import type { BaseArchive, BaseSummary } from '@/types/archive';
 
 interface UseArchiveOptions<T extends BaseArchive> {
-  /** Nama tabel di Supabase */
   table: string;
-  /** Activity key saat delete (misal: 'delete_archive') */
   deleteActivityKey: string;
-  /** Pesan log saat delete */
   deleteActivityLabel: (archive: T) => string;
 }
 
