@@ -123,7 +123,7 @@ function ChartSkeleton() {
     <div className="bg-white rounded-2xl border border-gray-200 p-6 animate-pulse">
       <div className="h-4 w-40 bg-gray-200 rounded mb-6" />
       <div className="flex justify-center">
-        <div className="w-[180px] h-[180px] rounded-full bg-gray-200" />
+        <div className="w-45 h-45 rounded-full bg-gray-200" />
       </div>
       <div className="flex justify-center gap-6 mt-4">
         <div className="h-3 w-20 bg-gray-200 rounded" />
@@ -165,7 +165,7 @@ export default function DashboardClient({
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
+          <div className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/20">
             <LayoutDashboard className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -242,8 +242,7 @@ export default function DashboardClient({
             iconBg="bg-purple-100"
           />
         </div>
-      ) : canViewClassification ? /* Empty state for no data yet */
-      null : null}
+      ) : canViewClassification /* Empty state for no data yet */ ? null : null}
 
       {/* ── Charts & Details Section ───────────────────────────────────────── */}
       {canViewClassification && latestClassification && cls ? (
@@ -330,7 +329,7 @@ export default function DashboardClient({
 
               {/* Model Info */}
               {latestClassification.model_info && (
-                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-100">
+                <div className="bg-linear-to-r from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-100">
                   <p className="text-xs font-semibold text-purple-600 uppercase tracking-wide mb-2">
                     Performa Model
                   </p>
