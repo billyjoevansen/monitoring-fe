@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import DashboardClient from './DashboardClient';
 import type { User } from '@/types';
+import type { ClassificationArchive, ReconciliationArchive } from '@/types/archive';
 
 export const metadata = {
   title: 'Dashboard',
@@ -24,5 +25,26 @@ export default async function DashboardPage() {
 
   if (error || !user || !user.is_active) redirect('/login');
 
-  return <DashboardClient user={user as User} />;
+  const [{ data: latestClassification }, { data: latestReconciliation }] = await Promise.all([
+    supabase
+      .from('classification_archives')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from('reconciliation_archives')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
+  return (
+    <DashboardClient
+      user={user as User}
+      latestClassification={(latestClassification as ClassificationArchive) ?? null}
+      latestReconciliation={(latestReconciliation as ReconciliationArchive) ?? null}
+    />
+  );
 }
