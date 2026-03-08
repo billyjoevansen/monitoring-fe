@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { manageClient } from '@/lib/supabase/client';
+import { logActivity } from '@/lib/auth';
 import { ROLE_LABELS, ROLE_COLORS, hasPermission } from '@/lib/rbac';
 import type { ActivityLog, Role } from '@/types';
 
@@ -146,6 +147,7 @@ export default function LogsPage() {
     const { error: deleteError } = await supabase.from('activity_logs').delete().in('id', ids);
 
     if (!deleteError) {
+      await logActivity('delete_log', `Menghapus ${ids.length} log aktivitas sekaligus`);
       setSelectedLogIds(new Set());
       await loadLogs();
     }

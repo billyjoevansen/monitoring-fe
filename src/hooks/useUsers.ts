@@ -177,7 +177,8 @@ export function useUsers() {
     setDeleteDialogUser(null);
   };
 
-  const handleToggleActive = async (user: User) => {    const supabase = manageClient();
+  const handleToggleActive = async (user: User) => {
+    const supabase = manageClient();
     const newStatus = !user.is_active;
 
     const { error: toggleErr } = await supabase
