@@ -14,7 +14,8 @@ import ResultTable from '@/components/ResultTable';
 import SummaryCard from '@/components/SummaryCard';
 import MiniCard from '@/components/MiniCard';
 import ErrorBanner from '@/components/ErrorBanner';
-import { ReconciliationArchive, CLASSIFY_COLUMNS } from '@/types';
+import { ReconciliationArchive } from '@/types';
+import { CLASSIFY_COLUMNS } from '@/config/classifyColumnsConfig';
 import { useClassify } from '@/hooks/useClassify';
 
 export default function ClassifyPage() {

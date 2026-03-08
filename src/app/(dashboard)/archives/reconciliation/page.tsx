@@ -5,6 +5,7 @@ import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/lib/rbac';
 import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
+import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
 import MiniCard from '@/components/MiniCard';
 import SummaryCard from '@/components/SummaryCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
@@ -32,57 +33,42 @@ export default function ReconciliationArchivesPage() {
     deleteActivityLabel: (a) => `Menghapus arsip rekonsiliasi: ${a.nama_arsip}`,
   });
 
-  // Mode: viewing detail
   if (viewingArchive) {
+    const { summary } = viewingArchive;
     return (
       <div>
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">{viewingArchive.nama_arsip}</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              {viewingArchive.user_nama} · {formatDate(viewingArchive.created_at)} ·{' '}
-              {viewingArchive.summary.total_petani} petani
-            </p>
-          </div>
-          <button
-            onClick={() => setViewingArchive(null)}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm"
-          >
-            ← Kembali
-          </button>
-        </div>
+        <ArchiveDetailHeader
+          title={viewingArchive.nama_arsip}
+          userName={viewingArchive.user_nama}
+          createdAt={viewingArchive.created_at}
+          totalPetani={summary.total_petani}
+          onBack={() => setViewingArchive(null)}
+          formatDate={formatDate}
+        />
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-          <SummaryCard
-            label="Total Petani"
-            value={viewingArchive.summary.total_petani}
-            color="blue"
-          />
+          <SummaryCard label="Total Petani" value={summary.total_petani} color="blue" />
           <SummaryCard
             label="Tebus Lengkap"
-            value={viewingArchive.summary.status_penebusan.tebus_lengkap}
+            value={summary.status_penebusan.tebus_lengkap}
             color="green"
           />
           <SummaryCard
             label="Tebus Sebagian"
-            value={viewingArchive.summary.status_penebusan.tebus_sebagian}
+            value={summary.status_penebusan.tebus_sebagian}
             color="yellow"
           />
           <SummaryCard
             label="Tebus Melebihi"
-            value={viewingArchive.summary.status_penebusan.tebus_melebihi}
+            value={summary.status_penebusan.tebus_melebihi}
             color="red"
           />
           <SummaryCard
             label="Belum Menebus"
-            value={viewingArchive.summary.status_penebusan.belum_menebus}
+            value={summary.status_penebusan.belum_menebus}
             color="orange"
           />
-          <SummaryCard
-            label="Kios Tidak Sesuai"
-            value={viewingArchive.summary.kios.tidak_sesuai}
-            color="purple"
-          />
+          <SummaryCard label="Kios Tidak Sesuai" value={summary.kios.tidak_sesuai} color="purple" />
         </div>
 
         <ReconcileTable data={viewingArchive.detail} />
@@ -113,15 +99,12 @@ export default function ReconciliationArchivesPage() {
       onView={setViewingArchive}
       onDelete={handleDelete}
       formatDate={formatDate}
-      renderExpandedSummary={(archive) => (
+      renderExpandedSummary={({ summary }) => (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          <MiniCard label="Total Petani" value={archive.summary.total_petani} />
-          <MiniCard label="Tebus Lengkap" value={archive.summary.status_penebusan.tebus_lengkap} />
-          <MiniCard
-            label="Tebus Sebagian"
-            value={archive.summary.status_penebusan.tebus_sebagian}
-          />
-          <MiniCard label="Kios Sesuai" value={`${archive.summary.kios.persentase_sesuai}%`} />
+          <MiniCard label="Total Petani" value={summary.total_petani} />
+          <MiniCard label="Tebus Lengkap" value={summary.status_penebusan.tebus_lengkap} />
+          <MiniCard label="Tebus Sebagian" value={summary.status_penebusan.tebus_sebagian} />
+          <MiniCard label="Kios Sesuai" value={`${summary.kios.persentase_sesuai}%`} />
         </div>
       )}
     />

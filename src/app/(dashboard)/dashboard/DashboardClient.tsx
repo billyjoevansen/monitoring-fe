@@ -380,7 +380,7 @@ export default function DashboardClient({
         </div>
       ) : null}
 
-      {/* ── Reconciliation Summary ─────────────────────────────────────────── */}
+      {/* Reconciliation Summary */}
       {canViewReconciliation && latestReconciliation && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
@@ -425,34 +425,6 @@ export default function DashboardClient({
           </div>
         </div>
       )}
-
-      {/* ── Feature Cards ──────────────────────────────────────────────────── */}
-      <div>
-        <div className="flex items-center gap-2 mb-4">
-          <LayoutDashboard className="w-4.5 h-4.5 text-gray-400" />
-          <h2 className="text-sm font-bold text-gray-600 uppercase tracking-wide">Menu Utama</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {visibleFeatures.map((feature) => {
-            const Icon = feature.icon;
-            return (
-              <Link
-                key={feature.href}
-                href={feature.href}
-                className={`group p-5 rounded-2xl border-2 transition-all duration-200 ${feature.cardClass}`}
-              >
-                <div
-                  className={`w-11 h-11 rounded-xl flex items-center justify-center mb-3 ${feature.iconClass} group-hover:scale-110 transition-transform`}
-                >
-                  <Icon className="w-5 h-5" />
-                </div>
-                <h3 className="text-base font-bold text-gray-800 mb-1">{feature.title}</h3>
-                <p className="text-xs text-gray-500 leading-relaxed">{feature.desc}</p>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 }

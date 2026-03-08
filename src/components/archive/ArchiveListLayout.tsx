@@ -1,31 +1,5 @@
 import { Loader2, Trash2, Eye, ChevronDown, ChevronRight, Search } from 'lucide-react';
-import type { ReactNode } from 'react';
-import type { BaseArchive, BaseSummary } from '@/types/archive';
-
-interface ArchiveListLayoutProps<T extends BaseArchive<BaseSummary>> {
-  /** Icon + warna header */
-  icon: ReactNode;
-  title: string;
-  subtitle: string;
-  /** Teks empty state */
-  emptyIcon: ReactNode;
-  emptyTitle: string;
-  emptySubtitle: string;
-  // Data & state dari useArchive
-  filtered: T[];
-  loading: boolean;
-  search: string;
-  expandedId: string | null;
-  deleting: string | null;
-  canEdit: boolean;
-  onSearchChange: (v: string) => void;
-  onToggleExpand: (id: string) => void;
-  onView: (archive: T) => void;
-  onDelete: (archive: T) => void;
-  formatDate: (dateStr: string) => string;
-  /** Render summary mini cards di expanded row */
-  renderExpandedSummary: (archive: T) => ReactNode;
-}
+import type { BaseArchive, BaseSummary, ArchiveListLayoutProps } from '@/types';
 
 export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
   icon,

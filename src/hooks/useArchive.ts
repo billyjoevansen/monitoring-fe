@@ -1,14 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth';
 import { formatDate } from '@/lib/format';
-import type { BaseArchive, BaseSummary } from '@/types/archive';
-
-interface UseArchiveOptions<T extends BaseArchive> {
-  table: string;
-  deleteActivityKey: string;
-  deleteActivityLabel: (archive: T) => string;
-}
+import type { BaseArchive, BaseSummary, UseArchiveOptions } from '@/types';
 
 export function useArchive<T extends BaseArchive<BaseSummary>>({
   table,
@@ -17,25 +11,32 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 }: UseArchiveOptions<T>) {
   const [archives, setArchives] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [viewingArchive, setViewingArchive] = useState<T | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadArchives();
-  }, []);
-
-  const loadArchives = async () => {
+  const loadArchives = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     const supabase = manageClient();
-    const { data } = await supabase
+    const { data, error: fetchError } = await supabase
       .from(table)
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (data) setArchives(data as T[]);
+    if (fetchError) {
+      setError(fetchError.message);
+    } else if (data) {
+      setArchives(data as T[]);
+    }
     setLoading(false);
-  };
+  }, [table]);
+
+  useEffect(() => {
+    loadArchives();
+  }, [loadArchives]);
 
   const handleDelete = async (archive: T) => {
     if (!confirm(`Hapus arsip "${archive.nama_arsip}"? Tindakan ini tidak dapat dibatalkan.`))
@@ -43,10 +44,9 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 
     setDeleting(archive.id);
     const supabase = manageClient();
+    const { error: deleteError } = await supabase.from(table).delete().eq('id', archive.id);
 
-    const { error } = await supabase.from(table).delete().eq('id', archive.id);
-
-    if (!error) {
+    if (!deleteError) {
       await logActivity(deleteActivityKey, deleteActivityLabel(archive));
       setArchives((prev) => prev.filter((a) => a.id !== archive.id));
       if (viewingArchive?.id === archive.id) setViewingArchive(null);
@@ -55,9 +55,9 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     setDeleting(null);
   };
 
-  const toggleExpand = (id: string) => {
+  const toggleExpand = useCallback((id: string) => {
     setExpandedId((prev) => (prev === id ? null : id));
-  };
+  }, []);
 
   const filtered = archives.filter((a) => {
     if (!search) return true;
@@ -69,6 +69,7 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     archives,
     filtered,
     loading,
+    error,
     search,
     setSearch,
     viewingArchive,

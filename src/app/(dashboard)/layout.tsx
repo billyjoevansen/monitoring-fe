@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { manageClient } from '@/lib/supabase/client';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar/Navbar';
 import { UserProvider } from '@/lib/UserContext';
 import { hasPermission, ROUTE_PERMISSIONS } from '@/lib/rbac';
 import { ShieldX } from 'lucide-react';
@@ -80,7 +80,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <UserProvider user={user}>
       <div className="min-h-screen bg-gray-50/50">
         <Navbar user={user} />
-        <main className="pt-10">
+        <main className="pt-14">
           <div className="max-w-400 mx-auto px-4 sm:px-6 py-8">
             {isAllowed ? (
               children

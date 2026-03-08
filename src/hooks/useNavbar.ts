@@ -1,83 +1,49 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { logout } from '@/lib/auth';
 import { hasPermission } from '@/lib/rbac';
-import {
-  LayoutDashboard,
-  FileSearch,
-  Tags,
-  FlaskConical,
-  BrainCog,
-  Settings,
-  Archive,
-  FileStack,
-  BrainCircuit,
-  Users,
-  ScrollText,
-} from 'lucide-react';
-import type { NavItem, User } from '@/types';
+import { NAV_ITEMS } from '@/config/navConfig';
+import type { User } from '@/types';
 
-const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  {
-    href: '/reconcile',
-    label: 'Rekonsiliasi',
-    icon: FileSearch,
-    permission: 'view_reconciliation',
-  },
-  { href: '/classify', label: 'Klasifikasi', icon: Tags, permission: 'view_classification' },
-  {
-    href: '#training',
-    label: 'Training',
-    icon: FlaskConical,
-    permission: 'view_training',
-    children: [
-      { href: '/training', label: 'Training', icon: BrainCog },
-      { href: '/settings', label: 'Pengaturan', icon: Settings },
-    ],
-  },
-  {
-    href: '#arsip',
-    label: 'Arsip',
-    icon: Archive,
-    children: [
-      { href: '/archives/reconciliation', label: 'Arsip Rekonsiliasi', icon: FileStack },
-      { href: '/archives/classification', label: 'Arsip Klasifikasi', icon: BrainCircuit },
-    ],
-  },
-  { href: '/users', label: 'Users', icon: Users, permission: 'manage_users' },
-  { href: '/logs', label: 'Log', icon: ScrollText, permission: 'view_logs' },
-];
+type DropdownKey = 'arsip' | 'train' | 'profile';
 
 export function useNavbar({ user }: { user: User }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [arsipOpen, setArsipOpen] = useState(false);
-  const [trainOpen, setTrainOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const arsipRef = useRef<HTMLDivElement>(null);
-  const trainRef = useRef<HTMLDivElement>(null);
-  const profileRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns on outside click
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<DropdownKey | null>(null);
+
+  const dropdownRefs = useRef<Partial<Record<DropdownKey, HTMLDivElement | null>>>({});
+  const setRef = useCallback(
+    (key: DropdownKey) => (el: HTMLDivElement | null) => {
+      dropdownRefs.current[key] = el;
+    },
+    [],
+  );
+
+  const toggleDropdown = useCallback(
+    (key: DropdownKey) => setOpenDropdown((prev) => (prev === key ? null : key)),
+    [],
+  );
+
+  const closeDropdown = useCallback(() => setOpenDropdown(null), []);
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
-      if (arsipRef.current && !arsipRef.current.contains(e.target as Node)) setArsipOpen(false);
-      if (trainRef.current && !trainRef.current.contains(e.target as Node)) setTrainOpen(false);
-      if (profileRef.current && !profileRef.current.contains(e.target as Node))
-        setProfileOpen(false);
+      const clickedOutsideAll = Object.values(dropdownRefs.current).every(
+        (ref) => !ref?.contains(e.target as Node),
+      );
+      if (clickedOutsideAll) closeDropdown();
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
+  }, [closeDropdown]);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
-    setArsipOpen(false);
-    setTrainOpen(false);
-  }, [pathname]);
+    closeDropdown();
+  }, [pathname, closeDropdown]);
 
   const handleLogout = async () => {
     try {
@@ -89,35 +55,26 @@ export function useNavbar({ user }: { user: User }) {
       console.error('Logout error:', error);
     }
   };
-  const visibleItems = navItems.filter((item) => {
-    if (!item.permission) return true;
-    return hasPermission(user.role, item.permission);
-  });
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => !item.permission || hasPermission(user.role, item.permission),
+  );
 
   const isActive = (href: string) => pathname === href;
-  const isArsipActive = navItems
-    .find((i) => i.href === '#arsip')
-    ?.children?.some((c) => pathname === c.href);
-  const isTrainActive = navItems
-    .find((i) => i.href === '#training')
-    ?.children?.some((c) => pathname === c.href);
+
+  const isGroupActive = (groupHref: string) =>
+    NAV_ITEMS.find((i) => i.href === groupHref)?.children?.some((c) => pathname === c.href) ??
+    false;
 
   return {
     visibleItems,
     isActive,
-    isArsipActive,
-    isTrainActive,
+    isGroupActive,
     mobileOpen,
     setMobileOpen,
-    arsipOpen,
-    setArsipOpen,
-    trainOpen,
-    setTrainOpen,
-    profileOpen,
-    setProfileOpen,
+    openDropdown,
+    toggleDropdown,
+    setRef,
     handleLogout,
-    arsipRef,
-    trainRef,
-    profileRef,
   };
 }
