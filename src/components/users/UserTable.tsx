@@ -8,6 +8,9 @@ interface UserTableProps {
   onEdit: (user: User) => void;
   onToggleActive: (user: User) => void;
   onDelete: (user: User) => void;
+  selectedIds: Set<string>;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: () => void;
 }
 
 export function UserTable({
@@ -16,13 +19,29 @@ export function UserTable({
   onEdit,
   onToggleActive,
   onDelete,
+  selectedIds,
+  onToggleSelect,
+  onToggleSelectAll,
 }: UserTableProps) {
+  const selectableUsers = users.filter((u) => u.id !== currentUserId && !u.is_active);
+  const allSelected =
+    selectableUsers.length > 0 && selectableUsers.every((u) => selectedIds.has(u.id));
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={onToggleSelectAll}
+                  disabled={selectableUsers.length === 0}
+                  className="w-4 h-4 accent-green-600 rounded border-gray-300 cursor-pointer disabled:opacity-40"
+                />
+              </th>
               {['No', 'Nama', 'Email', 'Role', 'Kecamatan', 'Status', 'Aksi'].map((col) => (
                 <th
                   key={col}
@@ -36,13 +55,23 @@ export function UserTable({
           <tbody className="divide-y divide-gray-100">
             {users.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
                   Belum ada user.
                 </td>
               </tr>
             ) : (
               users.map((u, idx) => (
                 <tr key={u.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-4 py-3">
+                    {u.id !== currentUserId && !u.is_active && (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(u.id)}
+                        onChange={() => onToggleSelect(u.id)}
+                        className="w-4 h-4 accent-green-600 rounded border-gray-300 cursor-pointer"
+                      />
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-gray-500">{idx + 1}</td>
                   <td className="px-4 py-3 font-medium text-gray-800">{u.nama}</td>
                   <td className="px-4 py-3 text-gray-600">{u.email}</td>
@@ -88,7 +117,8 @@ export function UserTable({
                           <button
                             onClick={() => onDelete(u)}
                             title="Hapus"
-                            className="p-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                            disabled={selectedIds.size > 0}
+                            className="p-1.5 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
                           >
                             <Trash2 className="w-4 h-4 text-red-600" />
                           </button>

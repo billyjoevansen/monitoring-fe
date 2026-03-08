@@ -27,6 +27,11 @@ export default function ReconciliationArchivesPage() {
     deleting,
     handleDelete,
     formatDate,
+    selectedIds,
+    bulkDeleting,
+    toggleSelect,
+    toggleSelectAll,
+    handleBulkDelete,
   } = useArchive<ReconciliationArchive>({
     table: 'reconciliation_archives',
     deleteActivityKey: 'delete_archive',
@@ -99,6 +104,11 @@ export default function ReconciliationArchivesPage() {
       onView={setViewingArchive}
       onDelete={handleDelete}
       formatDate={formatDate}
+      selectedIds={selectedIds}
+      bulkDeleting={bulkDeleting}
+      onToggleSelect={toggleSelect}
+      onToggleSelectAll={toggleSelectAll}
+      onBulkDelete={handleBulkDelete}
       renderExpandedSummary={({ summary }) => (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
           <MiniCard label="Total Petani" value={summary.total_petani} />

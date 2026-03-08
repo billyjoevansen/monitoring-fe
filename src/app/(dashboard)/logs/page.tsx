@@ -12,10 +12,11 @@ import {
   Clock,
   User,
   Activity,
+  Trash2,
 } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
 import { manageClient } from '@/lib/supabase/client';
-import { ROLE_LABELS, ROLE_COLORS } from '@/lib/rbac';
+import { ROLE_LABELS, ROLE_COLORS, hasPermission } from '@/lib/rbac';
 import type { ActivityLog, Role } from '@/types';
 
 const ACTION_LABELS: Record<string, { label: string; color: string }> = {
@@ -37,6 +38,7 @@ const PAGE_SIZE = 15;
 
 export default function LogsPage() {
   const currentUser = useUser();
+  const canManageLogs = hasPermission(currentUser.role, 'view_logs');
 
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +49,10 @@ export default function LogsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterAction, setFilterAction] = useState('');
   const [filterRole, setFilterRole] = useState('');
+
+  // Bulk delete
+  const [selectedLogIds, setSelectedLogIds] = useState<Set<string>>(new Set());
+  const [bulkDeletingLogs, setBulkDeletingLogs] = useState(false);
 
   useEffect(() => {
     loadLogs();
@@ -103,7 +109,54 @@ export default function LogsPage() {
     );
   });
 
+  const toggleSelectLog = (id: string) => {
+    setSelectedLogIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAllLogs = () => {
+    const visibleIds = filteredLogs.map((l) => l.id);
+    setSelectedLogIds((prev) => {
+      if (prev.size === visibleIds.length && visibleIds.length > 0) {
+        return new Set();
+      }
+      return new Set(visibleIds);
+    });
+  };
+
+  const handleBulkDeleteLogs = async () => {
+    if (selectedLogIds.size === 0) return;
+    if (
+      !confirm(
+        `Hapus ${selectedLogIds.size} log? Tindakan ini tidak dapat dibatalkan.`,
+      )
+    )
+      return;
+
+    setBulkDeletingLogs(true);
+    const supabase = manageClient();
+    const ids = [...selectedLogIds];
+    const { error: deleteError } = await supabase.from('activity_logs').delete().in('id', ids);
+
+    if (!deleteError) {
+      setSelectedLogIds(new Set());
+      await loadLogs();
+    }
+
+    setBulkDeletingLogs(false);
+  };
+
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  const allVisibleSelected =
+    filteredLogs.length > 0 && filteredLogs.every((l) => selectedLogIds.has(l.id));
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -219,6 +272,33 @@ export default function LogsPage() {
         <p className="text-xs text-gray-500 mt-3">Total: {totalCount} log tercatat</p>
       </div>
 
+      {/* Bulk action bar */}
+      {canManageLogs && selectedLogIds.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl">
+          <span className="text-sm text-blue-700 font-medium flex-1">
+            {selectedLogIds.size} item terpilih
+          </span>
+          <button
+            onClick={handleBulkDeleteLogs}
+            disabled={bulkDeletingLogs}
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            {bulkDeletingLogs ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+            Hapus Terpilih
+          </button>
+          <button
+            onClick={toggleSelectAllLogs}
+            className="px-4 py-1.5 text-sm text-blue-700 bg-white border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+          >
+            Batal
+          </button>
+        </div>
+      )}
+
       {/* Loading */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
@@ -240,6 +320,17 @@ export default function LogsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
+                    {canManageLogs && (
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                        <input
+                          type="checkbox"
+                          checked={allVisibleSelected}
+                          onChange={toggleSelectAllLogs}
+                          disabled={filteredLogs.length === 0}
+                          className="w-4 h-4 accent-green-600 rounded border-gray-300 cursor-pointer disabled:opacity-40"
+                        />
+                      </th>
+                    )}
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                       No
                     </th>
@@ -269,6 +360,16 @@ export default function LogsPage() {
 
                     return (
                       <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                        {canManageLogs && (
+                          <td className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedLogIds.has(log.id)}
+                              onChange={() => toggleSelectLog(log.id)}
+                              className="w-4 h-4 accent-green-600 rounded border-gray-300 cursor-pointer"
+                            />
+                          </td>
+                        )}
                         <td className="px-4 py-3 text-gray-500">
                           {(page - 1) * PAGE_SIZE + idx + 1}
                         </td>

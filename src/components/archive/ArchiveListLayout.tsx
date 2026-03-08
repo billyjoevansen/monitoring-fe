@@ -20,6 +20,11 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
   onDelete,
   formatDate,
   renderExpandedSummary,
+  selectedIds,
+  bulkDeleting,
+  onToggleSelect,
+  onToggleSelectAll,
+  onBulkDelete,
 }: ArchiveListLayoutProps<T>) {
   if (loading) {
     return (
@@ -28,6 +33,8 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
       </div>
     );
   }
+
+  const allSelected = filtered.length > 0 && selectedIds.size === filtered.length;
 
   return (
     <div>
@@ -55,6 +62,52 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
         </div>
       </div>
 
+      {/* Bulk action bar */}
+      {canEdit && selectedIds.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl">
+          <span className="text-sm text-blue-700 font-medium flex-1">
+            {selectedIds.size} arsip terpilih
+          </span>
+          <button
+            onClick={onBulkDelete}
+            disabled={bulkDeleting}
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            {bulkDeleting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+            Hapus Terpilih
+          </button>
+          <button
+            onClick={onToggleSelectAll}
+            className="px-4 py-1.5 text-sm text-blue-700 bg-white border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+          >
+            Batal
+          </button>
+        </div>
+      )}
+
+      {/* Select All checkbox */}
+      {canEdit && filtered.length > 0 && (
+        <div className="mb-2 flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="select-all-archives"
+            checked={allSelected}
+            onChange={onToggleSelectAll}
+            className="w-4 h-4 accent-green-600 rounded border-gray-300 cursor-pointer"
+          />
+          <label
+            htmlFor="select-all-archives"
+            className="text-sm text-gray-600 cursor-pointer select-none"
+          >
+            Pilih semua
+          </label>
+        </div>
+      )}
+
       {/* Empty state */}
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
@@ -68,8 +121,16 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
             {filtered.map((archive) => (
               <div key={archive.id}>
                 <div className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
-                  {/* Left: expand + info */}
+                  {/* Left: checkbox + expand + info */}
                   <div className="flex items-center gap-3 flex-1">
+                    {canEdit && (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(archive.id)}
+                        onChange={() => onToggleSelect(archive.id)}
+                        className="w-4 h-4 accent-green-600 rounded border-gray-300 cursor-pointer"
+                      />
+                    )}
                     <button
                       onClick={() => onToggleExpand(archive.id)}
                       className="p-1 hover:bg-gray-200 rounded transition-colors"
@@ -101,7 +162,7 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
                     {canEdit && (
                       <button
                         onClick={() => onDelete(archive)}
-                        disabled={deleting === archive.id}
+                        disabled={deleting === archive.id || selectedIds.size > 0}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium disabled:opacity-50"
                       >
                         {deleting === archive.id ? (

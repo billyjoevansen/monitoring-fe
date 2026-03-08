@@ -28,6 +28,11 @@ export default function ClassificationArchivesPage() {
     deleting,
     handleDelete,
     formatDate,
+    selectedIds,
+    bulkDeleting,
+    toggleSelect,
+    toggleSelectAll,
+    handleBulkDelete,
   } = useArchive<ClassificationArchive>({
     table: 'classification_archives',
     deleteActivityKey: 'delete_classification',
@@ -92,6 +97,11 @@ export default function ClassificationArchivesPage() {
       onView={setViewingArchive}
       onDelete={handleDelete}
       formatDate={formatDate}
+      selectedIds={selectedIds}
+      bulkDeleting={bulkDeleting}
+      onToggleSelect={toggleSelect}
+      onToggleSelectAll={toggleSelectAll}
+      onBulkDelete={handleBulkDelete}
       renderExpandedSummary={({ summary }) => (
         <div className="grid grid-cols-3 gap-3 text-sm">
           <MiniCard label="Total Petani" value={summary.total_petani} />

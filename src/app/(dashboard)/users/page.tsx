@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle, Loader2, UserPlus } from 'lucide-react';
+import { CheckCircle, Loader2, Trash2, UserPlus } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
 import { UserForm } from '@/components/users/UserForm';
 import { UserTable } from '@/components/users/UserTable';
@@ -30,6 +30,11 @@ export default function UsersPage() {
     handleSubmit,
     handleDeleteUser,
     handleToggleActive,
+    selectedUserIds,
+    bulkDeletingUsers,
+    toggleSelectUser,
+    toggleSelectAllUsers,
+    handleBulkDeleteUsers,
   } = useUsers();
 
   if (loading) {
@@ -80,6 +85,33 @@ export default function UsersPage() {
         />
       )}
 
+      {/* Bulk action bar */}
+      {selectedUserIds.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl">
+          <span className="text-sm text-blue-700 font-medium flex-1">
+            {selectedUserIds.size} user terpilih
+          </span>
+          <button
+            onClick={handleBulkDeleteUsers}
+            disabled={bulkDeletingUsers}
+            className="flex items-center gap-1.5 px-4 py-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            {bulkDeletingUsers ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+            Hapus Terpilih
+          </button>
+          <button
+            onClick={toggleSelectAllUsers}
+            className="px-4 py-1.5 text-sm text-blue-700 bg-white border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+          >
+            Batal
+          </button>
+        </div>
+      )}
+
       {/* Tabel User */}
       <UserTable
         users={users}
@@ -87,6 +119,9 @@ export default function UsersPage() {
         onEdit={openEditForm}
         onToggleActive={setToggleDialogUser}
         onDelete={setDeleteDialogUser}
+        selectedIds={selectedUserIds}
+        onToggleSelect={toggleSelectUser}
+        onToggleSelectAll={toggleSelectAllUsers}
       />
 
       {/* Dialog Konfirmasi */}

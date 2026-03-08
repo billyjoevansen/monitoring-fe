@@ -43,6 +43,10 @@ export function useUsers() {
   const [toggleDialogUser, setToggleDialogUser] = useState<User | null>(null);
   const [deleteDialogUser, setDeleteDialogUser] = useState<User | null>(null);
 
+  // Bulk delete state
+  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set());
+  const [bulkDeletingUsers, setBulkDeletingUsers] = useState(false);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -173,8 +177,7 @@ export function useUsers() {
     setDeleteDialogUser(null);
   };
 
-  const handleToggleActive = async (user: User) => {
-    const supabase = manageClient();
+  const handleToggleActive = async (user: User) => {    const supabase = manageClient();
     const newStatus = !user.is_active;
 
     const { error: toggleErr } = await supabase
@@ -192,6 +195,55 @@ export function useUsers() {
     }
 
     setToggleDialogUser(null);
+  };
+
+  const toggleSelectUser = (id: string) => {
+    if (id === currentUser.id) return;
+    setSelectedUserIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAllUsers = () => {
+    const selectableIds = users
+      .filter((u) => u.id !== currentUser.id && !u.is_active)
+      .map((u) => u.id);
+    setSelectedUserIds((prev) => {
+      if (prev.size === selectableIds.length && selectableIds.length > 0) {
+        return new Set();
+      }
+      return new Set(selectableIds);
+    });
+  };
+
+  const handleBulkDeleteUsers = async () => {
+    if (selectedUserIds.size === 0) return;
+    if (
+      !confirm(
+        `Hapus ${selectedUserIds.size} user? Tindakan ini tidak dapat dibatalkan.`,
+      )
+    )
+      return;
+
+    setBulkDeletingUsers(true);
+    const supabase = manageClient();
+    const ids = [...selectedUserIds];
+    const { error: deleteError } = await supabase.from('users').delete().in('id', ids);
+
+    if (!deleteError) {
+      await logActivity('delete_user', `Menghapus ${ids.length} user sekaligus`);
+      await loadData();
+      setSelectedUserIds(new Set());
+      showSuccessMessage(`${ids.length} user berhasil dihapus.`);
+    }
+
+    setBulkDeletingUsers(false);
   };
 
   return {
@@ -222,5 +274,11 @@ export function useUsers() {
     handleSubmit,
     handleDeleteUser,
     handleToggleActive,
+    // Bulk delete
+    selectedUserIds,
+    bulkDeletingUsers,
+    toggleSelectUser,
+    toggleSelectAllUsers,
+    handleBulkDeleteUsers,
   };
 }

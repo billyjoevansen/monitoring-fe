@@ -16,6 +16,8 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
   const [viewingArchive, setViewingArchive] = useState<T | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const loadArchives = useCallback(async () => {
     setLoading(true);
@@ -65,6 +67,51 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     return a.nama_arsip.toLowerCase().includes(q) || a.user_nama.toLowerCase().includes(q);
   });
 
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === filtered.length && filtered.length > 0) {
+        return new Set();
+      }
+      return new Set(filtered.map((a) => a.id));
+    });
+  }, [filtered]);
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (
+      !confirm(
+        `Hapus ${selectedIds.size} arsip? Tindakan ini tidak dapat dibatalkan.`,
+      )
+    )
+      return;
+
+    setBulkDeleting(true);
+    const supabase = manageClient();
+    const ids = [...selectedIds];
+    const { error: deleteError } = await supabase.from(table).delete().in('id', ids);
+
+    if (!deleteError) {
+      await logActivity(deleteActivityKey, `Menghapus ${ids.length} arsip sekaligus`);
+      setArchives((prev) => prev.filter((a) => !ids.includes(a.id)));
+      if (viewingArchive && ids.includes(viewingArchive.id)) setViewingArchive(null);
+      setSelectedIds(new Set());
+    }
+
+    setBulkDeleting(false);
+  };
+
   return {
     archives,
     filtered,
@@ -79,5 +126,10 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     deleting,
     handleDelete,
     formatDate,
+    selectedIds,
+    bulkDeleting,
+    toggleSelect,
+    toggleSelectAll,
+    handleBulkDelete,
   };
 }
