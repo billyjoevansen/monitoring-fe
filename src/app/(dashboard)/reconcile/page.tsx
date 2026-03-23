@@ -2,13 +2,13 @@
 
 import { FileSearch, AlertTriangle } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission } from '@/config/rbac';
 import { useReconcile } from '@/hooks/useReconcile';
 import ReconcileUploadSection from '@/components/reconcile/ReconcileUploadSection';
 import ReconcileArchiveSection from '@/components/reconcile/ReconcileArchiveSection';
-import SummaryCard from '@/components/SummaryCard';
+import SummaryCard from '@/components/ui/SummaryCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
-import ErrorBanner from '@/components/ErrorBanner';
+import ErrorBanner from '@/components/ui/ErrorBanner';
 
 export default function ReconcilePage() {
   const user = useUser();

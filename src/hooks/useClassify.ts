@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/lib/UserContext';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission } from '@/config/rbac';
 import { classify } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 import { manageClient } from '@/lib/supabase/client';

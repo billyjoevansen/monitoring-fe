@@ -2,7 +2,7 @@
 
 import { Fragment, useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Search } from 'lucide-react';
-import type { PupukDetail, PetaniRow, ReconcileDetailItem } from '@/types';
+import type { PetaniRow } from '@/types';
 
 const PUPUK_TYPES = [
   { key: 'urea', label: 'Urea' },
@@ -81,7 +81,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
     <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col min-w-0">
       {/* Toolbar — fixed di atas */}
       <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
-        <div className="relative w-full sm:w-72">
+        <div className="relative w-full sm:w-72 border-2 border-black rounded-lg">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
@@ -121,13 +121,13 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
 
       <div ref={tableWrapperRef} className="overflow-x-auto">
         <table className="w-max min-w-full text-xs border-collapse">
-          <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
+          <thead className="bg-gray-50 border border-black sticky top-0 z-10 ">
             <tr>
               <th
                 rowSpan={2}
                 className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 sticky left-0 bg-gray-50 z-20 min-w-10"
               >
-                No
+                No.
               </th>
               <th
                 rowSpan={2}
@@ -184,13 +184,13 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                 rowSpan={2}
                 className="px-3 py-2 text-right font-semibold text-gray-600 border-r border-gray-200 min-w-20 bg-green-50/50"
               >
-                Tot. Ajukan
+                Total Pengajuan
               </th>
               <th
                 rowSpan={2}
                 className="px-3 py-2 text-right font-semibold text-gray-600 border-r border-gray-200 min-w-20 bg-green-50/50"
               >
-                Tot. Tebus
+                Total Tebus
               </th>
               <th
                 rowSpan={2}
@@ -230,12 +230,20 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
               return (
                 <tr
                   key={`row-${row.nik}-${globalIdx}`}
-                  className="hover:bg-gray-50 transition-colors"
+                  className={`hover:bg-gray-200 transition-colors
+                    ${globalIdx % 2 != 0 ? 'bg-white' : 'bg-gray-100'}`}
                 >
-                  <td className="px-3 py-2.5 text-gray-500 border-r border-gray-100 sticky left-0 bg-white z-5">
-                    {globalIdx + 1}
+                  <td
+                    className={`px-3 py-2.5 text-gray-500 border-r border-gray-100 sticky left-0 z-10 transition-colors ${
+                      globalIdx % 2 != 0 ? 'bg-white' : 'bg-gray-100'
+                    }`}
+                  >
+                    {globalIdx + 1}.
                   </td>
-                  <td className="px-3 py-2.5 text-gray-800 font-medium border-r border-gray-100 sticky left-10 bg-white z-5 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)]">
+                  <td
+                    className={`px-3 py-2.5 text-gray-800 font-medium border-r border-gray-100 sticky left-10 z-5 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)]
+                    ${globalIdx % 2 != 0 ? 'bg-white' : 'bg-gray-100'}`}
+                  >
                     <div className="truncate max-w-35" title={row.nama_petani}>
                       {row.nama_petani}
                     </div>

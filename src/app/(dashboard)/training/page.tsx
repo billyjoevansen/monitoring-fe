@@ -2,10 +2,10 @@
 
 import { Loader2, FlaskConical, AlertTriangle, Sparkles } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
-import { hasPermission } from '@/lib/rbac';
-import FileUploader from '@/components/FileUploader';
-import ChartViewer from '@/components/ChartViewer';
-import ErrorBanner from '@/components/ErrorBanner';
+import { hasPermission } from '@/config/rbac';
+import FileUploader from '@/components/ui/FileUploader';
+import ChartViewer from '@/components/ui/ChartViewer';
+import ErrorBanner from '@/components/ui/ErrorBanner';
 import { useTrain } from '@/hooks/useTrain';
 
 export default function TrainingPage() {

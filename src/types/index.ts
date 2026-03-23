@@ -3,6 +3,7 @@ export * from './klasifikasi';
 export * from './petani';
 export * from './props';
 export * from './archive';
+import { ClassificationArchive, ReconciliationArchive } from './archive';
 
 // ROLE & PERMISSION
 export type Role = 'admin' | 'kabid' | 'kasie' | 'bpp';
@@ -10,6 +11,7 @@ export type Role = 'admin' | 'kabid' | 'kasie' | 'bpp';
 export type Permission =
   | 'view_reconciliation'
   | 'view_prediction'
+  | 'view_dashboard'
   | 'view_classification'
   | 'view_training'
   | 'upload_files'
@@ -18,7 +20,8 @@ export type Permission =
   | 'manage_users'
   | 'view_logs'
   | 'view_archives'
-  | 'manage_archives';
+  | 'manage_archives'
+  | 'view_api';
 
 // Navbar
 export interface NavItem {
@@ -27,6 +30,17 @@ export interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   permission?: Permission;
   children?: NavItem[];
+}
+
+export interface NavDropdownProps {
+  item: NavItem;
+  isOpen: boolean;
+  isGroupActive: boolean;
+  onToggle: () => void;
+  isActive: (href: string) => boolean;
+  /** Renders children inline (mobile) vs as floating panel (desktop) */
+  variant: 'desktop' | 'mobile';
+  dropdownRef?: (el: HTMLDivElement | null) => void;
 }
 
 // USER
@@ -104,6 +118,15 @@ export interface FeatureSelection {
 export interface ModelFile {
   path?: string;
   size_kb?: number;
+}
+
+// Dashboard Client types
+export interface DashboardClientProps {
+  user: User;
+  latestClassification: ClassificationArchive | null;
+  latestReconciliation: ReconciliationArchive | null;
+  totalClassifications: number;
+  totalReconciliations: number;
 }
 
 // Label distribution returned by BE /api/train

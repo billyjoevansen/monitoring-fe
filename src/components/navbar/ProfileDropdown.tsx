@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { LogOut, KeyRound, ChevronDown } from 'lucide-react';
-import { ROLE_LABELS, ROLE_COLORS } from '@/lib/rbac';
+import { ROLE_LABELS, ROLE_COLORS } from '@/config/rbac';
 import type { User } from '@/types';
 
 export function ProfileActions({ onLogout }: { onLogout: () => void }) {

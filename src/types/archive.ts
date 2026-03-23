@@ -71,6 +71,13 @@ export interface ArchiveListLayoutProps<T extends BaseArchive<BaseSummary>> {
   formatDate: (dateStr: string) => string;
   /** Render summary mini cards di expanded row */
   renderExpandedSummary: (archive: T) => ReactNode;
+  // Bulk delete
+  selectedIds: Set<string>;
+  allSelected: boolean;
+  bulkDeleting: boolean;
+  onToggleSelect: (id: string) => void;
+  onToggleSelectAll: () => void;
+  onBulkDelete: () => void;
 }
 
 export interface UseArchiveOptions<T extends BaseArchive> {

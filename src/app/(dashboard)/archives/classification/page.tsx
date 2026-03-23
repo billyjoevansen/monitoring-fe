@@ -2,13 +2,13 @@
 
 import { BrainCircuit } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission } from '@/config/rbac';
 import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
-import MiniCard from '@/components/MiniCard';
-import SummaryCard from '@/components/SummaryCard';
-import ResultTable from '@/components/ResultTable';
+import MiniCard from '@/components/ui/MiniCard';
+import SummaryCard from '@/components/ui/SummaryCard';
+import ResultTable from '@/components/ui/ResultTable';
 import { CLASSIFY_COLUMNS } from '@/config/classifyColumnsConfig';
 import type { ClassificationArchive } from '@/types';
 
@@ -28,6 +28,12 @@ export default function ClassificationArchivesPage() {
     deleting,
     handleDelete,
     formatDate,
+    selectedIds,
+    allSelected,
+    bulkDeleting,
+    toggleSelectArchive,
+    toggleSelectAll,
+    handleBulkDelete,
   } = useArchive<ClassificationArchive>({
     table: 'classification_archives',
     deleteActivityKey: 'delete_classification',
@@ -102,6 +108,12 @@ export default function ClassificationArchivesPage() {
           />
         </div>
       )}
+      selectedIds={selectedIds}
+      allSelected={allSelected}
+      bulkDeleting={bulkDeleting}
+      onToggleSelect={toggleSelectArchive}
+      onToggleSelectAll={toggleSelectAll}
+      onBulkDelete={handleBulkDelete}
     />
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { logout } from '@/lib/auth';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission } from '@/config/rbac';
 import { NAV_ITEMS } from '@/config/navConfig';
 import type { User } from '@/types';
 
@@ -60,7 +60,21 @@ export function useNavbar({ user }: { user: User }) {
     (item) => !item.permission || hasPermission(user.role, item.permission),
   );
 
-  const isActive = (href: string) => pathname === href;
+  const isActive = (href: string) => {
+    // 1. Jika href biasa (misal /dashboard)
+    if (href.startsWith('/')) {
+      return pathname === href;
+    }
+
+    // 2. Jika href diawali '#' (misal #training)
+    if (href.startsWith('#')) {
+      const slug = href.replace('#', ''); // 'training'
+      // Cek apakah pathname mengandung kata 'training' (misal /training atau /training/settings)
+      return pathname.includes(slug);
+    }
+
+    return false;
+  };
 
   const isGroupActive = (groupHref: string) =>
     NAV_ITEMS.find((i) => i.href === groupHref)?.children?.some((c) => pathname === c.href) ??

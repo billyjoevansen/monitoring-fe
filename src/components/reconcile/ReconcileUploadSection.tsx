@@ -1,5 +1,5 @@
 import { Loader2, FileSearch } from 'lucide-react';
-import FileUploader from '@/components/FileUploader';
+import FileUploader from '@/components/ui/FileUploader';
 
 interface ReconcileUploadSectionProps {
   rdkkFile: File | null;

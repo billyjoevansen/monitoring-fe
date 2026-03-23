@@ -10,10 +10,10 @@ import {
   ChevronRight,
   Info,
 } from 'lucide-react';
-import ResultTable from '@/components/ResultTable';
-import SummaryCard from '@/components/SummaryCard';
-import MiniCard from '@/components/MiniCard';
-import ErrorBanner from '@/components/ErrorBanner';
+import ResultTable from '@/components/ui/ResultTable';
+import SummaryCard from '@/components/ui/SummaryCard';
+import MiniCard from '@/components/ui/MiniCard';
+import ErrorBanner from '@/components/ui/ErrorBanner';
 import { ReconciliationArchive } from '@/types';
 import { CLASSIFY_COLUMNS } from '@/config/classifyColumnsConfig';
 import { useClassify } from '@/hooks/useClassify';

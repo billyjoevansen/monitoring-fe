@@ -20,6 +20,12 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
   onDelete,
   formatDate,
   renderExpandedSummary,
+  selectedIds,
+  allSelected,
+  bulkDeleting,
+  onToggleSelect,
+  onToggleSelectAll,
+  onBulkDelete,
 }: ArchiveListLayoutProps<T>) {
   if (loading) {
     return (
@@ -55,6 +61,25 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
         </div>
       </div>
 
+      {/* Bulk delete toolbar */}
+      {canEdit && selectedIds.size > 0 && (
+        <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-5 py-3 mb-4">
+          <p className="text-sm font-medium text-red-700">{selectedIds.size} arsip dipilih</p>
+          <button
+            onClick={onBulkDelete}
+            disabled={bulkDeleting}
+            className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            {bulkDeleting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+            Hapus {selectedIds.size} Arsip
+          </button>
+        </div>
+      )}
+
       {/* Empty state */}
       {filtered.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
@@ -64,12 +89,33 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+          {/* Select all bar */}
+          {canEdit && (
+            <div className="flex items-center gap-3 px-5 py-2.5 bg-gray-50 border-b border-gray-100">
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={onToggleSelectAll}
+                className="rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+              />
+              <span className="text-xs text-gray-500 font-medium">Pilih semua</span>
+            </div>
+          )}
+
           <div className="divide-y divide-gray-100">
             {filtered.map((archive) => (
-              <div key={archive.id}>
+              <div key={archive.id} className={selectedIds.has(archive.id) ? 'bg-red-50' : ''}>
                 <div className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
-                  {/* Left: expand + info */}
+                  {/* Left: checkbox + expand + info */}
                   <div className="flex items-center gap-3 flex-1">
+                    {canEdit && (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(archive.id)}
+                        onChange={() => onToggleSelect(archive.id)}
+                        className="rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+                      />
+                    )}
                     <button
                       onClick={() => onToggleExpand(archive.id)}
                       className="p-1 hover:bg-gray-200 rounded transition-colors"

@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { manageClient } from '@/lib/supabase/client';
 import Navbar from '@/components/navbar/Navbar';
 import { UserProvider } from '@/lib/UserContext';
-import { hasPermission, ROUTE_PERMISSIONS } from '@/lib/rbac';
+import { hasPermission, ROUTE_PERMISSIONS } from '@/config/rbac';
 import { ShieldX } from 'lucide-react';
 import type { User } from '@/types';
 

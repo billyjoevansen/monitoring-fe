@@ -2,12 +2,12 @@
 
 import { FileStack } from 'lucide-react';
 import { useUser } from '@/lib/UserContext';
-import { hasPermission } from '@/lib/rbac';
+import { hasPermission } from '@/config/rbac';
 import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
-import MiniCard from '@/components/MiniCard';
-import SummaryCard from '@/components/SummaryCard';
+import MiniCard from '@/components/ui/MiniCard';
+import SummaryCard from '@/components/ui/SummaryCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
 import type { ReconciliationArchive } from '@/types';
 
@@ -27,6 +27,12 @@ export default function ReconciliationArchivesPage() {
     deleting,
     handleDelete,
     formatDate,
+    selectedIds,
+    allSelected,
+    bulkDeleting,
+    toggleSelectArchive,
+    toggleSelectAll,
+    handleBulkDelete,
   } = useArchive<ReconciliationArchive>({
     table: 'reconciliation_archives',
     deleteActivityKey: 'delete_archive',
@@ -107,6 +113,12 @@ export default function ReconciliationArchivesPage() {
           <MiniCard label="Kios Sesuai" value={`${summary.kios.persentase_sesuai}%`} />
         </div>
       )}
+      selectedIds={selectedIds}
+      allSelected={allSelected}
+      bulkDeleting={bulkDeleting}
+      onToggleSelect={toggleSelectArchive}
+      onToggleSelectAll={toggleSelectAll}
+      onBulkDelete={handleBulkDelete}
     />
   );
 }

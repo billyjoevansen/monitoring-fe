@@ -21,7 +21,7 @@ interface HyperParams {
   max_features: string;
   min_samples_split: number;
   min_samples_leaf: number;
-  class_weight: string;
+  class_weight: 'balanced' | 'balanced_subsample' | null;
   bootstrap: boolean;
   oob_score: boolean;
   random_state: number;
@@ -170,7 +170,7 @@ export default function SettingsPage() {
               label="Fitur Maks (max_features)"
               desc="Jumlah fitur per split"
               value={hp.max_features}
-              options={['sqrt', 'log2']}
+              options={['sqrt', 'log2', 'auto']}
               onChange={(v) => setHp({ ...hp, max_features: v })}
             />
             <InputField
@@ -187,6 +187,19 @@ export default function SettingsPage() {
               value={hp.min_samples_leaf}
               onChange={(v) => setHp({ ...hp, min_samples_leaf: Number(v) })}
             />
+            <SelectField
+              label="Class Weight"
+              desc="Strategi penanganan ketidakseimbangan kelas"
+              value={hp.class_weight === null ? 'none' : hp.class_weight}
+              options={['none', 'balanced', 'balanced_subsample']}
+              onChange={(v) =>
+                setHp({
+                  ...hp,
+                  class_weight: v === 'none' ? null : (v as 'balanced' | 'balanced_subsample'),
+                })
+              }
+            />
+
             <CheckboxField
               label="Bootstrap Sampling"
               desc="Setiap pohon dilatih dari sampel acak"

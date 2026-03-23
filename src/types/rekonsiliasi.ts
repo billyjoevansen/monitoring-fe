@@ -64,6 +64,17 @@ export interface ReconcileResult {
   detail: ReconcileDetailItem[];
 }
 
+export interface ReconcileArchiveSectionProps {
+  result: ReconcileResult;
+  namaArsip: string;
+  saving: boolean;
+  saved: boolean;
+  onNamaArsipChange: (value: string) => void;
+  onSave: () => void;
+  filteredDetail?: Record<string, unknown>[];
+  searchQuery?: string;
+}
+
 // Key pupuk yang digunakan dalam proses rekonsiliasi
 export const PUPUK_KEYS = ['urea', 'npk', 'za', 'npk_formula', 'organik'] as const;
 // Type untuk key pupuk

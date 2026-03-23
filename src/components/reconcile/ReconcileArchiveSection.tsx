@@ -1,17 +1,6 @@
 import { Loader2, Save, CheckCircle, Filter } from 'lucide-react';
-import DownloadButtons from '@/components/DownloadButtons';
-import { ReconcileResult } from '@/types';
-
-interface ReconcileArchiveSectionProps {
-  result: ReconcileResult;
-  namaArsip: string;
-  saving: boolean;
-  saved: boolean;
-  onNamaArsipChange: (value: string) => void;
-  onSave: () => void;
-  filteredDetail?: Record<string, unknown>[];
-  searchQuery?: string;
-}
+import DownloadButtons from '@/components/ui/DownloadButtons';
+import { ReconcileArchiveSectionProps } from '@/types';
 
 export default function ReconcileArchiveSection({
   result,
@@ -23,7 +12,6 @@ export default function ReconcileArchiveSection({
   filteredDetail,
   searchQuery,
 }: ReconcileArchiveSectionProps) {
-  // Use filtered data if available and search is active, otherwise use full data
   const isFiltered = searchQuery && searchQuery.trim().length > 0 && filteredDetail;
   const downloadDetail = isFiltered ? filteredDetail : result.detail;
 

@@ -1,6 +1,6 @@
 import { CheckCircle, Loader2, X } from 'lucide-react';
 import type { Role, Kecamatan } from '@/types';
-import { ROLE_LABELS } from '@/lib/rbac';
+import { ROLE_LABELS } from '@/config/rbac';
 import type { UserFormState } from '@/hooks/useUsers';
 
 interface UserFormProps {

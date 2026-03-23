@@ -16,6 +16,8 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
   const [viewingArchive, setViewingArchive] = useState<T | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const loadArchives = useCallback(async () => {
     setLoading(true);
@@ -49,6 +51,11 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     if (!deleteError) {
       await logActivity(deleteActivityKey, deleteActivityLabel(archive));
       setArchives((prev) => prev.filter((a) => a.id !== archive.id));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(archive.id);
+        return next;
+      });
       if (viewingArchive?.id === archive.id) setViewingArchive(null);
     }
 
@@ -65,6 +72,46 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     return a.nama_arsip.toLowerCase().includes(q) || a.user_nama.toLowerCase().includes(q);
   });
 
+  const allSelected = filtered.length > 0 && filtered.every((a) => selectedIds.has(a.id));
+
+  const toggleSelectArchive = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((a) => a.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`Hapus ${selectedIds.size} arsip sekaligus? Tindakan ini tidak dapat dibatalkan.`))
+      return;
+
+    setBulkDeleting(true);
+    const ids = Array.from(selectedIds);
+    const supabase = manageClient();
+
+    const { error: deleteError } = await supabase.from(table).delete().in('id', ids);
+
+    if (!deleteError) {
+      await logActivity(deleteActivityKey, `Bulk delete ${ids.length} arsip`);
+      const deleted = new Set(selectedIds);
+      setArchives((prev) => prev.filter((a) => !deleted.has(a.id)));
+      if (viewingArchive && deleted.has(viewingArchive.id)) setViewingArchive(null);
+      setSelectedIds(new Set());
+    }
+
+    setBulkDeleting(false);
+  };
+
   return {
     archives,
     filtered,
@@ -79,5 +126,11 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     deleting,
     handleDelete,
     formatDate,
+    selectedIds,
+    allSelected,
+    bulkDeleting,
+    toggleSelectArchive,
+    toggleSelectAll,
+    handleBulkDelete,
   };
 }

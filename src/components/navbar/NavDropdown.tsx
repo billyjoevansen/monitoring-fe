@@ -2,18 +2,7 @@
 
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
-import type { NavItem } from '@/types';
-
-interface NavDropdownProps {
-  item: NavItem;
-  isOpen: boolean;
-  isGroupActive: boolean;
-  onToggle: () => void;
-  isActive: (href: string) => boolean;
-  /** Renders children inline (mobile) vs as floating panel (desktop) */
-  variant: 'desktop' | 'mobile';
-  dropdownRef?: (el: HTMLDivElement | null) => void;
-}
+import type { NavDropdownProps } from '@/types';
 
 export function NavDropdown({
   item,
@@ -34,13 +23,16 @@ export function NavDropdown({
       <div ref={dropdownRef} className="relative">
         <button
           onClick={onToggle}
-          className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeButtonCls}`}
+          className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeButtonCls}`}
         >
           <Icon className="w-4 h-4" />
           {item.label}
           <ChevronDown
             className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           />
+          {isGroupActive && (
+            <span className="absolute -bottom-3.25 left-3 right-3 h-0.5 bg-green-700 rounded-full" />
+          )}
         </button>
 
         {isOpen && (

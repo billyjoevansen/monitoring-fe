@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
-import { ROLE_COLORS, ROLE_LABELS } from '@/lib/rbac';
+import { ROLE_COLORS, ROLE_LABELS } from '@/config/rbac';
 import { NavDropdown } from '@/components/navbar/NavDropdown';
 import { ProfileDropdown, ProfileActions } from '@/components/navbar/ProfileDropdown';
 import { useNavbar } from '@/hooks/useNavbar';
 import type { User } from '@/types';
+import DarkModeToggle from './DarkModeToggle';
 
 function getDropdownKey(href: string): 'arsip' | 'train' {
   return href === '#training' ? 'train' : 'arsip';
@@ -28,19 +29,25 @@ export default function Navbar({ user }: { user: User }) {
 
   return (
     <>
-      <nav className="fixed top-3 left-1 right-1 z-50 border-b border-white/10 bg-white/80 backdrop-blur-xl supports-backdrop-filter:bg-white/60 rounded-md outline-2 outline-black">
+      <nav className="fixed top-3 left-1 right-1 z-50 border-b border-white/10 bg-white/80 backdrop-blur-xl supports-backdrop-filter:bg-white/60 rounded-md outline-2 outline-black dark:border-gray-700/50">
         <div className="max-w-400 mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
+            <Link
+              href="/dashboard"
+              className="relative overflow-hidden px-2 flex items-center gap-2.5 shrink-0 bg-green-200 rounded-md border border-green-300 group"
+            >
+              <div className="absolute inset-0 pointer-events-none z-0 animate-shimmer bg-linear-to-r from-transparent via-white/80 to-transparent w-[150%]" />
+
               <Image
                 src="/Logo_Kota_Serang.webp"
                 alt="Simpubes Serang"
                 width={55}
                 height={55}
-                className="object-contain"
+                priority
+                className="relative z-10 object-contain drop-shadow-sm"
               />
-              <span className="text-base font-bold text-gray-900 tracking-tight sm:block">
+              <span className="relative z-10 text-base font-bold text-gray-900 tracking-tight sm:block">
                 Simpubes Serang
               </span>
             </Link>
@@ -78,7 +85,7 @@ export default function Navbar({ user }: { user: User }) {
                     <Icon className="w-4 h-4" />
                     {item.label}
                     {isActive(item.href) && (
-                      <span className="absolute -bottom-3.25 left-3 right-3 h-0.5 bg-green-600 rounded-full" />
+                      <span className="absolute -bottom-3.25 left-3 right-3 h-0.5 bg-green-700 rounded-full" />
                     )}
                   </Link>
                 );
@@ -87,6 +94,7 @@ export default function Navbar({ user }: { user: User }) {
 
             {/* Right side */}
             <div className="flex items-center gap-2">
+              <DarkModeToggle />
               <ProfileDropdown
                 user={user}
                 isOpen={openDropdown === 'profile'}

@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle, Loader2, UserPlus } from 'lucide-react';
+import { CheckCircle, Loader2, UserPlus, Trash2 } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
 import { UserForm } from '@/components/users/UserForm';
 import { UserTable } from '@/components/users/UserTable';
@@ -30,6 +30,12 @@ export default function UsersPage() {
     handleSubmit,
     handleDeleteUser,
     handleToggleActive,
+    selectedIds,
+    allSelected,
+    bulkDeleting,
+    toggleSelectUser,
+    toggleSelectAll,
+    handleBulkDelete,
   } = useUsers();
 
   if (loading) {
@@ -45,7 +51,7 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">👥 Kelola User</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Kelola User</h1>
           <p className="text-gray-500 mt-1">Tambah dan kelola akun pengguna</p>
         </div>
         <button
@@ -62,6 +68,25 @@ export default function UsersPage() {
         <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2">
           <CheckCircle className="w-5 h-5" />
           {success}
+        </div>
+      )}
+
+      {/* Bulk delete toolbar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-5 py-3 mb-4">
+          <p className="text-sm font-medium text-red-700">{selectedIds.size} user dipilih</p>
+          <button
+            onClick={handleBulkDelete}
+            disabled={bulkDeleting}
+            className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            {bulkDeleting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="w-3.5 h-3.5" />
+            )}
+            Hapus {selectedIds.size} User
+          </button>
         </div>
       )}
 
@@ -84,9 +109,13 @@ export default function UsersPage() {
       <UserTable
         users={users}
         currentUserId={currentUser.id}
+        selectedIds={selectedIds}
+        allSelected={allSelected}
         onEdit={openEditForm}
         onToggleActive={setToggleDialogUser}
         onDelete={setDeleteDialogUser}
+        onToggleSelect={toggleSelectUser}
+        onToggleSelectAll={toggleSelectAll}
       />
 
       {/* Dialog Konfirmasi */}

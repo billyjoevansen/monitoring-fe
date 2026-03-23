@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/lib/UserContext';
 import { manageClient } from '@/lib/supabase/client';
-import { getCreatableRoles } from '@/lib/rbac';
+import { getCreatableRoles } from '@/config/rbac';
 import { logActivity } from '@/lib/auth';
 import type { User, Role, Kecamatan } from '@/types';
 
@@ -42,6 +42,10 @@ export function useUsers() {
   // Dialog state
   const [toggleDialogUser, setToggleDialogUser] = useState<User | null>(null);
   const [deleteDialogUser, setDeleteDialogUser] = useState<User | null>(null);
+
+  // Bulk delete state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDeleting, setBulkDeleting] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -194,6 +198,46 @@ export function useUsers() {
     setToggleDialogUser(null);
   };
 
+  // Bulk delete — only inactive users (same rule as single delete)
+  const selectableUsers = users.filter((u) => u.id !== currentUser.id && !u.is_active);
+  const allSelected =
+    selectableUsers.length > 0 && selectableUsers.every((u) => selectedIds.has(u.id));
+
+  const toggleSelectUser = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(selectableUsers.map((u) => u.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedIds.size === 0) return;
+
+    setBulkDeleting(true);
+    const ids = Array.from(selectedIds);
+    const supabase = manageClient();
+
+    const { error } = await supabase.from('users').delete().in('id', ids);
+
+    if (!error) {
+      await logActivity('delete_user', `Bulk delete ${ids.length} user`);
+      setSelectedIds(new Set());
+      await loadData();
+      showSuccessMessage(`${ids.length} user berhasil dihapus.`);
+    }
+
+    setBulkDeleting(false);
+  };
+
   return {
     // Data
     currentUser,
@@ -222,5 +266,12 @@ export function useUsers() {
     handleSubmit,
     handleDeleteUser,
     handleToggleActive,
+    // Bulk delete
+    selectedIds,
+    allSelected,
+    bulkDeleting,
+    toggleSelectUser,
+    toggleSelectAll,
+    handleBulkDelete,
   };
 }

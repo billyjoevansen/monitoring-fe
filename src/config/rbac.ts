@@ -13,6 +13,8 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_logs',
     'manage_archives',
     'view_archives',
+    'view_api',
+    'view_dashboard',
   ],
   kabid: [
     'view_reconciliation',
@@ -23,6 +25,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_logs',
     'manage_archives',
     'view_archives',
+    'view_dashboard',
   ],
   kasie: [
     'view_reconciliation',
@@ -32,8 +35,9 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'train_model',
     'view_logs',
     'view_archives',
+    'view_dashboard',
   ],
-  bpp: ['view_reconciliation', 'view_classification', 'upload_files', 'view_archives'],
+  bpp: ['view_dashboard', 'view_reconciliation', 'upload_files', 'view_archives'],
 };
 
 export function hasPermission(role: Role, permission: Permission): boolean {

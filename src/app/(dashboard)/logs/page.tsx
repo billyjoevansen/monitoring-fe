@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import {
   Loader2,
   ScrollText,
@@ -12,98 +11,44 @@ import {
   Clock,
   User,
   Activity,
+  Trash2,
+  X,
+  AlertTriangle,
 } from 'lucide-react';
-import { useUser } from '@/lib/UserContext';
-import { manageClient } from '@/lib/supabase/client';
-import { ROLE_LABELS, ROLE_COLORS } from '@/lib/rbac';
-import type { ActivityLog, Role } from '@/types';
-
-const ACTION_LABELS: Record<string, { label: string; color: string }> = {
-  login: { label: 'Login', color: 'bg-blue-100 text-blue-700' },
-  logout: { label: 'Logout', color: 'bg-gray-100 text-gray-700' },
-  reconcile: { label: 'Rekonsiliasi', color: 'bg-green-100 text-green-700' },
-  train_model: { label: 'Training Model', color: 'bg-purple-100 text-purple-700' },
-  predict: { label: 'Prediksi', color: 'bg-indigo-100 text-indigo-700' },
-  update_config: { label: 'Ubah Konfigurasi', color: 'bg-yellow-100 text-yellow-700' },
-  reset_config: { label: 'Reset Konfigurasi', color: 'bg-orange-100 text-orange-700' },
-  create_user: { label: 'Buat User', color: 'bg-teal-100 text-teal-700' },
-  update_user: { label: 'Edit User', color: 'bg-cyan-100 text-cyan-700' },
-  activate_user: { label: 'Aktifkan User', color: 'bg-emerald-100 text-emerald-700' },
-  deactivate_user: { label: 'Nonaktifkan User', color: 'bg-red-100 text-red-700' },
-  change_password: { label: 'Ganti Password', color: 'bg-amber-100 text-amber-700' },
-};
-
-const PAGE_SIZE = 15;
+import { ROLE_LABELS, ROLE_COLORS } from '@/config/rbac';
+import { ACTION_LABELS, PAGE_SIZE } from '@/config/logConfig';
+import type { Role } from '@/types';
+import { useLogs } from '@/hooks/useLogs';
 
 export default function LogsPage() {
-  const currentUser = useUser();
-
-  const [logs, setLogs] = useState<ActivityLog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-
-  // Filters
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterAction, setFilterAction] = useState('');
-  const [filterRole, setFilterRole] = useState('');
-
-  useEffect(() => {
-    loadLogs();
-  }, [page, filterAction, filterRole]);
-
-  const loadLogs = async () => {
-    setLoading(true);
-    const supabase = manageClient();
-
-    let query = supabase
-      .from('activity_logs')
-      .select('*', { count: 'exact' })
-      .order('created_at', { ascending: false });
-
-    if (filterAction) {
-      query = query.eq('action', filterAction);
-    }
-
-    if (filterRole) {
-      query = query.eq('user_role', filterRole);
-    }
-
-    const from = (page - 1) * PAGE_SIZE;
-    const to = from + PAGE_SIZE - 1;
-    query = query.range(from, to);
-
-    const { data, count } = await query;
-
-    if (data) setLogs(data as ActivityLog[]);
-    if (count !== null) setTotalCount(count);
-    setLoading(false);
-  };
-
-  const handleRefresh = () => {
-    setPage(1);
-    loadLogs();
-  };
-
-  const handleResetFilters = () => {
-    setSearchQuery('');
-    setFilterAction('');
-    setFilterRole('');
-    setPage(1);
-  };
-
-  const filteredLogs = logs.filter((log) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase();
-    return (
-      log.user_nama?.toLowerCase().includes(q) ||
-      log.user_email?.toLowerCase().includes(q) ||
-      log.detail?.toLowerCase().includes(q) ||
-      log.action?.toLowerCase().includes(q)
-    );
-  });
-
-  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const {
+    filteredLogs,
+    loading,
+    totalCount,
+    totalPages,
+    page,
+    setPage,
+    searchQuery,
+    setSearchQuery,
+    filterAction,
+    updateFilterAction,
+    filterRole,
+    updateFilterRole,
+    handleResetFilters,
+    selectedLogs,
+    toggleSelectAll,
+    toggleSelectLog,
+    canDelete,
+    showDeleteModal,
+    deleteMode,
+    logToDelete,
+    deleting,
+    openDeleteModal,
+    openBulkDeleteModal,
+    closeDeleteModal,
+    handleDelete,
+    handleRefresh,
+  } = useLogs();
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -171,10 +116,7 @@ export default function LogsPage() {
           <div>
             <select
               value={filterAction}
-              onChange={(e) => {
-                setFilterAction(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => updateFilterAction(e.target.value)}
               className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Semua Aksi</option>
@@ -190,10 +132,7 @@ export default function LogsPage() {
           <div>
             <select
               value={filterRole}
-              onChange={(e) => {
-                setFilterRole(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => updateFilterRole(e.target.value)}
               className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               <option value="">Semua Role</option>
@@ -216,10 +155,21 @@ export default function LogsPage() {
           )}
         </div>
 
-        <p className="text-xs text-gray-500 mt-3">Total: {totalCount} log tercatat</p>
+        <div className="flex items-center justify-between mt-3">
+          <p className="text-xs text-gray-500">Total: {totalCount} log tercatat</p>
+          {canDelete && selectedLogs.size > 0 && (
+            <button
+              onClick={openBulkDeleteModal}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              Hapus {selectedLogs.size} log terpilih
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Loading */}
+      {/* Loading & Content */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
@@ -240,6 +190,18 @@ export default function LogsPage() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
+                    {canDelete && (
+                      <th className="px-4 py-3 text-left">
+                        <input
+                          type="checkbox"
+                          checked={
+                            selectedLogs.size === filteredLogs.length && filteredLogs.length > 0
+                          }
+                          onChange={toggleSelectAll}
+                          className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        />
+                      </th>
+                    )}
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                       No
                     </th>
@@ -253,11 +215,16 @@ export default function LogsPage() {
                       Role
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
-                      Aksi
+                      Aktivitas
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
                       Detail
                     </th>
+                    {canDelete && (
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">
+                        Aksi
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
@@ -269,6 +236,16 @@ export default function LogsPage() {
 
                     return (
                       <tr key={log.id} className="hover:bg-gray-50 transition-colors">
+                        {canDelete && (
+                          <td className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedLogs.has(log.id)}
+                              onChange={() => toggleSelectLog(log.id)}
+                              className="w-4 h-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                            />
+                          </td>
+                        )}
                         <td className="px-4 py-3 text-gray-500">
                           {(page - 1) * PAGE_SIZE + idx + 1}
                         </td>
@@ -316,6 +293,17 @@ export default function LogsPage() {
                         <td className="px-4 py-3 text-gray-600 max-w-xs truncate">
                           {log.detail || '-'}
                         </td>
+                        {canDelete && (
+                          <td className="px-4 py-3">
+                            <button
+                              onClick={() => openDeleteModal(log)}
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Hapus log"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        )}
                       </tr>
                     );
                   })}
@@ -349,6 +337,75 @@ export default function LogsPage() {
             )}
           </div>
         </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  {deleteMode === 'single' ? 'Hapus Log' : 'Hapus Multiple Log'}
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {deleteMode === 'single'
+                    ? 'Apakah Anda yakin ingin menghapus log ini?'
+                    : `Apakah Anda yakin ingin menghapus ${selectedLogs.size} log terpilih?`}
+                </p>
+              </div>
+            </div>
+
+            {deleteMode === 'single' && logToDelete && (
+              <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">User:</span> {logToDelete.user_nama}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Aksi:</span>{' '}
+                  {ACTION_LABELS[logToDelete.action]?.label || logToDelete.action}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <span className="font-medium">Waktu:</span> {formatDate(logToDelete.created_at)}{' '}
+                  {formatTime(logToDelete.created_at)}
+                </p>
+              </div>
+            )}
+
+            <p className="text-sm text-red-600 mb-6">Tindakan ini tidak dapat dibatalkan.</p>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={closeDeleteModal}
+                disabled={deleting}
+                className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+              >
+                <X className="w-4 h-4" />
+                Batal
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center gap-2 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {deleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Menghapus...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    Hapus
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

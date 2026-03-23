@@ -48,6 +48,7 @@ export async function getModelInfo() {
 /** Konfigurasi */
 export async function getConfig() {
   const res = await api.get('/api/config');
+  console.log('Config:', res.data);
   return res.data;
 }
 
