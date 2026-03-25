@@ -41,8 +41,8 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
       <div className="mb-8 flex items-center gap-3">
         {icon}
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">{title}</h1>
-          <p className="text-gray-500 mt-1">{subtitle}</p>
+          <h1 className="text-3xl font-bold text-foreground">{title}</h1>
+          <p className="text-muted-foreground mt-1">{subtitle}</p>
         </div>
       </div>
 
@@ -82,31 +82,37 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
 
       {/* Empty state */}
       {filtered.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-          <div className="w-12 h-12 text-gray-300 mx-auto mb-3">{emptyIcon}</div>
-          <p className="text-gray-500 font-medium">{emptyTitle}</p>
-          <p className="text-gray-400 text-sm mt-1">{emptySubtitle}</p>
+        <div className="bg-background rounded-xl border border-gray-200 p-12 text-center">
+          <div className="w-12 h-12 text-foreground mx-auto mb-3">{emptyIcon}</div>
+          <p className="text-foreground font-medium">{emptyTitle}</p>
+          <p className="text-muted-foreground text-sm mt-1">{emptySubtitle}</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-background rounded-xl border border-gray-200 shadow-sm overflow-hidden">
           {/* Select all bar */}
           {canEdit && (
-            <div className="flex items-center gap-3 px-5 py-2.5 bg-gray-50 border-b border-gray-100">
+            <div className="flex items-center gap-3 px-5 py-2.5 bg-background border-b border-gray-100">
               <input
                 type="checkbox"
                 checked={allSelected}
                 onChange={onToggleSelectAll}
                 className="rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
               />
-              <span className="text-xs text-gray-500 font-medium">Pilih semua</span>
+              <span className="text-xs text-foreground font-medium">Pilih semua</span>
             </div>
           )}
 
           <div className="divide-y divide-gray-100">
             {filtered.map((archive) => (
-              <div key={archive.id} className={selectedIds.has(archive.id) ? 'bg-red-50' : ''}>
-                <div className="flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors">
-                  {/* Left: checkbox + expand + info */}
+              <div
+                key={archive.id}
+                className={`group transition-colors duration-200 ${
+                  selectedIds.has(archive.id) ? 'bg-red-50' : ''
+                } hover:bg-gray-50 dark:hover:bg-slate-500`}
+              >
+                {/* Main row */}
+                <div className="flex items-center justify-between px-5 py-4">
+                  {/* Left */}
                   <div className="flex items-center gap-3 flex-1">
                     {canEdit && (
                       <input
@@ -116,9 +122,10 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
                         className="rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
                       />
                     )}
+
                     <button
                       onClick={() => onToggleExpand(archive.id)}
-                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                      className="p-1 hover:bg-gray-200 dark:hover:bg-white rounded transition-colors"
                     >
                       {expandedId === archive.id ? (
                         <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -126,16 +133,31 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
                         <ChevronRight className="w-4 h-4 text-gray-500" />
                       )}
                     </button>
-                    <div>
-                      <p className="font-semibold text-gray-800">{archive.nama_arsip}</p>
-                      <p className="text-xs text-gray-500">
-                        {archive.user_nama} · {formatDate(archive.created_at)} ·{' '}
-                        {archive.summary.total_petani} petani
+
+                    <div className="flex flex-col gap-1">
+                      {/* Title */}
+                      <p className="font-semibold text-foreground leading-snug">
+                        {archive.nama_arsip}
                       </p>
+
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                        <span>Dibuat oleh : </span>
+                        <span className="px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-500/70">
+                          {archive.user_nama}
+                        </span>
+                        <span>Waktu : </span>
+                        <span className="px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-500/70">
+                          {formatDate(archive.created_at)}
+                        </span>
+                        <span>Jumlah : </span>
+                        <span className="px-2 py-0.5 rounded-md bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 font-medium">
+                          {archive.summary.total_petani} petani
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Right: actions */}
+                  {/* Right */}
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onView(archive)}
@@ -144,6 +166,7 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
                       <Eye className="w-3.5 h-3.5" />
                       Lihat
                     </button>
+
                     {canEdit && (
                       <button
                         onClick={() => onDelete(archive)}
@@ -161,7 +184,7 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
                   </div>
                 </div>
 
-                {/* Expanded summary */}
+                {/* Expanded */}
                 {expandedId === archive.id && (
                   <div className="px-14 pb-4">{renderExpandedSummary(archive)}</div>
                 )}

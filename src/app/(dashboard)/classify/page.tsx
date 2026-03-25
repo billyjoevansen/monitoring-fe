@@ -121,7 +121,7 @@ export default function ClassifyPage() {
             />
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
+          <div className="bg-background rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
             {saved ? (
               <div className="flex items-center gap-2 text-green-700">
                 <CheckCircle className="w-5 h-5" />

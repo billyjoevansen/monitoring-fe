@@ -59,7 +59,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   admin: 'Administrator',
   kabid: 'Kepala Bidang',
   kasie: 'Kepala Seksi Penyuluh',
-  bpp: 'Balai Penyuluh Pertanian',
+  bpp: 'BPP',
 };
 
 export const ROLE_COLORS: Record<Role, string> = {

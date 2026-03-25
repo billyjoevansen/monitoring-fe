@@ -62,30 +62,39 @@ export function NavDropdown({
 
   // Mobile variant
   return (
-    <div ref={dropdownRef}>
+    <div ref={dropdownRef} className="space-y-1">
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium ${activeButtonCls}`}
+        className={`w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${activeButtonCls}`}
       >
         <div className="flex items-center gap-2.5">
           <Icon className="w-4 h-4" />
           {item.label}
         </div>
-        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
       </button>
 
-      {isOpen && (
-        <div className="ml-6 mt-1 space-y-0.5">
+      {/* Dropdown */}
+      <div
+        className={`overflow-hidden transition-all duration-200 ${
+          isOpen ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="pl-4 border-l border-gray-200 dark:border-slate-700 space-y-1">
           {item.children?.map((child) => {
             const ChildIcon = child.icon;
             return (
               <Link
+                onClick={() => onToggle()}
                 key={child.href}
                 href={child.href}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   isActive(child.href)
                     ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30 font-medium'
-                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800'
                 }`}
               >
                 <ChildIcon className="w-4 h-4" />
@@ -94,7 +103,7 @@ export function NavDropdown({
             );
           })}
         </div>
-      )}
+      </div>
     </div>
   );
 }
