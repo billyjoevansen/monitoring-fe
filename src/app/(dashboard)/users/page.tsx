@@ -51,8 +51,8 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Kelola User</h1>
-          <p className="text-gray-500 mt-1">Tambah dan kelola akun pengguna</p>
+          <h1 className="text-3xl font-bold text-foreground">Kelola User</h1>
+          <p className="text-muted-foreground mt-1">Tambah dan kelola akun pengguna</p>
         </div>
         <button
           onClick={openAddForm}

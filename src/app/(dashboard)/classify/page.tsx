@@ -58,10 +58,10 @@ export default function ClassifyPage() {
       <ErrorBanner message={error} />
 
       {!result && (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+        <div className="bg-background rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
           <div className="p-4 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-700">Pilih Arsip Rekonsiliasi</h2>
-            <p className="text-xs text-gray-500 mt-1">
+            <h2 className="text-sm font-semibold text-foreground">Pilih Arsip Rekonsiliasi</h2>
+            <p className="text-xs text-muted-foreground mt-1">
               Data yang dipilih akan diproses menggunakan model Random Forest
             </p>
           </div>
@@ -169,8 +169,8 @@ function PageHeader() {
         <Tags className="w-5 h-5 text-indigo-600" />
       </div>
       <div>
-        <h1 className="text-3xl font-bold text-gray-800">Klasifikasi</h1>
-        <p className="text-gray-500 mt-1">
+        <h1 className="text-3xl font-bold text-foreground">Klasifikasi</h1>
+        <p className="text-muted-foreground mt-1">
           Pilih arsip rekonsiliasi untuk diklasifikasikan NORMAL / TIDAK NORMAL
         </p>
       </div>
@@ -181,9 +181,9 @@ function PageHeader() {
 function EmptyArchiveState() {
   return (
     <div className="p-8 text-center">
-      <Tags className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-      <p className="text-gray-500 font-medium">Belum ada arsip rekonsiliasi.</p>
-      <p className="text-gray-400 text-sm mt-1">
+      <Tags className="w-10 h-10 text-foreground mx-auto mb-2" />
+      <p className="text-foreground font-medium">Belum ada arsip rekonsiliasi.</p>
+      <p className="text-muted-foreground text-sm mt-1">
         Lakukan rekonsiliasi terlebih dahulu dan simpan hasilnya.
       </p>
     </div>
@@ -209,18 +209,18 @@ function ArchiveItem({
 }: ArchiveItemProps) {
   return (
     <div>
-      <div className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors">
+      <div className="flex items-center justify-between px-4 py-3 hover:bg-foreground/10 transition-colors">
         <div className="flex items-center gap-3 flex-1">
-          <button onClick={onToggleExpand} className="p-1 hover:bg-gray-200 rounded">
+          <button onClick={onToggleExpand} className="p-1 hover:bg-foreground/20 rounded">
             {isExpanded ? (
-              <ChevronDown className="w-4 h-4 text-gray-500" />
+              <ChevronDown className="w-4 h-4 text-foreground" />
             ) : (
-              <ChevronRight className="w-4 h-4 text-gray-500" />
+              <ChevronRight className="w-4 h-4 text-foreground" />
             )}
           </button>
           <div>
-            <p className="font-semibold text-gray-800">{archive.nama_arsip}</p>
-            <p className="text-xs text-gray-500">
+            <p className="font-semibold text-foreground">{archive.nama_arsip}</p>
+            <p className="text-xs text-muted-foreground">
               {archive.user_nama} · {formatDate(archive.created_at)} ·{' '}
               {archive.summary.total_petani} petani
             </p>

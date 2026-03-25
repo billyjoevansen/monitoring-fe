@@ -119,8 +119,10 @@ function PageHeader({ withSubtitle = false }: { withSubtitle?: boolean }) {
         <FileSearch className="w-5 h-5 text-blue-600" />
       </div>
       <div>
-        <h1 className="text-3xl font-bold text-gray-800">Rekonsiliasi</h1>
-        {withSubtitle && <p className="text-gray-500 mt-1">Bandingkan data RDKK dengan SIVERVAL</p>}
+        <h1 className="text-3xl font-bold text-foreground">Rekonsiliasi</h1>
+        {withSubtitle && (
+          <p className="text-muted-foreground mt-1">Cocokan data RDKK dengan SIVERVAL</p>
+        )}
       </div>
     </div>
   );

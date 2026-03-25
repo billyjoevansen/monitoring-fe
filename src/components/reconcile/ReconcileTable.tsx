@@ -19,6 +19,10 @@ interface ReconcileTableProps {
   onFilteredDataChange?: (filtered: Record<string, unknown>[], searchQuery: string) => void;
 }
 
+const STRIPE_EVEN = 'bg-white dark:bg-slate-900';
+const STRIPE_ODD = 'bg-gray-50 dark:bg-slate-800';
+const STICKY_BORDER = 'border-r border-border dark:border-white';
+
 export default function ReconcileTable({ data, onFilteredDataChange }: ReconcileTableProps) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -26,7 +30,6 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
   const tableWrapperRef = useRef<HTMLDivElement>(null);
   const [tableMaxHeight, setTableMaxHeight] = useState(500);
 
-  // Hitung tinggi maksimal tabel berdasarkan sisa viewport
   useEffect(() => {
     const calculateHeight = () => {
       if (tableWrapperRef.current) {
@@ -55,7 +58,6 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
     );
   });
 
-  // Notify parent whenever filtered data changes
   useEffect(() => {
     onFilteredDataChange?.(filtered as unknown as Record<string, unknown>[], search);
   }, [search, data]);
@@ -78,11 +80,11 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col min-w-0">
-      {/* Toolbar — fixed di atas */}
-      <div className="p-4 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
-        <div className="relative w-full sm:w-72 border-2 border-black rounded-lg">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+    <div className="bg-background rounded-xl border border-border shadow-sm flex flex-col min-w-0">
+      {/* Toolbar */}
+      <div className="p-4 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
+        <div className="relative w-full sm:w-72 border-2 border-black dark:border-white/20 rounded-lg">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Cari nama, NIK, poktan, status..."
@@ -92,19 +94,19 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-500">Tampilkan:</label>
+            <label className="text-xs text-muted-foreground">Tampilkan:</label>
             <select
               value={pageSize}
               onChange={(e) => {
                 setPageSize(Number(e.target.value));
                 setPage(1);
               }}
-              className="px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="px-2 py-1.5 border border-input rounded-lg text-xs bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {PAGE_SIZE_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>
@@ -113,61 +115,62 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
               ))}
             </select>
           </div>
-          <p className="text-xs text-gray-500">
-            dari <span className="font-semibold text-gray-700">{filtered.length}</span> data
+          <p className="text-xs text-muted-foreground">
+            dari <span className="font-semibold text-foreground">{filtered.length}</span> data
           </p>
         </div>
       </div>
 
+      {/* Table */}
       <div ref={tableWrapperRef} className="overflow-x-auto">
-        <table className="w-max min-w-full text-xs border-collapse">
-          <thead className="bg-gray-50 border border-black sticky top-0 z-10 ">
+        <table className="w-max min-w-full text-xs border-separate border-spacing-0">
+          <thead className="sticky top-0 z-10">
             <tr>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 sticky left-0 bg-gray-50 z-20 min-w-10"
+                className={`px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border sticky left-0 z-20 min-w-10 bg-gray-50 dark:bg-slate-800 ${STICKY_BORDER}`}
               >
                 No.
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 sticky left-10 bg-gray-50 z-20 min-w-35 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.1)]"
+                className={`px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border sticky left-10 z-20 min-w-35 bg-gray-50 dark:bg-slate-800 ${STICKY_BORDER}`}
               >
                 Nama Petani
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 min-w-30"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-30 bg-gray-50 dark:bg-slate-800"
               >
                 NIK
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 min-w-25"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
               >
                 Poktan
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 min-w-25"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
               >
                 Gapoktan
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 min-w-25"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
               >
                 Kios RDKK
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-gray-600 border-r border-gray-200 min-w-25"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
               >
                 Kios Tebus
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-center font-semibold text-gray-600 border-r border-gray-200 min-w-12.5"
+                className="px-3 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border min-w-12.5 bg-gray-50 dark:bg-slate-800"
               >
                 Kios ✓
               </th>
@@ -175,105 +178,105 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                 <th
                   key={`group-${p.key}`}
                   colSpan={3}
-                  className="px-2 py-2 text-center font-semibold text-gray-600 border-r border-gray-200 bg-blue-50/50"
+                  className="px-2 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border bg-blue-50 dark:bg-blue-900/20"
                 >
                   {p.label}
                 </th>
               ))}
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-right font-semibold text-gray-600 border-r border-gray-200 min-w-20 bg-green-50/50"
+                className="px-3 py-2 text-right font-semibold text-muted-foreground border-b border-r border-border min-w-20 bg-green-50 dark:bg-green-900/20"
               >
                 Total Pengajuan
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-right font-semibold text-gray-600 border-r border-gray-200 min-w-20 bg-green-50/50"
+                className="px-3 py-2 text-right font-semibold text-muted-foreground border-b border-r border-border min-w-20 bg-green-50 dark:bg-green-900/20"
               >
                 Total Tebus
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-right font-semibold text-gray-600 border-r border-gray-200 min-w-17.5 bg-green-50/50"
+                className="px-3 py-2 text-right font-semibold text-muted-foreground border-b border-r border-border min-w-17.5 bg-green-50 dark:bg-green-900/20"
               >
                 Selisih
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-center font-semibold text-gray-600 border-r border-gray-200 min-w-27.5"
+                className="px-3 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border min-w-27.5 bg-gray-50 dark:bg-slate-800"
               >
                 Status
               </th>
-              <th rowSpan={2} className="px-3 py-2 text-left font-semibold text-gray-600 min-w-50">
+              <th
+                rowSpan={2}
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border min-w-50 bg-gray-50 dark:bg-slate-800"
+              >
                 Catatan
               </th>
             </tr>
             <tr>
               {PUPUK_TYPES.map((p) => (
                 <Fragment key={`sub-${p.key}`}>
-                  <th className="px-2 py-1.5 text-right font-medium text-gray-500 border-r border-gray-100 bg-blue-50/30 min-w-15">
+                  <th className="px-2 py-1.5 text-right font-medium text-muted-foreground border-b border-r border-border bg-blue-50/60 dark:bg-blue-900/10 min-w-15">
                     Ajukan
                   </th>
-                  <th className="px-2 py-1.5 text-right font-medium text-gray-500 border-r border-gray-100 bg-blue-50/30 min-w-15">
+                  <th className="px-2 py-1.5 text-right font-medium text-muted-foreground border-b border-r border-border bg-blue-50/60 dark:bg-blue-900/10 min-w-15">
                     Tebus
                   </th>
-                  <th className="px-2 py-1.5 text-right font-medium text-gray-500 border-r border-gray-200 bg-blue-50/30 min-w-15">
+                  <th className="px-2 py-1.5 text-right font-medium text-muted-foreground border-b border-r border-border bg-blue-50/60 dark:bg-blue-900/10 min-w-15">
                     Selisih
                   </th>
                 </Fragment>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {pageData.map((row, idx) => {
               const globalIdx = start + idx;
+              const stripe = globalIdx % 2 !== 0 ? STRIPE_EVEN : STRIPE_ODD;
               return (
                 <tr
                   key={`row-${row.nik}-${globalIdx}`}
-                  className={`hover:bg-gray-200 transition-colors
-                    ${globalIdx % 2 != 0 ? 'bg-white' : 'bg-gray-100'}`}
+                  className="transition-colors hover:bg-gray-200 dark:hover:bg-slate-700"
                 >
                   <td
-                    className={`px-3 py-2.5 text-gray-500 border-r border-gray-100 sticky left-0 z-10 transition-colors ${
-                      globalIdx % 2 != 0 ? 'bg-white' : 'bg-gray-100'
-                    }`}
+                    className={`px-3 py-2.5 text-muted-foreground border-b border-border sticky left-0 z-10 transition-colors ${stripe} ${STICKY_BORDER}`}
                   >
                     {globalIdx + 1}.
                   </td>
                   <td
-                    className={`px-3 py-2.5 text-gray-800 font-medium border-r border-gray-100 sticky left-10 z-5 shadow-[2px_0_4px_-2px_rgba(0,0,0,0.05)]
-                    ${globalIdx % 2 != 0 ? 'bg-white' : 'bg-gray-100'}`}
+                    className={`px-3 py-2.5 text-foreground font-medium border-b border-border sticky left-10 z-10 transition-colors ${stripe} ${STICKY_BORDER}`}
                   >
                     <div className="truncate max-w-35" title={row.nama_petani}>
                       {row.nama_petani}
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 text-gray-600 font-mono border-r border-gray-100">
+                  <td className="px-3 py-2.5 text-muted-foreground font-mono border-b border-r border-border">
                     {row.nik}
                   </td>
-                  <td className="px-3 py-2.5 text-gray-600 border-r border-gray-100">
+                  <td className="px-3 py-2.5 text-muted-foreground border-b border-r border-border">
                     {row.poktan}
                   </td>
-                  <td className="px-3 py-2.5 text-gray-600 border-r border-gray-100">
-                    {row.gapoktan || <span className="text-gray-300">-</span>}
+                  <td className="px-3 py-2.5 text-muted-foreground border-b border-r border-border">
+                    {row.gapoktan || <span className="text-muted-foreground/30">-</span>}
                   </td>
-                  <td className="px-3 py-2.5 text-gray-600 border-r border-gray-100">
+                  <td className="px-3 py-2.5 text-muted-foreground border-b border-r border-border">
                     <div className="truncate max-w-25" title={row.kios_rdkk}>
                       {row.kios_rdkk}
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 text-gray-600 border-r border-gray-100">
+                  <td className="px-3 py-2.5 text-muted-foreground border-b border-r border-border">
                     <div className="truncate max-w-25" title={row.kios_penebusan}>
                       {row.kios_penebusan}
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 text-center border-r border-gray-100">
+                  <td className="px-3 py-2.5 text-center border-b border-r border-border">
                     {row.kios_sesuai ? (
-                      <span className="inline-block w-5 h-5 bg-green-100 text-green-700 rounded-full text-[10px] leading-5 font-bold">
+                      <span className="inline-block w-5 h-5 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 rounded-full text-[10px] leading-5 font-bold">
                         ✓
                       </span>
                     ) : (
-                      <span className="inline-block w-5 h-5 bg-red-100 text-red-700 rounded-full text-[10px] leading-5 font-bold">
+                      <span className="inline-block w-5 h-5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 rounded-full text-[10px] leading-5 font-bold">
                         ✗
                       </span>
                     )}
@@ -285,43 +288,55 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                     const sl = pd?.selisih_kg ?? 0;
                     return (
                       <Fragment key={`pupuk-${row.nik}-${p.key}-${globalIdx}`}>
-                        <td className="px-2 py-2.5 text-right text-gray-600 border-r border-gray-50">
+                        <td className="px-2 py-2.5 text-right text-muted-foreground border-b border-r border-border">
                           {aj > 0 ? (
                             aj.toLocaleString('id-ID')
                           ) : (
-                            <span className="text-gray-300">-</span>
+                            <span className="text-muted-foreground/30">-</span>
                           )}
                         </td>
-                        <td className="px-2 py-2.5 text-right text-gray-600 border-r border-gray-50">
+                        <td className="px-2 py-2.5 text-right text-muted-foreground border-b border-r border-border">
                           {tb > 0 ? (
                             tb.toLocaleString('id-ID')
                           ) : (
-                            <span className="text-gray-300">-</span>
+                            <span className="text-muted-foreground/30">-</span>
                           )}
                         </td>
                         <td
-                          className={`px-2 py-2.5 text-right font-medium border-r border-gray-200 ${sl > 0 ? 'text-yellow-600' : sl < 0 ? 'text-red-600' : 'text-gray-300'}`}
+                          className={`px-2 py-2.5 text-right font-medium border-b border-r border-border ${
+                            sl > 0
+                              ? 'text-yellow-600 dark:text-yellow-400'
+                              : sl < 0
+                                ? 'text-red-600 dark:text-red-400'
+                                : 'text-muted-foreground/30'
+                          }`}
                         >
                           {sl !== 0 ? sl.toLocaleString('id-ID') : '-'}
                         </td>
                       </Fragment>
                     );
                   })}
-                  <td className="px-3 py-2.5 text-right font-semibold text-gray-700 border-r border-gray-100 bg-green-50/20">
+                  <td className="px-3 py-2.5 text-right font-semibold text-foreground border-b border-r border-border bg-green-50/30 dark:bg-green-900/10">
                     {row.total_pupuk_diajukan_kg?.toLocaleString('id-ID')}
                   </td>
-                  <td className="px-3 py-2.5 text-right font-semibold text-gray-700 border-r border-gray-100 bg-green-50/20">
+                  <td className="px-3 py-2.5 text-right font-semibold text-foreground border-b border-r border-border bg-green-50/30 dark:bg-green-900/10">
                     {row.total_pupuk_ditebus_kg?.toLocaleString('id-ID')}
                   </td>
                   <td
-                    className={`px-3 py-2.5 text-right font-semibold border-r border-gray-100 bg-green-50/20 ${row.selisih_total_kg > 0 ? 'text-yellow-600' : row.selisih_total_kg < 0 ? 'text-red-600' : 'text-green-600'}`}
+                    className={`px-3 py-2.5 text-right font-semibold border-b border-r border-border bg-green-50/30 dark:bg-green-900/10 ${
+                      row.selisih_total_kg > 0
+                        ? 'text-yellow-600 dark:text-yellow-400'
+                        : row.selisih_total_kg < 0
+                          ? 'text-red-600 dark:text-red-400'
+                          : 'text-green-600 dark:text-green-400'
+                    }`}
                   >
                     {row.selisih_total_kg?.toLocaleString('id-ID')}
                   </td>
-                  <td className="px-3 py-2.5 text-center border-r border-gray-100">
+                  <td className="px-3 py-2.5 text-center border-b border-r border-border">
                     <StatusBadge status={row.status_tebus} />
                   </td>
-                  <td className="px-3 py-2.5 text-gray-600">
+                  <td className="px-3 py-2.5 text-muted-foreground border-b border-border">
                     {row.catatan && row.catatan.length > 0 ? (
                       <ul className="list-disc list-inside space-y-0.5">
                         {row.catatan.map((c, i) => (
@@ -331,7 +346,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                         ))}
                       </ul>
                     ) : (
-                      <span className="text-gray-300">-</span>
+                      <span className="text-muted-foreground/30">-</span>
                     )}
                   </td>
                 </tr>
@@ -339,7 +354,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
             })}
             {pageData.length === 0 && (
               <tr>
-                <td colSpan={99} className="px-4 py-8 text-center text-gray-400">
+                <td colSpan={99} className="px-4 py-8 text-center text-muted-foreground">
                   Tidak ada data ditemukan.
                 </td>
               </tr>
@@ -348,43 +363,47 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
         </table>
       </div>
 
-      {/* Pagination — fixed di bawah */}
+      {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50/50 shrink-0">
-          <p className="text-xs text-gray-500">
-            Menampilkan <span className="font-semibold text-gray-700">{start + 1}</span>–
-            <span className="font-semibold text-gray-700">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/30 shrink-0">
+          <p className="text-xs text-muted-foreground">
+            Menampilkan <span className="font-semibold text-foreground">{start + 1}</span>–
+            <span className="font-semibold text-foreground">
               {Math.min(start + pageSize, filtered.length)}
             </span>{' '}
-            dari <span className="font-semibold text-gray-700">{filtered.length}</span>
+            dari <span className="font-semibold text-foreground">{filtered.length}</span>
           </p>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setPage(1)}
               disabled={page === 1}
-              className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               title="Halaman pertama"
             >
-              <ChevronsLeft className="w-4 h-4 text-gray-600" />
+              <ChevronsLeft className="w-4 h-4 text-muted-foreground" />
             </button>
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               title="Sebelumnya"
             >
-              <ChevronLeft className="w-4 h-4 text-gray-600" />
+              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
             </button>
             {getPageNumbers().map((p, i) =>
               p === '...' ? (
-                <span key={`dots-${i}`} className="px-2 py-1 text-xs text-gray-400">
+                <span key={`dots-${i}`} className="px-2 py-1 text-xs text-muted-foreground">
                   …
                 </span>
               ) : (
                 <button
                   key={`page-${p}`}
                   onClick={() => setPage(p)}
-                  className={`min-w-8 h-8 rounded-lg text-xs font-medium transition-colors ${page === p ? 'bg-green-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-200'}`}
+                  className={`min-w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                    page === p
+                      ? 'bg-green-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:bg-gray-200 dark:hover:bg-slate-700'
+                  }`}
                 >
                   {p}
                 </button>
@@ -393,18 +412,18 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               title="Selanjutnya"
             >
-              <ChevronRight className="w-4 h-4 text-gray-600" />
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
             </button>
             <button
               onClick={() => setPage(totalPages)}
               disabled={page === totalPages}
-              className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               title="Halaman terakhir"
             >
-              <ChevronsRight className="w-4 h-4 text-gray-600" />
+              <ChevronsRight className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
         </div>
@@ -415,15 +434,17 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
 
 function StatusBadge({ status }: { status: string }) {
   const colorMap: Record<string, string> = {
-    'TEBUS LENGKAP': 'bg-green-100 text-green-700',
-    'TEBUS SEBAGIAN': 'bg-yellow-100 text-yellow-700',
-    'TEBUS MELEBIHI': 'bg-red-100 text-red-700',
-    'BELUM MENEBUS': 'bg-orange-100 text-orange-700',
-    'TIDAK ADA PENGAJUAN': 'bg-gray-100 text-gray-600',
+    'TEBUS LENGKAP': 'bg-green-100  text-green-700  dark:bg-green-900/40  dark:text-green-300',
+    'TEBUS SEBAGIAN': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
+    'TEBUS MELEBIHI': 'bg-red-100    text-red-700    dark:bg-red-900/40    dark:text-red-300',
+    'BELUM MENEBUS': 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+    'TIDAK ADA PENGAJUAN': 'bg-muted      text-muted-foreground',
   };
   return (
     <span
-      className={`px-2 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap ${colorMap[status] || 'bg-gray-100 text-gray-600'}`}
+      className={`px-2 py-1 rounded-full text-[10px] font-semibold whitespace-nowrap ${
+        colorMap[status] ?? 'bg-muted text-muted-foreground'
+      }`}
     >
       {status}
     </span>

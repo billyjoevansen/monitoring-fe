@@ -1,4 +1,4 @@
-/* global.css */
+/* globals.css */
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* =====================================================
-   TAILWIND V4 — CSS-based config (Animasi & Lainnya)
+   TAILWIND V4 — CSS-based config
    ===================================================== */
 @theme {
   /* Nav Animations */
@@ -34,36 +34,50 @@
   }
 
   /* Font */
-  --font-sans: 'Segoe UI', system-ui, apple-system, sans-serif;
+  --font-sans: 'Segoe UI', 'system-ui', '-apple-system', 'sans-serif';
 }
 
-/* Base Styles */
 :root {
+  color-scheme: light;
+
   --background: #ffffff;
   --foreground: #020617;
 }
 
-/* 2. Ubah nilainya saat class .dark aktif */
 .dark {
-  --background: #020617; /* Warna gelap (misal: Slate 950) */
+  color-scheme: dark;
+
+  --background: #020617;
   --foreground: #f8fafc;
 }
 
-.bg-background {
+/* =====================================================
+   BASE STYLES
+   ===================================================== */
+body {
+  font-family: var(--font-sans);
   background-color: var(--background);
   color: var(--foreground);
   transition:
     background-color 0.2s ease,
     color 0.2s ease;
 }
+input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1; /* beberapa browser set opacity 0.5 by default */
+}
 
-/* Base Styles */
-body {
-  font-family: var(--font-sans);
+select {
   background-color: var(--background);
   color: var(--foreground);
 }
 
+option {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Focus ring global */
 *:focus-visible {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;

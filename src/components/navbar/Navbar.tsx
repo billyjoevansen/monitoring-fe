@@ -29,27 +29,38 @@ export default function Navbar({ user }: { user: User }) {
 
   return (
     <>
-      <nav className="fixed top-3 left-1 right-1 z-50 border-b border-white/10 bg-white/80 backdrop-blur-xl supports-backdrop-filter:bg-white/60 rounded-md outline-2 outline-black dark:border-gray-700/50">
+      <nav className="fixed top-3 left-1 right-1 z-50 border border-black/10 dark:border-white bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl supports-backdrop-filter:bg-white/60 dark:supports-backdrop-filter:bg-slate-900/60 rounded-md outline-2 outline-black dark:outline-white/10">
         <div className="max-w-400 mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link
               href="/dashboard"
-              className="relative overflow-hidden px-2 flex items-center gap-2.5 shrink-0 bg-green-200 rounded-md border border-green-300 group"
+              className="relative overflow-hidden px-4 py-1 flex items-center gap-2.5 shrink-0 bg-green-200 dark:bg-green-900/40 rounded-md border border-green-300 dark:border-green-800 group"
             >
               <div className="absolute inset-0 pointer-events-none z-0 animate-shimmer bg-linear-to-r from-transparent via-white/80 to-transparent w-[150%]" />
-
               <Image
                 src="/Logo_Kota_Serang.webp"
                 alt="Simpubes Serang"
-                width={55}
-                height={55}
+                width={50}
+                height={50}
                 priority
                 className="relative z-10 object-contain drop-shadow-sm"
               />
-              <span className="relative z-10 text-base font-bold text-gray-900 tracking-tight sm:block">
-                Simpubes Serang
-              </span>
+              <div className="relative z-10 text-base font-bold text-gray-900 dark:text-white tracking-tight leading-none w-min">
+                <div className="flex flex-col">
+                  <div className="flex justify-between w-full uppercase text-xs opacity-70">
+                    <span>S</span>
+                    <span>i</span>
+                    <span>m</span>
+                    <span>p</span>
+                    <span>u</span>
+                    <span>b</span>
+                    <span>e</span>
+                    <span>s</span>
+                  </div>
+                  <div className="text-xl leading-tight">SERANG</div>
+                </div>
+              </div>
             </Link>
 
             {/* Desktop Nav */}
@@ -78,14 +89,14 @@ export default function Navbar({ user }: { user: User }) {
                     href={item.href}
                     className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       isActive(item.href)
-                        ? 'text-green-700 bg-green-50'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/80'
+                        ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30'
+                        : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-slate-800/80'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                     {item.label}
                     {isActive(item.href) && (
-                      <span className="absolute -bottom-3.25 left-3 right-3 h-0.5 bg-green-700 rounded-full" />
+                      <span className="absolute -bottom-3.25 left-3 right-3 h-0.5 bg-green-700 dark:bg-green-400 rounded-full" />
                     )}
                   </Link>
                 );
@@ -106,15 +117,15 @@ export default function Navbar({ user }: { user: User }) {
               {/* Mobile Hamburger */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden p-2 rounded-lg bg-gray-200 hover:bg-gray-100/80 transition-colors"
+                className="lg:hidden p-2 rounded-lg bg-gray-200 dark:bg-slate-700 hover:bg-gray-100/80 dark:hover:bg-slate-600 transition-colors"
               >
                 <div
                   className={`transition-all duration-300 ${mobileOpen ? 'rotate-90' : 'rotate-0'}`}
                 >
                   {mobileOpen ? (
-                    <X className="w-5 h-5 text-gray-700" />
+                    <X className="w-5 h-5 text-gray-700 dark:text-slate-300" />
                   ) : (
-                    <Menu className="w-5 h-5 text-gray-700" />
+                    <Menu className="w-5 h-5 text-gray-700 dark:text-slate-300" />
                   )}
                 </div>
               </button>
@@ -127,15 +138,15 @@ export default function Navbar({ user }: { user: User }) {
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute top-16 left-1 right-1 bg-white border-b border-gray-200 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto animate-in slide-in-from-top-2 duration-800 rounded-sm">
+          <div className="absolute top-16 left-1 right-1 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto animate-in slide-in-from-top-2 duration-800 rounded-sm">
             <div className="p-4 space-y-1">
               {/* User info */}
-              <div className="px-3 py-3 mb-3 bg-gray-50 rounded-lg">
-                <p className="text-sm font-semibold text-gray-800">{user.nama}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+              <div className="px-3 py-3 mb-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+                <p className="text-sm font-semibold text-gray-800 dark:text-white">{user.nama}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400">{user.email}</p>
                 <span
                   className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${ROLE_COLORS[user.role]}`}
                 >
@@ -167,8 +178,8 @@ export default function Navbar({ user }: { user: User }) {
                     href={item.href}
                     className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium ${
                       isActive(item.href)
-                        ? 'text-green-700 bg-green-50'
-                        : 'text-gray-600 hover:bg-gray-50'
+                        ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30'
+                        : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -178,7 +189,7 @@ export default function Navbar({ user }: { user: User }) {
               })}
 
               {/* Mobile profile actions */}
-              <div className="border-t border-gray-100 pt-2 mt-2 space-y-1">
+              <div className="border-t border-gray-100 dark:border-slate-700 pt-2 mt-2 space-y-1">
                 <ProfileActions onLogout={handleLogout} />
               </div>
             </div>

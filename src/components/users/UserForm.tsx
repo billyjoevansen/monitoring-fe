@@ -27,18 +27,18 @@ export function UserForm({
   onCancel,
 }: UserFormProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
+    <div className="bg-background rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-800">
+        <h2 className="text-lg font-bold text-foreground">
           {isEditing ? 'Edit User' : 'Tambah User Baru'}
         </h2>
         <button onClick={onCancel} className="p-1 hover:bg-gray-100 rounded-full">
-          <X className="w-5 h-5 text-gray-500" />
+          <X className="w-5 h-5 text-foreground" />
         </button>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 text-sm p-3 rounded-lg mb-4">
+        <div className="bg-background border border-red-200 text-red-700 text-sm p-3 rounded-lg mb-4">
           {error}
         </div>
       )}
@@ -46,7 +46,7 @@ export function UserForm({
       <form onSubmit={onSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Nama Lengkap</label>
             <input
               type="text"
               value={form.nama}
@@ -58,7 +58,7 @@ export function UserForm({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Email</label>
             <input
               type="email"
               value={form.email}
@@ -66,16 +66,16 @@ export function UserForm({
               required
               disabled={isEditing}
               autoComplete="off"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-background disabled:cursor-not-allowed"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <label className="block text-sm font-medium text-foreground mb-1">Role</label>
             <select
               value={form.role}
               onChange={(e) => onFormChange({ role: e.target.value as Role })}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-3 py-2 border border-input rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {creatableRoles.map((role) => (
                 <option key={role} value={role}>
@@ -87,7 +87,7 @@ export function UserForm({
 
           {form.role === 'bpp' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kecamatan</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Kecamatan</label>
               <select
                 value={form.kecamatan}
                 onChange={(e) => onFormChange({ kecamatan: e.target.value })}
@@ -106,7 +106,7 @@ export function UserForm({
 
           {!isEditing && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Password</label>
               <input
                 type="password"
                 value={form.password}

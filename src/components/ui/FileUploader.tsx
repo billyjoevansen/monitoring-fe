@@ -44,8 +44,8 @@ export default function FileUploader({
 
   return (
     <div className="flex-1">
-      <label className="block text-sm font-semibold text-gray-700 mb-2">{label}</label>
-      <p className="text-xs text-gray-500 mb-3">{description}</p>
+      <label className="block text-sm font-semibold text-foreground mb-2">{label}</label>
+      <p className="text-xs text-muted-foreground mb-3">{description}</p>
 
       {!file ? (
         <div
@@ -65,8 +65,10 @@ export default function FileUploader({
           <Upload
             className={`w-10 h-10 mx-auto mb-3 ${isDragging ? 'text-green-500' : 'text-gray-400'}`}
           />
-          <p className="text-sm text-gray-600 font-medium">Drag & drop file di sini</p>
-          <p className="text-xs text-gray-400 mt-1">atau klik untuk pilih file (.xlsx / .xls)</p>
+          <p className="text-sm text-foreground font-medium">Drag & drop file di sini</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            atau klik untuk pilih file (.xlsx / .xls)
+          </p>
           <input
             id={inputId}
             type="file"
@@ -76,12 +78,12 @@ export default function FileUploader({
           />
         </div>
       ) : (
-        <div className="border-2 border-green-200 bg-green-50 rounded-xl p-4 flex items-center justify-between">
+        <div className="border-2 border-foreground bg-background rounded-xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <FileSpreadsheet className="w-8 h-8 text-green-600" />
             <div>
-              <p className="text-sm font-semibold text-gray-800">{file.name}</p>
-              <p className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</p>
+              <p className="text-sm font-semibold text-foreground">{file.name}</p>
+              <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</p>
             </div>
           </div>
           <button

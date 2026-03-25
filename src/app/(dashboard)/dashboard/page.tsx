@@ -23,7 +23,14 @@ export default async function DashboardPage() {
     .eq('id', authUser.id)
     .single();
 
-  if (error || !user || !user.is_active) redirect('/login');
+  if (error || !user || !user.is_active) {
+    if (error) {
+      console.error('Dashboard Error:', error.message);
+    } else {
+      console.error('Dashboard Error: User not found or inactive');
+    }
+    redirect('/unauthorized');
+  }
 
   // Fetch latest classification archive
   const { data: latestClassification } = await supabase

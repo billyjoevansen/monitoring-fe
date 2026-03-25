@@ -5,11 +5,9 @@ import { healthCheck } from '@/lib/api';
 import { hasPermission, ROLE_LABELS } from '@/config/rbac';
 import { formatDate } from '@/lib/format';
 import {
-  FileSearch,
   BrainCircuit,
   Users as UsersIcon,
   LayoutDashboard,
-  TrendingUp,
   ShieldCheck,
   AlertTriangle,
   BarChart3,
@@ -22,17 +20,11 @@ import Link from 'next/link';
 import type { DashboardClientProps } from '@/types';
 import DonutChart from '@/components/dashboard/DonutChart';
 import StatCard from '@/components/dashboard/StatCard';
-import RekonSummaryCard from '@/components/dashboard/ReconSummary';
 import Hero from '@/components/ui/Hero';
+import { Button } from '@/components/ui/button';
 
 // ─── Main Component ───────────────────────────────────────────────────────────
-export default function DashboardClient({
-  user,
-  latestClassification,
-  latestReconciliation,
-  totalClassifications,
-  totalReconciliations,
-}: DashboardClientProps) {
+export default function DashboardClient({ user, latestClassification }: DashboardClientProps) {
   const [serverStatus, setServerStatus] = useState<'loading' | 'online' | 'offline'>('loading');
   const [isExpanded, setIsExpanded] = useState(false);
   useEffect(() => {
@@ -90,7 +82,15 @@ export default function DashboardClient({
         icon={<LayoutDashboard className="w-10 h-10 text-white" />}
         title="Dashboard"
         subtitle={`Selamat datang, ${user.nama} — ${ROLE_LABELS[user.role]}${user.kecamatan ? ` · Kec. ${user.kecamatan}` : ''}`}
-        className="bg-background dark:bg-slate-900"
+        className="bg-background"
+        actions={
+          <Button asChild variant="outline" size="sm">
+            <Link href="/reconcile">
+              Cocokan Data
+              <ArrowRight className="w-3.5 h-3.5 ml-2" />
+            </Link>
+          </Button>
+        }
       />
       {/* ── Statistics Overview ─────────────────────────────────────────────── */}
       {canViewDashboard && latestClassification && cls ? (
@@ -142,24 +142,24 @@ export default function DashboardClient({
       {canViewDashboard && latestClassification && cls ? (
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Donut Chart */}
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+          <div className="lg:col-span-2 bg-background rounded-2xl border border-gray-200 shadow-sm p-6">
             <div className="flex items-center gap-2 mb-6">
-              <BarChart3 className="w-4.5 h-4.5 text-gray-500" />
-              <h3 className="text-sm font-bold text-gray-800">Distribusi Klasifikasi</h3>
+              <BarChart3 className="w-4.5 h-4.5 text-foreground" />
+              <h3 className="text-sm font-bold text-foreground">Distribusi Klasifikasi</h3>
             </div>
             <DonutChart normal={cls.normal} tidakNormal={cls.tidak_normal} />
           </div>
 
           {/* Classification Details */}
-          <div className="lg:col-span-3 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="lg:col-span-3 bg-background rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
                   <BrainCircuit className="w-4.5 h-4.5 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-gray-800">Klasifikasi Terakhir</h3>
-                  <p className="text-xs text-gray-400">{latestClassification.nama_arsip}</p>
+                  <h3 className="text-sm font-bold text-foreground">Klasifikasi Terakhir</h3>
+                  <p className="text-xs text-muted-foreground">{latestClassification.nama_arsip}</p>
                 </div>
               </div>
               <Link
@@ -173,27 +173,27 @@ export default function DashboardClient({
             <div className="p-6 space-y-5">
               {/* Meta Info */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                <div className="bg-background rounded-xl p-3">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <UsersIcon className="w-3 h-3" /> Operator
                   </p>
-                  <p className="text-sm font-semibold text-gray-800 mt-0.5">
+                  <p className="text-sm font-semibold text-foreground mt-0.5">
                     {latestClassification.user_nama}
                   </p>
                 </div>
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                <div className="bg-background rounded-xl p-3">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Clock className="w-3 h-3" /> Waktu
                   </p>
-                  <p className="text-sm font-semibold text-gray-800 mt-0.5">
+                  <p className="text-sm font-semibold text-foreground mt-0.5">
                     {formatDate(latestClassification.created_at)}
                   </p>
                 </div>
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <p className="text-xs text-gray-400 flex items-center gap-1">
+                <div className="bg-background rounded-xl p-3">
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <Database className="w-3 h-3" /> Total Data
                   </p>
-                  <p className="text-sm font-semibold text-gray-800 mt-0.5">
+                  <p className="text-sm font-semibold text-foreground mt-0.5">
                     {cls.total_petani} petani
                   </p>
                 </div>

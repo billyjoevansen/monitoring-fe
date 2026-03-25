@@ -15,8 +15,8 @@ export function NavDropdown({
 }: NavDropdownProps) {
   const Icon = item.icon;
   const activeButtonCls = isGroupActive
-    ? 'text-green-700 bg-green-50'
-    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100/80';
+    ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30'
+    : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-slate-800/80';
 
   if (variant === 'desktop') {
     return (
@@ -31,12 +31,12 @@ export function NavDropdown({
             className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
           />
           {isGroupActive && (
-            <span className="absolute -bottom-3.25 left-3 right-3 h-0.5 bg-green-700 rounded-full" />
+            <span className="absolute -bottom-3.25 left-3 right-3 h-0.5 bg-green-700 dark:bg-green-400 rounded-full" />
           )}
         </button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-1.5 w-56 bg-white rounded-xl border border-gray-200 shadow-lg shadow-gray-200/50 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="absolute top-full left-0 mt-1.5 w-56 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-lg shadow-gray-200/50 dark:shadow-black/30 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
             {item.children?.map((child) => {
               const ChildIcon = child.icon;
               return (
@@ -45,8 +45,8 @@ export function NavDropdown({
                   href={child.href}
                   className={`flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors ${
                     isActive(child.href)
-                      ? 'text-green-700 bg-green-50 font-medium'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30 font-medium'
+                      : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   <ChildIcon className="w-4 h-4" />
@@ -84,8 +84,8 @@ export function NavDropdown({
                 href={child.href}
                 className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${
                   isActive(child.href)
-                    ? 'text-green-700 bg-green-50 font-medium'
-                    : 'text-gray-500 hover:text-gray-800'
+                    ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30 font-medium'
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800'
                 }`}
               >
                 <ChildIcon className="w-4 h-4" />

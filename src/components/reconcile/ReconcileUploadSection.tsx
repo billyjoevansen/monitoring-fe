@@ -1,5 +1,6 @@
 import { Loader2, FileSearch } from 'lucide-react';
 import FileUploader from '@/components/ui/FileUploader';
+import { Button } from '../ui/button';
 
 interface ReconcileUploadSectionProps {
   rdkkFile: File | null;
@@ -23,7 +24,7 @@ export default function ReconcileUploadSection({
   onReset,
 }: ReconcileUploadSectionProps) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
+    <div className="bg-background rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
       <div className="flex gap-6">
         <FileUploader
           label="Data RDKK"
@@ -42,7 +43,7 @@ export default function ReconcileUploadSection({
         <button
           onClick={onProcess}
           disabled={loading || !rdkkFile || !sivervalFile}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <>
@@ -57,12 +58,9 @@ export default function ReconcileUploadSection({
           )}
         </button>
         {hasResult && (
-          <button
-            onClick={onReset}
-            className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
-          >
+          <Button variant="outline" size="xl" onClick={onReset}>
             Reset
-          </button>
+          </Button>
         )}
       </div>
     </div>

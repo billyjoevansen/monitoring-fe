@@ -16,7 +16,7 @@ export default function ReconcileArchiveSection({
   const downloadDetail = isFiltered ? filteredDetail : result.detail;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
+    <div className="bg-background rounded-xl border border-foreground p-4 shadow-sm mb-6">
       {saved ? (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-green-700">
@@ -44,7 +44,7 @@ export default function ReconcileArchiveSection({
             onChange={(e) => onNamaArsipChange(e.target.value)}
             placeholder="Nama arsip (misal: Rekon Kec. Serang Jan 2025)"
             autoComplete="off"
-            className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="flex-1 px-4 py-2.5 border border-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           />
           <div className="flex items-center gap-2">
             <button

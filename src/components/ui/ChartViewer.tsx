@@ -18,11 +18,13 @@ export default function ChartViewer({ charts }: ChartViewerProps) {
 
   return (
     <div className="mt-8">
-      <h3 className="text-lg font-bold text-gray-800 mb-4">📊 Visualisasi</h3>
+      <h3 className="text-lg font-bold text-foreground mb-4">📊 Visualisasi</h3>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {Object.entries(charts).map(([key, base64]) => (
-          <div key={key} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">{chartTitles[key] || key}</h4>
+          <div key={key} className="bg-background rounded-xl border border-gray-200 p-4 shadow-sm">
+            <h4 className="text-sm font-semibold text-muted-foreground mb-3">
+              {chartTitles[key] || key}
+            </h4>
             <img
               src={`data:image/png;base64,${base64}`}
               alt={chartTitles[key] || key}

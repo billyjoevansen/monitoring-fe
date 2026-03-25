@@ -48,8 +48,8 @@ export function UserDialogs({
               onClick={() => toggleDialogUser && onConfirmToggle(toggleDialogUser)}
               className={
                 isActive
-                  ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
-                  : 'bg-green-600 hover:bg-green-700 text-white'
+                  ? 'bg-yellow-500 hover:bg-yellow-600 text-foreground'
+                  : 'bg-green-600 hover:bg-green-700 text-foreground'
               }
             >
               {isActive ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan'}
@@ -72,7 +72,7 @@ export function UserDialogs({
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteDialogUser && onConfirmDelete(deleteDialogUser)}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-red-600 hover:bg-red-700 text-foreground"
             >
               Ya, Hapus
             </AlertDialogAction>

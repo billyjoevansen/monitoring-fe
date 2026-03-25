@@ -43,16 +43,19 @@ const DarkModeToggle: React.FC = () => {
     <button
       onClick={toggleTheme}
       aria-label="Toggle Dark Mode"
-      className="p-1.5 rounded-md transition-all duration-300 
-                 hover:bg-gray-100 dark:hover:bg-neutral-800 
-                 border-2 border-gray-300 dark:border-neutral-700
-                 text-gray-700 dark:text-yellow-400"
+      className="group relative p-1.5 w-9 h-9 flex items-center justify-center rounded-md overflow-hidden transition-all duration-300 
+             hover:bg-gray-200 dark:hover:bg-neutral-800 
+             border-2 border-foreground dark:border-neutral-700"
     >
-      {isDark ? (
-        <Moon className="w-5 h-5 fill-current transition-transform rotate-0 scale-100" />
-      ) : (
-        <Sun className="w-5 h-5 fill-current transition-transform rotate-0 scale-100" />
-      )}
+      <Sun
+        className={`w-5 h-5 absolute transition-all duration-500 fill-current text-yellow-500
+      ${isDark ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}
+      />
+
+      <Moon
+        className={`w-5 h-5 absolute transition-all duration-500 fill-current text-white
+      ${isDark ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}
+      />
     </button>
   );
 };
