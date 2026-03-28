@@ -1,14 +1,11 @@
 import { useCallback, useState } from 'react';
-import { useUser } from '@/lib/UserContext';
 import { reconcile } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 import { manageClient } from '@/lib/supabase/client';
 import { getApiErrorMessage } from '@/lib/errors';
-import { ReconcileResult } from '@/types';
+import type { ReconcileResult, User } from '@/types';
 
-export function useReconcile() {
-  const user = useUser();
-
+export function useReconcile(user: User) {
   const [rdkkFile, setRdkkFile] = useState<File | null>(null);
   const [sivervalFile, setSivervalFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -82,7 +79,6 @@ export function useReconcile() {
     setNamaArsip('');
   }, []);
 
-  // Track filtered data from the table's search
   const [filteredDetail, setFilteredDetail] = useState<Record<string, unknown>[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -95,25 +91,20 @@ export function useReconcile() {
   );
 
   return {
-    // File state
     rdkkFile,
     sivervalFile,
     setRdkkFile,
     setSivervalFile,
-    // Process state
     loading,
     result,
     error,
-    // Archive state
     namaArsip,
     setNamaArsip,
     saving,
     saved,
-    // Handlers
     handleProcess,
     handleSaveToArchive,
     handleReset,
-    // Filtered data for table
     filteredDetail,
     searchQuery,
     handleFilteredDataChange,

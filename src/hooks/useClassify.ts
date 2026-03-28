@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/config/rbac';
 import { classify } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 import { manageClient } from '@/lib/supabase/client';
 import { getApiErrorMessage } from '@/lib/errors';
 import { formatDate } from '@/lib/format';
-import { ReconciliationArchive, ClassifyResult } from '@/types';
+import type { ReconciliationArchive, ClassifyResult, User } from '@/types';
 
-export function useClassify() {
-  const user = useUser();
+export function useClassify(user: User) {
   const canClassify = hasPermission(user.role, 'view_classification');
 
   const [archives, setArchives] = useState<ReconciliationArchive[]>([]);
@@ -102,8 +100,6 @@ export function useClassify() {
   };
 
   return {
-    // state
-    user,
     canClassify,
     archives,
     selectedArchive,
@@ -115,7 +111,6 @@ export function useClassify() {
     namaArsip,
     saving,
     saved,
-    // actions
     setNamaArsip,
     handleClassify,
     handleSaveToArchive,

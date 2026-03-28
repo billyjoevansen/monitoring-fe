@@ -1,14 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useUser } from '@/lib/UserContext';
 import { manageClient } from '@/lib/supabase/client';
 import { hasPermission } from '@/config/rbac';
 import { PAGE_SIZE } from '@/config/logConfig';
-import type { ActivityLog } from '@/types';
+import type { ActivityLog, User } from '@/types';
 
-export function useLogs() {
-  const currentUser = useUser();
-
-  // State
+export function useLogs(currentUser: User) {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
@@ -22,28 +18,22 @@ export function useLogs() {
   const [logToDelete, setLogToDelete] = useState<ActivityLog | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // Permission
-  const canDelete = useMemo(() => {
-    return currentUser?.role && hasPermission(currentUser.role, 'view_logs');
-  }, [currentUser]);
+  const canDelete = useMemo(() => hasPermission(currentUser.role, 'view_logs'), [currentUser.role]);
 
-  // Client-side filtering for search
   const filteredLogs = useMemo(() => {
     if (!searchQuery) return logs;
     const q = searchQuery.toLowerCase();
-    return logs.filter((log) => {
-      return (
+    return logs.filter(
+      (log) =>
         log.user_nama?.toLowerCase().includes(q) ||
         log.user_email?.toLowerCase().includes(q) ||
         log.detail?.toLowerCase().includes(q) ||
-        log.action?.toLowerCase().includes(q)
-      );
-    });
+        log.action?.toLowerCase().includes(q),
+    );
   }, [logs, searchQuery]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
-  // Fetch Data
   const loadLogs = useCallback(async () => {
     setLoading(true);
     const supabase = manageClient();
@@ -53,13 +43,8 @@ export function useLogs() {
       .select('*', { count: 'exact' })
       .order('created_at', { ascending: false });
 
-    if (filterAction) {
-      query = query.eq('action', filterAction);
-    }
-
-    if (filterRole) {
-      query = query.eq('user_role', filterRole);
-    }
+    if (filterAction) query = query.eq('action', filterAction);
+    if (filterRole) query = query.eq('user_role', filterRole);
 
     const from = (page - 1) * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
@@ -75,16 +60,13 @@ export function useLogs() {
     }
 
     setLoading(false);
-  }, [page, filterAction, filterRole]); // Dependencies for fetching
+  }, [page, filterAction, filterRole]);
 
   useEffect(() => {
     loadLogs();
-  }, [loadLogs]); // Run when loadLogs definition changes
+  }, [loadLogs]);
 
-  // Handlers
-  const handleRefresh = () => {
-    loadLogs();
-  };
+  const handleRefresh = () => loadLogs();
 
   const handleResetFilters = () => {
     setSearchQuery('');

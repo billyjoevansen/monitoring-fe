@@ -45,7 +45,7 @@ const DarkModeToggle: React.FC = () => {
       aria-label="Toggle Dark Mode"
       className="group relative p-1.5 w-9 h-9 flex items-center justify-center rounded-md overflow-hidden transition-all duration-300 
              hover:bg-gray-200 dark:hover:bg-neutral-800 
-             border-2 border-foreground dark:border-neutral-700"
+             border-2 border-foreground"
     >
       <Sun
         className={`w-5 h-5 absolute transition-all duration-500 fill-current text-yellow-500

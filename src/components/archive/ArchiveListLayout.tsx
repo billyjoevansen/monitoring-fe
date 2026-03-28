@@ -107,8 +107,8 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
               <div
                 key={archive.id}
                 className={`group transition-colors duration-200 ${
-                  selectedIds.has(archive.id) ? 'bg-red-50' : ''
-                } hover:bg-gray-50 dark:hover:bg-slate-500`}
+                  selectedIds.has(archive.id) ? 'bg-red-50 dark:bg-gray-500/50' : ''
+                } hover:bg-red-200 dark:hover:bg-slate-500`}
               >
                 {/* Main row */}
                 <div className="flex items-center justify-between px-5 py-4">

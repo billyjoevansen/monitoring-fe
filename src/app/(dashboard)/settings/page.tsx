@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   XCircle,
 } from 'lucide-react';
-import { useUser } from '@/lib/UserContext';
 import { getConfig, updateConfig, resetConfig } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 
@@ -35,8 +34,6 @@ interface TrainingConfig {
 }
 
 export default function SettingsPage() {
-  const user = useUser();
-
   const [hp, setHp] = useState<HyperParams | null>(null);
   const [tc, setTc] = useState<TrainingConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -65,20 +62,13 @@ export default function SettingsPage() {
     try {
       setSaving(true);
       setError(null);
-      await updateConfig({
-        hyperparameters: hp,
-        training_config: tc,
-      });
+      await updateConfig({ hyperparameters: hp, training_config: tc });
       await logActivity('update_config', 'Mengubah konfigurasi model');
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as {
-          response?: {
-            data?: { error?: string; details?: string[] };
-          };
-        };
+        const axiosErr = err as { response?: { data?: { error?: string; details?: string[] } } };
         setError(
           axiosErr.response?.data?.details?.join(', ') ||
             axiosErr.response?.data?.error ||
@@ -141,7 +131,6 @@ export default function SettingsPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Hyperparameters */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <h2 className="text-lg font-bold text-gray-800 mb-6">Hyperparameter Random Forest</h2>
           <div className="space-y-5">
@@ -199,7 +188,6 @@ export default function SettingsPage() {
                 })
               }
             />
-
             <CheckboxField
               label="Bootstrap Sampling"
               desc="Setiap pohon dilatih dari sampel acak"
@@ -215,7 +203,6 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        {/* Training Config */}
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <h2 className="text-lg font-bold text-gray-800 mb-6">Konfigurasi Training</h2>
           <div className="space-y-5">
@@ -241,7 +228,6 @@ export default function SettingsPage() {
               onChange={(v) => setTc({ ...tc, stratify: v })}
             />
           </div>
-
           <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0" />
             <p className="text-sm text-yellow-800 font-medium">
@@ -251,7 +237,6 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex gap-3 justify-end mt-6">
         <button
           onClick={handleReset}

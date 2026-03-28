@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useUser } from '@/lib/UserContext';
 import { manageClient } from '@/lib/supabase/client';
 import { getCreatableRoles } from '@/config/rbac';
 import { logActivity } from '@/lib/auth';
@@ -23,8 +22,7 @@ const DEFAULT_FORM: UserFormState = {
   password: '',
 };
 
-export function useUsers() {
-  const currentUser = useUser();
+export function useUsers(currentUser: User) {
   const creatableRoles = getCreatableRoles(currentUser.role);
 
   const [users, setUsers] = useState<User[]>([]);
@@ -34,16 +32,13 @@ export function useUsers() {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Form & editing state
   const [showForm, setShowForm] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [form, setForm] = useState<UserFormState>(DEFAULT_FORM);
 
-  // Dialog state
   const [toggleDialogUser, setToggleDialogUser] = useState<User | null>(null);
   const [deleteDialogUser, setDeleteDialogUser] = useState<User | null>(null);
 
-  // Bulk delete state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
 
@@ -198,7 +193,6 @@ export function useUsers() {
     setToggleDialogUser(null);
   };
 
-  // Bulk delete — only inactive users (same rule as single delete)
   const selectableUsers = users.filter((u) => u.id !== currentUser.id && !u.is_active);
   const allSelected =
     selectableUsers.length > 0 && selectableUsers.every((u) => selectedIds.has(u.id));
@@ -239,34 +233,28 @@ export function useUsers() {
   };
 
   return {
-    // Data
     currentUser,
     users,
     kecamatanList,
     creatableRoles,
-    // State
     loading,
     saving,
     success,
     error,
-    // Form
     showForm,
     editingUser,
     form,
     setForm,
-    // Dialog
     toggleDialogUser,
     setToggleDialogUser,
     deleteDialogUser,
     setDeleteDialogUser,
-    // Actions
     openAddForm,
     openEditForm,
     resetForm,
     handleSubmit,
     handleDeleteUser,
     handleToggleActive,
-    // Bulk delete
     selectedIds,
     allSelected,
     bulkDeleting,

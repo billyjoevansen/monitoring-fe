@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { useUser } from '@/lib/UserContext';
 import { hasPermission } from '@/config/rbac';
-import { TrainResult } from '@/types';
+import { TrainResult, User } from '@/types';
 import { trainModel, visualizeTraining } from '@/lib/api';
 import { logActivity } from '@/lib/auth';
 import { getApiErrorMessage } from '@/lib/errors';
 
-export function useTrain() {
-  const user = useUser();
+export function useTrain(user: User) {
   const canTrain = hasPermission(user.role, 'train_model');
 
   const [rdkkFile, setRdkkFile] = useState<File | null>(null);
@@ -57,6 +55,7 @@ export function useTrain() {
     setSivervalFile(null);
     setError(null);
   };
+
   return {
     rdkkFile,
     sivervalFile,
