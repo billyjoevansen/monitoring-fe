@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Info,
 } from 'lucide-react';
-import ResultTable from '@/components/ui/ResultTable';
+import ResultTable from '@/components/classify/ResultTable';
 import SummaryCard from '@/components/ui/SummaryCard';
 import MiniCard from '@/components/ui/MiniCard';
 import ErrorBanner from '@/components/ui/ErrorBanner';

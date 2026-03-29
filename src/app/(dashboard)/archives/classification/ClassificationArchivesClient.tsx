@@ -6,7 +6,7 @@ import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
 import MiniCard from '@/components/ui/MiniCard';
 import SummaryCard from '@/components/ui/SummaryCard';
-import ResultTable from '@/components/ui/ResultTable';
+import ResultTable from '@/components/classify/ResultTable';
 import { CLASSIFY_COLUMNS } from '@/config/classifyColumnsConfig';
 import type { ClassificationArchive } from '@/types';
 

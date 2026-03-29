@@ -45,7 +45,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8">
+        <div className="bg-background rounded-2xl shadow-xl border border-gray-200 p-8">
           <h2 className="text-xl font-bold text-gray-800 mb-6">Masuk</h2>
 
           {/* Error */}

@@ -40,3 +40,23 @@ export interface ClassifyColumn {
   key: string;
   label: string;
 }
+
+export interface HyperParams {
+  n_estimators: number;
+  criterion: string;
+  max_depth: number | null;
+  max_features: string;
+  min_samples_split: number;
+  min_samples_leaf: number;
+  class_weight: 'balanced' | 'balanced_subsample' | null;
+  bootstrap: boolean;
+  oob_score: boolean;
+  random_state: number;
+  n_jobs: number;
+}
+
+export interface TrainingConfig {
+  test_size: number;
+  random_state: number;
+  stratify: boolean;
+}
