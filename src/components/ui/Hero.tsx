@@ -21,6 +21,24 @@ const PATTERNS: [string, string, string][] = [
     `repeating-linear-gradient(135deg, #1e293b 0px, #1e293b 10px, transparent 1px, transparent 12px)`,
     '12px 12px',
   ],
+  [
+    // 1. Bold Polka Dots (Titik besar yang solid)
+    `radial-gradient(circle, #e5e7eb 8px, transparent 8px)`,
+    `radial-gradient(circle, #334155 8px, transparent 8px)`,
+    '40px 40px',
+  ],
+  [
+    // 2. Thick Diagonal Stripes (Garis miring tebal/Sporty)
+    `linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 50%, #e5e7eb 50%, #e5e7eb 75%, transparent 75%, transparent)`,
+    `linear-gradient(45deg, #1e293b 25%, transparent 25%, transparent 50%, #1e293b 50%, #1e293b 75%, transparent 75%, transparent)`,
+    '40px 40px',
+  ],
+  [
+    // 3. Blueprint Grid (Double line yang tegas)
+    `linear-gradient(#e5e7eb 2px, transparent 2px), linear-gradient(90deg, #e5e7eb 2px, transparent 2px), linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px)`,
+    `linear-gradient(#1e293b 2px, transparent 2px), linear-gradient(90deg, #1e293b 2px, transparent 2px), linear-gradient(#1e293b 1px, transparent 1px), linear-gradient(90deg, #1e293b 1px, transparent 1px)`,
+    '80px 80px, 20px 20px',
+  ],
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -28,15 +46,13 @@ interface HeroProps {
   title: string;
   subtitle: string;
   icon?: React.ReactNode;
-  /** Optional badge label shown above the title (e.g. route name or status) */
-  badge?: string;
   /** Optional action buttons rendered on the right side */
   actions?: React.ReactNode;
   className?: string;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export default function Hero({ title, subtitle, icon, badge, actions, className = '' }: HeroProps) {
+export default function Hero({ title, subtitle, icon, actions, className = '' }: HeroProps) {
   // Unique ID so the scoped <style> doesn't bleed into other <section> elements
   const uid = useId().replace(/:/g, '');
   const sectionId = `hero-${uid}`;
@@ -100,7 +116,7 @@ export default function Hero({ title, subtitle, icon, badge, actions, className 
 
       <section
         id={sectionId}
-        className={`relative overflow-hidden border-b border-gray-200 dark:border-slate-800 transition-colors ${className}`}
+        className={`relative mb-3 overflow-hidden border-b border-gray-200 dark:border-slate-800 transition-colors ${className}`}
       >
         {/* Subtle gradient fade at bottom to blend into page */}
         <div className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-white/60 dark:from-slate-950/60 to-transparent pointer-events-none" />
@@ -109,16 +125,6 @@ export default function Hero({ title, subtitle, icon, badge, actions, className 
         <div className="absolute inset-y-0 left-0 w-1 bg-linear-to-b from-emerald-400 via-green-500 to-emerald-600 dark:from-emerald-500 dark:via-green-400 dark:to-emerald-600" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-8 py-10">
-          {/* Badge row */}
-          {badge && (
-            <div className="hero-badge mb-3">
-              <span className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-widest uppercase text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
-                {badge}
-              </span>
-            </div>
-          )}
-
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex items-center gap-5 flex-1 min-w-0">
               {icon && (

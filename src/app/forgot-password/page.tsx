@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Wheat, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import { resetPassword } from '@/lib/auth';
 import Link from 'next/link';
+import Turnstile from '@/components/Turnstile';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -72,7 +73,10 @@ export default function ForgotPasswordPage() {
                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   />
                 </div>
-
+                <Turnstile
+                  onVerify={(token) => console.log('Turnstile token:', token)}
+                  onExpire={() => console.log('Turnstile expired')}
+                />
                 <button
                   type="submit"
                   disabled={loading}

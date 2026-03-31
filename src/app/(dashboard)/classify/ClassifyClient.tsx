@@ -17,6 +17,7 @@ import ErrorBanner from '@/components/ui/ErrorBanner';
 import { useClassify } from '@/hooks/useClassify';
 import { CLASSIFY_COLUMNS } from '@/config/classifyColumnsConfig';
 import type { ReconciliationArchive, User } from '@/types';
+import Hero from '@/components/ui/Hero';
 
 export default function ClassifyClient({ user }: { user: User }) {
   const {
@@ -42,7 +43,11 @@ export default function ClassifyClient({ user }: { user: User }) {
   if (!canClassify) {
     return (
       <div>
-        <PageHeader />
+        <Hero
+          icon={<Tags className="w-10 h-10 text-foreground" />}
+          title="Klasifikasi"
+          subtitle="Halaman klasifikasi tidak tersedia"
+        />
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-xl flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 shrink-0" />
           <span>Role Anda tidak memiliki akses ke halaman ini.</span>
@@ -53,8 +58,13 @@ export default function ClassifyClient({ user }: { user: User }) {
 
   return (
     <div>
-      <PageHeader />
-
+      {!result && (
+        <Hero
+          icon={<Tags className="w-10 h-10 text-foreground" />}
+          title="Klasifikasi"
+          subtitle="Pilih arsip rekonsiliasi untuk memulai klasifikasi menggunakan model Random Forest"
+        />
+      )}
       <ErrorBanner message={error} />
 
       {!result && (
@@ -161,23 +171,6 @@ export default function ClassifyClient({ user }: { user: User }) {
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-
-function PageHeader() {
-  return (
-    <div className="mb-8 flex items-center gap-3">
-      <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-        <Tags className="w-5 h-5 text-indigo-600" />
-      </div>
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Klasifikasi</h1>
-        <p className="text-muted-foreground mt-1">
-          Pilih arsip rekonsiliasi untuk diklasifikasikan NORMAL / TIDAK NORMAL
-        </p>
-      </div>
-    </div>
-  );
-}
-
 function EmptyArchiveState() {
   return (
     <div className="p-8 text-center">

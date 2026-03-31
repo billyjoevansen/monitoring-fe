@@ -10,5 +10,7 @@ export default async function ReconcilePage() {
     redirect('/login');
   }
 
+  if (!user) redirect('/login');
+
   return <ReconcileClient user={user} />;
 }

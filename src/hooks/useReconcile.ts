@@ -16,7 +16,7 @@ export function useReconcile(user: User) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const handleProcess = async () => {
+  const handleProcess = useCallback(async () => {
     if (!rdkkFile || !sivervalFile) {
       setError('Upload kedua file terlebih dahulu.');
       return;
@@ -37,9 +37,9 @@ export function useReconcile(user: User) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [rdkkFile, sivervalFile]);
 
-  const handleSaveToArchive = async () => {
+  const handleSaveToArchive = useCallback(async () => {
     if (!result || !namaArsip.trim()) {
       setError('Masukkan nama arsip.');
       return;
@@ -68,7 +68,7 @@ export function useReconcile(user: User) {
     } finally {
       setSaving(false);
     }
-  };
+  }, [result, namaArsip, user]);
 
   const handleReset = useCallback(() => {
     setResult(null);

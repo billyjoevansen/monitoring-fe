@@ -5,7 +5,9 @@ import { useUsers } from '@/hooks/useUsers';
 import { UserForm } from '@/components/users/UserForm';
 import { UserTable } from '@/components/users/UserTable';
 import { UserDialogs } from '@/components/users/UserDialogs';
+import { Button } from '@/components/ui/button';
 import type { User } from '@/types';
+import Hero from '@/components/ui/Hero';
 
 export default function UsersClient({ currentUser }: { currentUser: User }) {
   const {
@@ -48,19 +50,17 @@ export default function UsersClient({ currentUser }: { currentUser: User }) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Kelola User</h1>
-          <p className="text-muted-foreground mt-1">Tambah dan kelola akun pengguna</p>
-        </div>
-        <button
-          onClick={openAddForm}
-          className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-        >
-          <UserPlus className="w-4 h-4" />
-          Tambah User
-        </button>
-      </div>
+      <Hero
+        icon={<UserPlus className="w-10 h-10 text-foreground" />}
+        title="Manajemen User"
+        subtitle="Kelola akun pengguna, atur peran, dan aktifkan atau nonaktifkan akses dengan mudah."
+        actions={
+          <Button onClick={openAddForm} variant="outline">
+            <UserPlus className="w-4 h-4" />
+            Tambah User
+          </Button>
+        }
+      />
 
       {success && (
         <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2">

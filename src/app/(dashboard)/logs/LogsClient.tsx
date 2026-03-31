@@ -1,12 +1,13 @@
 'use client';
 
-import { Loader2 } from 'lucide-react';
+import { Loader2, ScrollText, RefreshCw } from 'lucide-react';
 import { useLogs } from '@/hooks/useLogs';
-import { LogsHeader } from '@/components/logs/LogsHeader';
 import { LogsFilter } from '@/components/logs/LogsFilter';
 import { LogTable } from '@/components/logs/LogTable';
 import { LogDialogs } from '@/components/logs/LogDialogs';
+import { Button } from '@/components/ui/button';
 import type { User } from '@/types';
+import Hero from '@/components/ui/Hero';
 
 export default function LogsClient({ currentUser }: { currentUser: User }) {
   const {
@@ -40,7 +41,17 @@ export default function LogsClient({ currentUser }: { currentUser: User }) {
 
   return (
     <div>
-      <LogsHeader onRefresh={handleRefresh} />
+      <Hero
+        icon={<ScrollText className="w-10 h-10 text-foreground" />}
+        title="Manajemen User"
+        subtitle="Kelola akun pengguna, atur peran, dan aktifkan atau nonaktifkan akses dengan mudah."
+        actions={
+          <Button onClick={handleRefresh} variant="outline" size="sm">
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
+        }
+      />
 
       <LogsFilter
         searchQuery={searchQuery}

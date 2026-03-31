@@ -41,6 +41,7 @@ export default function ReconcileUploadSection({
       </div>
       <div className="flex gap-3 mt-6">
         <button
+          type="button"
           onClick={onProcess}
           disabled={loading || !rdkkFile || !sivervalFile}
           className="flex-1 flex items-center justify-center gap-2 px-6 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"

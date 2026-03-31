@@ -46,7 +46,7 @@ export default function DashboardClient({ user, latestClassification }: Dashboar
           onClick={() => setIsExpanded(!isExpanded)}
           className={`
           flex items-center cursor-pointer overflow-hidden transition-all duration-300 ease-in-out
-          bg-black/90 backdrop-blur-md border border-white/10 shadow-2xl hover:bg-black
+          bg-black/90 dark:bg-slate-700 backdrop-blur-md border border-white/10 shadow-2xl hover:bg-black
           ${isExpanded ? 'p-2 rounded-full' : 'p-2 rounded-xl'}
         `}
         >
