@@ -13,5 +13,11 @@ export default async function ReconciliationArchivesPage() {
 
   const canEdit = hasPermission(user.role, 'manage_archives');
 
-  return <ReconciliationArchivesClient canEdit={canEdit} />;
+  return (
+    <ReconciliationArchivesClient
+      canEdit={canEdit}
+      userRole={user.role}
+      userKecamatan={user.kecamatan ?? null}
+    />
+  );
 }

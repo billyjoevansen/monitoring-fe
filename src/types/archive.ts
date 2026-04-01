@@ -17,6 +17,7 @@ export interface BaseArchive<TSummary extends BaseSummary = BaseSummary> {
   summary: TSummary;
   detail: Record<string, unknown>[];
   created_at: string;
+  kecamatan?: string | null;
 }
 
 // Reconciliation
@@ -27,7 +28,10 @@ export interface ReconciliationSummary {
   kios: KiosSummary;
 }
 
-export interface ReconciliationArchive extends BaseArchive<ReconciliationSummary> {}
+export interface ReconciliationArchive extends BaseArchive<ReconciliationSummary> {
+  /** Wilayah kecamatan arsip ini. Null jika tidak diisi. */
+  kecamatan: string | null;
+}
 
 // Classification
 
@@ -59,6 +63,9 @@ export interface ArchiveListLayoutProps<T extends BaseArchive<BaseSummary>> {
   emptySubtitle: string;
   // Data & state dari useArchive
   filtered: T[];
+  filterWilayah: string;
+  onFilterWilayahChange: (value: string) => void;
+  userKecamatan?: string | null;
   loading: boolean;
   search: string;
   expandedId: string | null;
@@ -69,7 +76,6 @@ export interface ArchiveListLayoutProps<T extends BaseArchive<BaseSummary>> {
   onView: (archive: T) => void;
   onDelete: (archive: T) => void;
   formatDate: (dateStr: string) => string;
-  /** Render summary mini cards di expanded row */
   renderExpandedSummary: (archive: T) => ReactNode;
   // Bulk delete
   selectedIds: Set<string>;
@@ -84,4 +90,5 @@ export interface UseArchiveOptions<T extends BaseArchive> {
   table: string;
   deleteActivityKey: string;
   deleteActivityLabel: (archive: T) => string;
+  filterByKecamatan?: string | null;
 }

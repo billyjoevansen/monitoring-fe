@@ -24,6 +24,8 @@ export default function ReconcileClient({ user }: { user: User }) {
     error,
     namaArsip,
     setNamaArsip,
+    kecamatan,
+    setKecamatan,
     saving,
     saved,
     handleProcess,
@@ -113,6 +115,9 @@ export default function ReconcileClient({ user }: { user: User }) {
             onSave={handleSaveToArchive}
             filteredDetail={filteredDetail}
             searchQuery={searchQuery}
+            kecamatan={kecamatan}
+            onKecamatanChange={setKecamatan}
+            userKecamatan={user.role === 'bpp' ? (user.kecamatan ?? null) : null}
           />
 
           <ReconcileTable data={result.detail} onFilteredDataChange={handleFilteredDataChange} />

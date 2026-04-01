@@ -8,129 +8,154 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
   table,
   deleteActivityKey,
   deleteActivityLabel,
+  filterByKecamatan,
 }: UseArchiveOptions<T>) {
   const [archives, setArchives] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [search, setSearch] = useState('');
+  const [filterWilayah, setFilterWilayah] = useState('');
+
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const [total, setTotal] = useState(0);
+
   const [viewingArchive, setViewingArchive] = useState<T | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
 
   const loadArchives = useCallback(async () => {
     setLoading(true);
     setError(null);
-    const supabase = manageClient();
-    const { data, error: fetchError } = await supabase
-      .from(table)
-      .select('*')
-      .order('created_at', { ascending: false });
 
-    if (fetchError) {
-      setError(fetchError.message);
-    } else if (data) {
-      setArchives(data as T[]);
+    try {
+      const supabase = manageClient();
+
+      let query = supabase
+        .from(table)
+        .select('*', { count: 'exact' })
+        .order('created_at', { ascending: false });
+
+      // role filter
+      if (filterByKecamatan) {
+        query = query.eq('kecamatan', filterByKecamatan);
+      }
+
+      // search
+      if (search) {
+        query = query.or(`nama_arsip.ilike.%${search}%,user_nama.ilike.%${search}%`);
+      }
+
+      // filter wilayah
+      if (filterWilayah) {
+        query = query.eq('kecamatan', filterWilayah);
+      }
+
+      // pagination
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, error, count } = await query.range(from, to);
+
+      if (error) throw error;
+
+      setArchives((data as T[]) ?? []);
+      setTotal(count ?? 0);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Fetch error');
+      setArchives([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  }, [table]);
+  }, [table, search, filterWilayah, page, filterByKecamatan]);
 
   useEffect(() => {
     loadArchives();
   }, [loadArchives]);
 
-  const handleDelete = async (archive: T) => {
-    if (!confirm(`Hapus arsip "${archive.nama_arsip}"? Tindakan ini tidak dapat dibatalkan.`))
-      return;
+  useEffect(() => {
+    setPage(1);
+  }, [search, filterWilayah]);
 
-    setDeleting(archive.id);
-    const supabase = manageClient();
-    const { error: deleteError } = await supabase.from(table).delete().eq('id', archive.id);
+  const totalPages = Math.ceil(total / pageSize);
 
-    if (!deleteError) {
-      await logActivity(deleteActivityKey, deleteActivityLabel(archive));
-      setArchives((prev) => prev.filter((a) => a.id !== archive.id));
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        next.delete(archive.id);
-        return next;
-      });
-      if (viewingArchive?.id === archive.id) setViewingArchive(null);
-    }
-
-    setDeleting(null);
-  };
-
-  const toggleExpand = useCallback((id: string) => {
-    setExpandedId((prev) => (prev === id ? null : id));
-  }, []);
-
-  const filtered = archives.filter((a) => {
-    if (!search) return true;
-    const q = search.toLowerCase();
-    return a.nama_arsip.toLowerCase().includes(q) || a.user_nama.toLowerCase().includes(q);
-  });
-
-  const allSelected = filtered.length > 0 && filtered.every((a) => selectedIds.has(a.id));
-
-  const toggleSelectArchive = useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }, []);
-
-  const toggleSelectAll = () => {
-    if (allSelected) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filtered.map((a) => a.id)));
-    }
-  };
-
-  const handleBulkDelete = async () => {
-    if (selectedIds.size === 0) return;
-    if (!confirm(`Hapus ${selectedIds.size} arsip sekaligus? Tindakan ini tidak dapat dibatalkan.`))
-      return;
-
-    setBulkDeleting(true);
-    const ids = Array.from(selectedIds);
-    const supabase = manageClient();
-
-    const { error: deleteError } = await supabase.from(table).delete().in('id', ids);
-
-    if (!deleteError) {
-      await logActivity(deleteActivityKey, `Bulk delete ${ids.length} arsip`);
-      const deleted = new Set(selectedIds);
-      setArchives((prev) => prev.filter((a) => !deleted.has(a.id)));
-      if (viewingArchive && deleted.has(viewingArchive.id)) setViewingArchive(null);
-      setSelectedIds(new Set());
-    }
-
-    setBulkDeleting(false);
-  };
-
+  // 🔥 tetap return API lama
   return {
     archives,
-    filtered,
+    filtered: archives, // sekarang sudah difilter dari server
     loading,
     error,
+
     search,
     setSearch,
+
+    filterWilayah,
+    setFilterWilayah,
+
+    page,
+    setPage,
+    totalPages,
+
     viewingArchive,
     setViewingArchive,
+
     expandedId,
-    toggleExpand,
+    toggleExpand: (id: string) => setExpandedId((prev) => (prev === id ? null : id)),
+
     deleting,
-    handleDelete,
+    handleDelete: async (archive: T) => {
+      if (!confirm(`Hapus "${archive.nama_arsip}"?`)) return;
+
+      setDeleting(archive.id);
+
+      const supabase = manageClient();
+      const { error } = await supabase.from(table).delete().eq('id', archive.id);
+
+      if (!error) {
+        await logActivity(deleteActivityKey, deleteActivityLabel(archive));
+        setArchives((prev) => prev.filter((a) => a.id !== archive.id));
+      }
+
+      setDeleting(null);
+    },
+
     formatDate,
+
     selectedIds,
-    allSelected,
+    allSelected: archives.length > 0 && archives.every((a) => selectedIds.has(a.id)),
+
     bulkDeleting,
-    toggleSelectArchive,
-    toggleSelectAll,
-    handleBulkDelete,
+
+    toggleSelectArchive: (id: string) => {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.has(id) ? next.delete(id) : next.add(id);
+        return next;
+      });
+    },
+
+    toggleSelectAll: () => {
+      setSelectedIds(new Set(archives.map((a) => a.id)));
+    },
+
+    handleBulkDelete: async () => {
+      if (selectedIds.size === 0) return;
+
+      setBulkDeleting(true);
+
+      const ids = Array.from(selectedIds);
+      const supabase = manageClient();
+
+      await supabase.from(table).delete().in('id', ids);
+
+      setArchives((prev) => prev.filter((a) => !selectedIds.has(a.id)));
+      setSelectedIds(new Set());
+
+      setBulkDeleting(false);
+    },
   };
 }

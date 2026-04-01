@@ -1,6 +1,6 @@
-import { Loader2, Trash2, Eye, ChevronDown, ChevronRight, Search } from 'lucide-react';
+import { Loader2, Trash2, Eye, ChevronDown, ChevronRight, Search, MapPin } from 'lucide-react';
 import type { BaseArchive, BaseSummary, ArchiveListLayoutProps } from '@/types';
-
+import { KECAMATAN_LIST } from '@/config/kecamatan';
 export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
   icon,
   title,
@@ -11,10 +11,12 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
   filtered,
   loading,
   search,
+  filterWilayah,
   expandedId,
   deleting,
   canEdit,
   onSearchChange,
+  onFilterWilayahChange,
   onToggleExpand,
   onView,
   onDelete,
@@ -26,7 +28,9 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
   onToggleSelect,
   onToggleSelectAll,
   onBulkDelete,
+  userKecamatan,
 }: ArchiveListLayoutProps<T>) {
+  const isBpp = !!userKecamatan;
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -46,9 +50,9 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
         </div>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-sm">
+      {/* Search & Filter */}
+      <div className="mb-6 flex gap-3">
+        <div className="relative max-w-sm w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
@@ -58,6 +62,27 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
             onChange={(e) => onSearchChange(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           />
+        </div>
+        <div className="relative">
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          {isBpp ? (
+            <div className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-foreground select-none cursor-not-allowed min-w-45">
+              {userKecamatan}
+            </div>
+          ) : (
+            <select
+              value={filterWilayah}
+              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500"
+              onChange={(e) => onFilterWilayahChange(e.target.value)}
+            >
+              <option value="">Semua Wilayah</option>
+              {KECAMATAN_LIST.map((kecamatan) => (
+                <option key={kecamatan} value={kecamatan}>
+                  {kecamatan}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
 
@@ -108,7 +133,7 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
                 key={archive.id}
                 className={`group transition-colors duration-200 ${
                   selectedIds.has(archive.id) ? 'bg-red-50 dark:bg-gray-500/50' : ''
-                } hover:bg-red-200 dark:hover:bg-slate-500`}
+                } hover:bg-gray-200 dark:hover:bg-slate-500`}
               >
                 {/* Main row */}
                 <div className="flex items-center justify-between px-5 py-4">
@@ -125,7 +150,7 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
 
                     <button
                       onClick={() => onToggleExpand(archive.id)}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-white rounded transition-colors"
+                      className="p-1 hover:bg-white rounded transition-colors"
                     >
                       {expandedId === archive.id ? (
                         <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -152,6 +177,10 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
                         <span>Jumlah : </span>
                         <span className="px-2 py-0.5 rounded-md bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 font-medium">
                           {archive.summary.total_petani} petani
+                        </span>
+                        <span>Wilayah : </span>
+                        <span className="px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-500/70">
+                          {archive.kecamatan}
                         </span>
                       </div>
                     </div>

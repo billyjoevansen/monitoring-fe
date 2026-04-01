@@ -1,20 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { LogOut, KeyRound, ChevronDown } from 'lucide-react';
+import { LogOut, ChevronDown } from 'lucide-react';
 import { ROLE_LABELS, ROLE_COLORS } from '@/config/rbac';
 import type { User } from '@/types';
 
 export function ProfileActions({ onLogout }: { onLogout: () => void }) {
   return (
     <>
-      <Link
-        href="/change-password"
-        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
-      >
-        <KeyRound className="w-4 h-4" />
-        Ganti Password
-      </Link>
       <button
         onClick={onLogout}
         className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"

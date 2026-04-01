@@ -3,7 +3,7 @@
 import { Loader2, FlaskConical, AlertTriangle, Sparkles } from 'lucide-react';
 import { useTrain } from '@/hooks/useTrain';
 import FileUploader from '@/components/ui/FileUploader';
-import ChartViewer from '@/components/ui/ChartViewer';
+import ChartViewer from '@/components/dashboard/ChartViewer';
 import ErrorBanner from '@/components/ui/ErrorBanner';
 import type { User } from '@/types';
 

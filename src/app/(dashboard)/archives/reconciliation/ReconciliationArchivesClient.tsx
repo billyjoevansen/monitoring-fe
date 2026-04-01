@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { FileStack, Download, Filter } from 'lucide-react';
+import { FileStack, Download, Filter, MapPin } from 'lucide-react';
 import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
@@ -9,14 +9,29 @@ import MiniCard from '@/components/ui/MiniCard';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
 import DownloadButtons from '@/components/ui/DownloadButtons';
-import type { ReconciliationArchive, ReconcileDetailItem, ReconcileSummary } from '@/types';
+import type { ReconciliationArchive, ReconcileDetailItem, ReconcileSummary, Role } from '@/types';
 
-export default function ReconciliationArchivesClient({ canEdit }: { canEdit: boolean }) {
+interface ReconciliationArchivesClientProps {
+  canEdit: boolean;
+  userRole: Role;
+  userKecamatan: string | null;
+}
+
+export default function ReconciliationArchivesClient({
+  canEdit,
+  userRole,
+  userKecamatan,
+}: ReconciliationArchivesClientProps) {
+  // BPP hanya bisa melihat arsip kecamatannya sendiri
+  const filterByKecamatan = userRole === 'bpp' ? (userKecamatan ?? undefined) : undefined;
+
   const {
     filtered,
     loading,
     search,
     setSearch,
+    filterWilayah,
+    setFilterWilayah,
     viewingArchive,
     setViewingArchive,
     expandedId,
@@ -34,13 +49,12 @@ export default function ReconciliationArchivesClient({ canEdit }: { canEdit: boo
     table: 'reconciliation_archives',
     deleteActivityKey: 'delete_archive',
     deleteActivityLabel: (a) => `Menghapus arsip rekonsiliasi: ${a.nama_arsip}`,
+    filterByKecamatan,
   });
 
-  // Filtered state — mirrors the pattern in ReconcileClient / useReconcile
   const [filteredDetail, setFilteredDetail] = useState<ReconcileDetailItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Reset whenever the user opens a different (or new) archive
   useEffect(() => {
     if (viewingArchive) {
       setFilteredDetail(viewingArchive.detail as ReconcileDetailItem[]);
@@ -72,6 +86,14 @@ export default function ReconciliationArchivesClient({ canEdit }: { canEdit: boo
           formatDate={formatDate}
         />
 
+        {/* Badge kecamatan arsip */}
+        {viewingArchive.kecamatan && (
+          <div className="inline-flex items-center gap-1.5 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg mb-4">
+            <MapPin className="w-3.5 h-3.5" />
+            <span>{viewingArchive.kecamatan}</span>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           <SummaryCard label="Total Petani" value={summary.total_petani} color="blue" />
           <SummaryCard
@@ -97,7 +119,6 @@ export default function ReconciliationArchivesClient({ canEdit }: { canEdit: boo
           <SummaryCard label="Kios Tidak Sesuai" value={summary.kios.tidak_sesuai} color="purple" />
         </div>
 
-        {/* Download bar — shows filtered badge when search is active */}
         <div className="flex items-center justify-between bg-background rounded-xl border border-foreground px-4 py-3 shadow-sm mb-6">
           <div className="flex items-center gap-2">
             <Download className="w-4 h-4 text-muted-foreground" />
@@ -126,6 +147,12 @@ export default function ReconciliationArchivesClient({ canEdit }: { canEdit: boo
     );
   }
 
+  // Subtitle dinamis: BPP tampilkan wilayahnya
+  const subtitle =
+    userRole === 'bpp' && userKecamatan
+      ? `Riwayat hasil rekonsiliasi wilayah ${userKecamatan}`
+      : 'Riwayat hasil rekonsiliasi yang telah disimpan';
+
   return (
     <ArchiveListLayout
       icon={
@@ -134,11 +161,13 @@ export default function ReconciliationArchivesClient({ canEdit }: { canEdit: boo
         </div>
       }
       title="Arsip Rekonsiliasi"
-      subtitle="Riwayat hasil rekonsiliasi yang telah disimpan"
+      subtitle={subtitle}
       emptyIcon={<FileStack className="w-full h-full" />}
       emptyTitle="Belum ada arsip rekonsiliasi."
       emptySubtitle="Lakukan rekonsiliasi dan simpan hasilnya."
       filtered={filtered}
+      filterWilayah={filterWilayah}
+      onFilterWilayahChange={setFilterWilayah}
       loading={loading}
       search={search}
       expandedId={expandedId}
@@ -163,6 +192,7 @@ export default function ReconciliationArchivesClient({ canEdit }: { canEdit: boo
       onToggleSelect={toggleSelectArchive}
       onToggleSelectAll={toggleSelectAll}
       onBulkDelete={handleBulkDelete}
+      userKecamatan={userKecamatan}
     />
   );
 }

@@ -16,6 +16,8 @@ export default function ClassificationArchivesClient({ canEdit }: { canEdit: boo
     loading,
     search,
     setSearch,
+    filterWilayah,
+    setFilterWilayah,
     viewingArchive,
     setViewingArchive,
     expandedId,
@@ -81,6 +83,8 @@ export default function ClassificationArchivesClient({ canEdit }: { canEdit: boo
       emptyTitle="Belum ada arsip klasifikasi."
       emptySubtitle="Lakukan klasifikasi dan simpan hasilnya."
       filtered={filtered}
+      filterWilayah={filterWilayah}
+      onFilterWilayahChange={setFilterWilayah}
       loading={loading}
       search={search}
       expandedId={expandedId}

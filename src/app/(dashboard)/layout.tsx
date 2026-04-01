@@ -12,7 +12,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     redirect('/login');
   }
 
-  if (!user.is_active) redirect('/login');
+  if (!user.is_active) redirect('/deactivated');
 
   return (
     <div className="min-h-screen bg-background">

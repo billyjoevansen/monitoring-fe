@@ -73,6 +73,11 @@ export interface ReconcileArchiveSectionProps {
   onSave: () => void;
   filteredDetail?: Record<string, unknown>[];
   searchQuery?: string;
+  /** Nilai kecamatan yang sedang dipilih */
+  kecamatan: string;
+  /** Callback saat kecamatan diubah */
+  onKecamatanChange: (value: string) => void;
+  userKecamatan: string | null;
 }
 
 // Key pupuk yang digunakan dalam proses rekonsiliasi

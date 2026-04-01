@@ -16,6 +16,10 @@ export function useReconcile(user: User) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
+  const [kecamatan, setKecamatan] = useState<string>(() =>
+    user.role === 'bpp' ? (user.kecamatan ?? '') : '',
+  );
+
   const handleProcess = useCallback(async () => {
     if (!rdkkFile || !sivervalFile) {
       setError('Upload kedua file terlebih dahulu.');
@@ -56,11 +60,15 @@ export function useReconcile(user: User) {
         nama_arsip: namaArsip.trim(),
         summary: result.summary,
         detail: result.detail,
+        kecamatan: kecamatan.trim() || null,
       });
 
       if (insertErr) throw insertErr;
 
-      await logActivity('save_archive', `Menyimpan arsip rekonsiliasi: ${namaArsip}`);
+      await logActivity(
+        'save_archive',
+        `Menyimpan arsip rekonsiliasi: ${namaArsip}${kecamatan ? ` (${kecamatan})` : ''}`,
+      );
       setSaved(true);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Gagal menyimpan.';
@@ -68,7 +76,7 @@ export function useReconcile(user: User) {
     } finally {
       setSaving(false);
     }
-  }, [result, namaArsip, user]);
+  }, [result, namaArsip, kecamatan, user]);
 
   const handleReset = useCallback(() => {
     setResult(null);
@@ -77,7 +85,9 @@ export function useReconcile(user: User) {
     setError(null);
     setSaved(false);
     setNamaArsip('');
-  }, []);
+    // Reset kecamatan: BPP tetap pada wilayahnya, role lain dikosongkan
+    setKecamatan(user.role === 'bpp' ? (user.kecamatan ?? '') : '');
+  }, [user]);
 
   const [filteredDetail, setFilteredDetail] = useState<Record<string, unknown>[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -100,6 +110,8 @@ export function useReconcile(user: User) {
     error,
     namaArsip,
     setNamaArsip,
+    kecamatan,
+    setKecamatan,
     saving,
     saved,
     handleProcess,

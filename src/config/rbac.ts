@@ -50,6 +50,8 @@ export function getCreatableRoles(role: Role): Role[] {
       return ['admin', 'kabid', 'kasie', 'bpp'];
     case 'kabid':
       return ['kasie', 'bpp'];
+    case 'kasie':
+      return ['bpp'];
     default:
       return [];
   }

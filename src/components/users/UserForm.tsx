@@ -1,7 +1,8 @@
 import { CheckCircle, Loader2, X } from 'lucide-react';
 import { useEffect } from 'react';
-import type { Role, Kecamatan } from '@/types';
+import type { Role } from '@/types';
 import { ROLE_LABELS } from '@/config/rbac';
+import { KECAMATAN_LIST } from '@/config/kecamatan';
 import type { UserFormState } from '@/hooks/useUsers';
 
 interface UserFormProps {
@@ -10,7 +11,6 @@ interface UserFormProps {
   form: UserFormState;
   onFormChange: (updated: Partial<UserFormState>) => void;
   creatableRoles: Role[];
-  kecamatanList: Kecamatan[];
   saving: boolean;
   error: string | null;
   onSubmit: (e: React.FormEvent) => void;
@@ -23,7 +23,6 @@ export function UserForm({
   form,
   onFormChange,
   creatableRoles,
-  kecamatanList,
   saving,
   error,
   onSubmit,
@@ -145,9 +144,9 @@ export function UserForm({
                     className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="">Pilih Kecamatan</option>
-                    {kecamatanList.map((kec) => (
-                      <option key={kec.id} value={kec.nama}>
-                        {kec.nama}
+                    {KECAMATAN_LIST.map((kecamatan) => (
+                      <option key={kecamatan} value={kecamatan}>
+                        {kecamatan}
                       </option>
                     ))}
                   </select>

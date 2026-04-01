@@ -105,7 +105,6 @@ export default function UsersClient({ currentUser }: { currentUser: User }) {
         form={form}
         onFormChange={(updated) => setForm((prev) => ({ ...prev, ...updated }))}
         creatableRoles={creatableRoles}
-        kecamatanList={kecamatanList}
         saving={saving}
         error={error}
         onSubmit={handleSubmit}

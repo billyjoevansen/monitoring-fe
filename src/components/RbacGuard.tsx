@@ -25,8 +25,8 @@ export default function RbacGuard({ user, children }: { user: User; children: Re
       </div>
       <h1 className="text-2xl font-bold text-foreground mb-2">Akses Ditolak</h1>
       <p className="text-foreground text-center max-w-md">
-        <span className="font-semibold capitalize">{user.role}</span> tidak memiliki izin untuk
-        mengakses halaman ini.
+        <span className="font-semibold capitalize">{user.role}</span> tidak memiliki akses ke
+        halaman ini.
       </p>
       <button
         onClick={() => router.push('/dashboard')}
