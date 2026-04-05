@@ -73,6 +73,7 @@ export function useClassify(user: User) {
         nama_arsip: namaArsip.trim(),
         summary: result.summary,
         detail: result.detail,
+        model_info: result.model_info,
       });
 
       if (insertErr) throw insertErr;

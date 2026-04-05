@@ -17,7 +17,6 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_dashboard',
   ],
   kabid: [
-    'view_reconciliation',
     'view_classification',
     'view_training',
     'train_model',

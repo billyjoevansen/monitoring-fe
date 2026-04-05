@@ -33,6 +33,7 @@ export interface ClassifyDetailItem {
 export interface ClassifyResult {
   summary: ClassificationSummary;
   detail: ClassifyDetailItem[];
+  model_info: ModelInfo;
 }
 
 // Kolom tabel hasil klasifikasi
