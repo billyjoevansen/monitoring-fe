@@ -49,8 +49,8 @@ export default function DeactivatedPage() {
 
           <h2 className="text-xl font-bold text-gray-800 mb-2">Akun Dinonaktifkan</h2>
           <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-            Akun Anda telah dinonaktifkan oleh administrator. Silakan hubungi admin untuk informasi
-            lebih lanjut atau mengaktifkan kembali akun Anda.
+            Akun Anda telah dinonaktifkan oleh admin. Silakan hubungi admin untuk informasi lebih
+            lanjut atau mengaktifkan kembali akun Anda.
           </p>
 
           <div className="space-y-3">

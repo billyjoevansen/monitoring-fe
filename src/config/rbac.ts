@@ -21,6 +21,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_classification',
     'view_training',
     'train_model',
+    'edit_model_config',
     'manage_users',
     'view_logs',
     'manage_archives',
@@ -30,9 +31,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   kasie: [
     'view_reconciliation',
     'view_classification',
-    'view_training',
     'upload_files',
-    'train_model',
     'view_logs',
     'view_archives',
     'view_dashboard',
