@@ -50,9 +50,8 @@ export function useUsers(currentUser: User) {
   const loadData = async () => {
     const supabase = manageClient();
 
-    const [usersRes, kecRes] = await Promise.all([
+    const [usersRes] = await Promise.all([
       supabase.from('users').select('*').order('created_at', { ascending: false }),
-      supabase.from('kecamatan').select('*').order('nama'),
     ]);
 
     if (usersRes.data) {
@@ -65,7 +64,6 @@ export function useUsers(currentUser: User) {
       setUsers(filtered);
     }
 
-    if (kecRes.data) setKecamatanList(kecRes.data as Kecamatan[]);
     setLoading(false);
   };
 
