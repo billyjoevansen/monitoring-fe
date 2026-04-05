@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { getCreatableRoles } from '@/config/rbac';
-import { logActivity } from '@/lib/auth';
+import { logActivity } from '@/lib/auth-client';
+import { deleteUserCompletely, updateUserPassword } from '@/lib/auth-server';
 import type { User, Role, Kecamatan } from '@/types';
 
 export interface UserFormState {
@@ -119,11 +120,17 @@ export function useUsers(currentUser: User) {
 
         if (updateErr) throw updateErr;
 
+        if (form.password && form.password.length >= 8) {
+          await updateUserPassword(editingUser.id, form.password);
+        }
+
         await logActivity('update_user', `Mengubah user ${form.nama} (${form.role})`);
+
         showSuccessMessage(`User ${form.nama} berhasil diperbarui.`);
       } else {
         if (!form.password || form.password.length < 8) {
           setError('Password minimal 8 karakter.');
+          setSaving(false);
           return;
         }
 
@@ -160,13 +167,15 @@ export function useUsers(currentUser: User) {
   };
 
   const handleDeleteUser = async (user: User) => {
-    const supabase = manageClient();
-    const { error } = await supabase.from('users').delete().eq('id', user.id);
+    try {
+      await deleteUserCompletely(user.id);
 
-    if (!error) {
       await logActivity('delete_user', `Menghapus user ${user.nama}`);
       await loadData();
       showSuccessMessage(`User ${user.nama} berhasil dihapus.`);
+    } catch (err) {
+      console.error(err);
+      setError('Gagal menghapus user.');
     }
 
     setDeleteDialogUser(null);
@@ -218,15 +227,17 @@ export function useUsers(currentUser: User) {
 
     setBulkDeleting(true);
     const ids = Array.from(selectedIds);
-    const supabase = manageClient();
 
-    const { error } = await supabase.from('users').delete().in('id', ids);
+    try {
+      await Promise.all(ids.map((id) => deleteUserCompletely(id)));
 
-    if (!error) {
       await logActivity('delete_user', `Bulk delete ${ids.length} user`);
       setSelectedIds(new Set());
       await loadData();
       showSuccessMessage(`${ids.length} user berhasil dihapus.`);
+    } catch (err) {
+      console.error(err);
+      setError('Gagal bulk delete user.');
     }
 
     setBulkDeleting(false);
@@ -240,6 +251,7 @@ export function useUsers(currentUser: User) {
     loading,
     saving,
     success,
+    setSuccess,
     error,
     showForm,
     editingUser,

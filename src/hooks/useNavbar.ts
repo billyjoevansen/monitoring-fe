@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { logout } from '@/lib/auth';
+import { logout } from '@/lib/auth-client';
 import { hasPermission } from '@/config/rbac';
 import { NAV_ITEMS } from '@/config/navConfig';
 import type { User } from '@/types';

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getConfig, updateConfig, resetConfig } from '@/lib/api';
-import { logActivity } from '@/lib/auth';
+import { logActivity } from '@/lib/auth-client';
 import type { HyperParams, TrainingConfig } from '../types';
 
 interface UseSettingsReturn {

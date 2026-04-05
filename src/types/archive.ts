@@ -26,6 +26,9 @@ export interface ReconciliationSummary {
   total_petani: number;
   status_penebusan: StatusPenebusan;
   kios: KiosSummary;
+  total_pupuk_diajukan_kg: number;
+  total_pupuk_ditebus_kg: number;
+  selisih_total_kg: number;
 }
 
 export interface ReconciliationArchive extends BaseArchive<ReconciliationSummary> {

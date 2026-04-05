@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { hasPermission } from '@/config/rbac';
 import { classify } from '@/lib/api';
-import { logActivity } from '@/lib/auth';
+import { logActivity } from '@/lib/auth-client';
 import { manageClient } from '@/lib/supabase/client';
 import { getApiErrorMessage } from '@/lib/errors';
 import { formatDate } from '@/lib/format';

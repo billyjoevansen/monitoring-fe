@@ -34,26 +34,6 @@ export async function getUserProfile(): Promise<User | null> {
   return data as User;
 }
 
-// Kirim email reset password.
-export async function resetPassword(email: string) {
-  const supabase = manageClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/change-password`,
-  });
-
-  if (error) throw error;
-}
-
-// Update password.
-export async function updatePassword(newPassword: string) {
-  const supabase = manageClient();
-  const { error } = await supabase.auth.updateUser({
-    password: newPassword,
-  });
-
-  if (error) throw error;
-}
-
 // Log aktivitas user.
 export async function logActivity(action: string, detail?: string) {
   const supabase = manageClient();

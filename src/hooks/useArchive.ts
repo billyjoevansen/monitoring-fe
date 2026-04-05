@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { manageClient } from '@/lib/supabase/client';
-import { logActivity } from '@/lib/auth';
+import { logActivity } from '@/lib/auth-client';
 import { formatDate } from '@/lib/format';
 import type { BaseArchive, BaseSummary, UseArchiveOptions } from '@/types';
 

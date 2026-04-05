@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { UserX, LogOut, Phone } from 'lucide-react';
-import { logout } from '@/lib/auth';
+import { logout } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 

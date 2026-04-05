@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { reconcile } from '@/lib/api';
-import { logActivity } from '@/lib/auth';
+import { logActivity } from '@/lib/auth-client';
 import { manageClient } from '@/lib/supabase/client';
 import { getApiErrorMessage } from '@/lib/errors';
 import type { ReconcileResult, User } from '@/types';

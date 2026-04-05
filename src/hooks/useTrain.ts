@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { hasPermission } from '@/config/rbac';
 import { TrainResult, User } from '@/types';
 import { trainModel, visualizeTraining } from '@/lib/api';
-import { logActivity } from '@/lib/auth';
+import { logActivity } from '@/lib/auth-client';
 import { getApiErrorMessage } from '@/lib/errors';
 
 export function useTrain(user: User) {

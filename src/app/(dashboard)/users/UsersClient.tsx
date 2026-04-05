@@ -12,11 +12,11 @@ import Hero from '@/components/ui/Hero';
 export default function UsersClient({ currentUser }: { currentUser: User }) {
   const {
     users,
-    kecamatanList,
     creatableRoles,
     loading,
     saving,
     success,
+    setSuccess,
     error,
     showForm,
     editingUser,
@@ -63,9 +63,21 @@ export default function UsersClient({ currentUser }: { currentUser: User }) {
       />
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-6 flex items-center gap-2">
-          <CheckCircle className="w-5 h-5" />
-          {success}
+        <div className="fixed top-6 right-6 z-50 w-full max-w-sm animate-in slide-in-from-top-2 fade-in">
+          <div className="flex items-start gap-3 p-4 rounded-xl border border-black dark:border-green-800 bg-green-200 dark:bg-white shadow-lg">
+            <CheckCircle className="w-5 h-5 mt-0.5 text-green-600 shrink-0" />
+            <div className="flex-1 text-sm">
+              <p className="font-medium text-green-800">Berhasil</p>
+              <p className="text-green-700">{success}</p>
+            </div>
+
+            <button
+              onClick={() => setSuccess(null)}
+              className="mt-2 px-1.5 text-gray-400 hover:text-gray-600 border-2 rounded-2xl transition-colors"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
 

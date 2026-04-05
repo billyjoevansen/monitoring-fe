@@ -23,6 +23,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'edit_model_config',
     'manage_users',
     'view_logs',
+    'view_api',
     'manage_archives',
     'view_archives',
     'view_dashboard',
@@ -57,8 +58,8 @@ export function getCreatableRoles(role: Role): Role[] {
 
 export const ROLE_LABELS: Record<Role, string> = {
   admin: 'Administrator',
-  kabid: 'Kepala Bidang',
-  kasie: 'Kepala Seksi Penyuluh',
+  kabid: 'Kabid',
+  kasie: 'Kasie',
   bpp: 'BPP',
 };
 

@@ -153,20 +153,30 @@ export function UserForm({
                 </div>
               )}
 
-              {!isEditing && (
-                <div className={form.role === 'bpp' ? 'sm:col-span-2' : ''}>
-                  <label className="block text-sm font-medium text-foreground mb-1">Password</label>
-                  <input
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => onFormChange({ password: e.target.value })}
-                    required
-                    placeholder="Minimal 8 karakter"
-                    autoComplete="new-password"
-                    className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
-              )}
+              <div className={form.role === 'bpp' ? 'sm:col-span-2' : ''}>
+                <label className="block text-sm font-medium text-foreground mb-1">Password</label>
+
+                <input
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => onFormChange({ password: e.target.value })}
+                  required={!isEditing}
+                  placeholder={
+                    isEditing
+                      ? 'Kosongkan jika tidak ingin mengubah password'
+                      : 'Minimal 8 karakter'
+                  }
+                  autoComplete={isEditing ? 'off' : 'new-password'}
+                  className="w-full px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+
+                {/* helper text */}
+                {isEditing && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Isi hanya jika ingin mengganti password user
+                  </p>
+                )}
+              </div>
             </div>
           </form>
         </div>
