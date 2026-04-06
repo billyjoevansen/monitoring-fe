@@ -5,7 +5,7 @@ import { manageClient } from '@/lib/supabase/client';
 import { getCreatableRoles } from '@/config/rbac';
 import { logActivity } from '@/lib/auth-client';
 import { deleteUserCompletely, updateUserPassword } from '@/lib/auth-server';
-import type { User, Role, Kecamatan } from '@/types';
+import type { User, Role } from '@/types';
 
 export interface UserFormState {
   email: string;
@@ -27,7 +27,6 @@ export function useUsers(currentUser: User) {
   const creatableRoles = getCreatableRoles(currentUser.role);
 
   const [users, setUsers] = useState<User[]>([]);
-  const [kecamatanList, setKecamatanList] = useState<Kecamatan[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -122,7 +121,10 @@ export function useUsers(currentUser: User) {
           await updateUserPassword(editingUser.id, form.password);
         }
 
-        await logActivity('update_user', `Mengubah user ${form.nama} (${form.role})`);
+        await logActivity(
+          'update_user',
+          `${form.nama} ${form.role ? 'menjadi ' + form.role : `(${form.role})`} ${form.password ? 'dengan password baru' : 'tanpa mengubah password'})`,
+        );
 
         showSuccessMessage(`User ${form.nama} berhasil diperbarui.`);
       } else {
@@ -244,7 +246,6 @@ export function useUsers(currentUser: User) {
   return {
     currentUser,
     users,
-    kecamatanList,
     creatableRoles,
     loading,
     saving,

@@ -3,6 +3,7 @@ import { ROLE_LABELS, ROLE_COLORS } from '@/config/rbac';
 import { ACTION_LABELS, PAGE_SIZE } from '@/config/logConfig';
 import { formatDate, formatTime } from '@/components/logs/logUtils';
 import type { ActivityLog, Role } from '@/types';
+import { Button } from '../ui/button';
 
 interface LogTableProps {
   logs: ActivityLog[];
@@ -170,26 +171,28 @@ export function LogTable({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100">
-          <button
+        <div className="flex gap-5 items-center justify-center px-4 py-3 border-t border-gray-100">
+          <Button
             onClick={() => onPageChange((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="flex items-center gap-1 px-3 py-1.5 text-foreground text-sm bg-slate-800 dark:bg-white hover:bg-slate-500 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            variant="pagination"
+            size="sm"
           >
             <ChevronLeft className="w-4 h-4" />
             Prev
-          </button>
-          <span className="text-sm text-gray-600">
+          </Button>
+          <span className="text-sm text-foreground">
             Halaman {page} dari {totalPages}
           </span>
-          <button
+          <Button
             onClick={() => onPageChange((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="flex items-center gap-1 px-3 py-1.5 text-foreground text-sm bg-slate-800 dark:bg-white hover:bg-slate-500 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            variant="pagination"
+            size="sm"
           >
             Next
             <ChevronRight className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       )}
     </div>

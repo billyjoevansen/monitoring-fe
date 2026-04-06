@@ -1,6 +1,6 @@
 export const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   login: { label: 'Login', color: 'bg-blue-100 text-blue-700' },
-  logout: { label: 'Logout', color: 'bg-gray-100 text-gray-700' },
+  logout: { label: 'Logout', color: 'bg-red-100 text-red-700' },
   reconcile: { label: 'Rekonsiliasi', color: 'bg-green-100 text-green-700' },
   train_model: { label: 'Training Model', color: 'bg-purple-100 text-purple-700' },
   classify: { label: 'Klasifikasi', color: 'bg-indigo-100 text-indigo-700' },
@@ -10,7 +10,7 @@ export const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   update_user: { label: 'Edit User', color: 'bg-cyan-100 text-cyan-700' },
   delete_user: { label: 'Hapus User', color: 'bg-red-100 text-red-700' },
   activate_user: { label: 'Aktifkan User', color: 'bg-emerald-100 text-emerald-700' },
-  deactivate_user: { label: 'Nonaktifkan User', color: 'bg-red-100 text-red-700' },
+  deactivate_user: { label: 'Menonaktifkan User', color: 'bg-gray-100 text-gray-700' },
   save_classification: { label: 'Simpan Klasifikasi', color: 'bg-amber-100 text-amber-700' },
 };
 

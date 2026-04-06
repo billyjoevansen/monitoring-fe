@@ -35,7 +35,7 @@ const buttonVariants = cva(
           'bg-red-600 text-white shadow-xs transition-all duration-200 hover:bg-red-700 hover:scale-[1.02] dark:bg-red-700 dark:hover:bg-red-800 data-[state=open]:bg-red-700',
 
         pagination:
-          'text-muted-foreground bg-transparent border border-transparent transition-all duration-200 hover:bg-foreground/8 hover:text-foreground hover:border-foreground/10 aria-current:bg-foreground aria-current:text-background aria-current:border-transparent aria-current:shadow-xs dark:hover:bg-foreground/10',
+          'text-accent hover:text-foreground bg-gray-200 border border-gray-300 transition-all duration-200 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-500 dark:hover:border-foreground/10 aria-current:bg-foreground aria-current:text-background aria-current:border-transparent aria-current:shadow-xs',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
