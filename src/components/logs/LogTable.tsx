@@ -174,7 +174,7 @@ export function LogTable({
           <button
             onClick={() => onPageChange((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 px-3 py-1.5 text-foreground text-sm bg-slate-800 dark:bg-white hover:bg-slate-500 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="w-4 h-4" />
             Prev
@@ -185,7 +185,7 @@ export function LogTable({
           <button
             onClick={() => onPageChange((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex items-center gap-1 px-3 py-1.5 text-foreground text-sm bg-slate-800 dark:bg-white hover:bg-slate-500 dark:hover:bg-gray-300 disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Next
             <ChevronRight className="w-4 h-4" />

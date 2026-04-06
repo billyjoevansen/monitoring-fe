@@ -8,13 +8,14 @@ export async function login(email: string, password: string) {
     email,
     password,
   });
-
+  await logActivity('login', `User mencoba login`);
   if (error) throw error;
   return data;
 }
 
 // Logout.
 export async function logout() {
+  await logActivity('logout', 'User telah logout');
   const supabase = manageClient();
   const { error } = await supabase.auth.signOut();
   if (error) throw error;

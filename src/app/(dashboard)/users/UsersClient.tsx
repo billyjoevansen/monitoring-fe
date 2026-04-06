@@ -55,7 +55,7 @@ export default function UsersClient({ currentUser }: { currentUser: User }) {
         title="Manajemen User"
         subtitle="Kelola akun pengguna, atur peran, dan aktifkan atau nonaktifkan akses dengan mudah."
         actions={
-          <Button onClick={openAddForm} variant="outline">
+          <Button onClick={openAddForm} variant="secondary" size="lg">
             <UserPlus className="w-4 h-4" />
             Tambah User
           </Button>

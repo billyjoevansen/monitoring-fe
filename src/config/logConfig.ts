@@ -8,6 +8,7 @@ export const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   reset_config: { label: 'Reset Konfigurasi', color: 'bg-orange-100 text-orange-700' },
   create_user: { label: 'Buat User', color: 'bg-teal-100 text-teal-700' },
   update_user: { label: 'Edit User', color: 'bg-cyan-100 text-cyan-700' },
+  delete_user: { label: 'Hapus User', color: 'bg-red-100 text-red-700' },
   activate_user: { label: 'Aktifkan User', color: 'bg-emerald-100 text-emerald-700' },
   deactivate_user: { label: 'Nonaktifkan User', color: 'bg-red-100 text-red-700' },
   save_classification: { label: 'Simpan Klasifikasi', color: 'bg-amber-100 text-amber-700' },

@@ -1,6 +1,7 @@
 import { Search, Filter, Trash2 } from 'lucide-react';
 import { ROLE_LABELS } from '@/config/rbac';
 import { ACTION_LABELS } from '@/config/logConfig';
+import { Button } from '@/components/ui/button';
 
 interface LogsFilterProps {
   searchQuery: string;
@@ -83,12 +84,9 @@ export function LogsFilter({
         </select>
 
         {hasActiveFilter && (
-          <button
-            onClick={onResetFilters}
-            className="px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
+          <Button onClick={onResetFilters} variant="destructive" size="lg">
             Reset Filter
-          </button>
+          </Button>
         )}
       </div>
 
