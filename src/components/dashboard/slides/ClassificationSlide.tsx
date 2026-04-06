@@ -12,6 +12,7 @@ import {
 import Link from 'next/link';
 import { formatDate } from '@/lib/format';
 import type { ClassificationArchive } from '@/types';
+
 import StatCard from '@/components/dashboard/StatCard';
 import DonutChart from '@/components/dashboard/DonutChart';
 import MetaInfoGrid from '@/components/dashboard/MetaInfoGrid';
@@ -39,6 +40,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
 
   return (
     <div className="space-y-6">
+      {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           icon={<UsersIcon className="w-5 h-5 text-blue-600" />}
@@ -48,6 +50,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
           gradient="bg-blue-50 border-blue-200 text-blue-900"
           iconBg="bg-blue-100"
         />
+
         <StatCard
           icon={<ShieldCheck className="w-5 h-5 text-green-600" />}
           label="Normal"
@@ -56,6 +59,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
           gradient="bg-green-50 border-green-200 text-green-900"
           iconBg="bg-green-100"
         />
+
         <StatCard
           icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
           label="Tidak Normal"
@@ -64,6 +68,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
           gradient="bg-red-50 border-red-200 text-red-900"
           iconBg="bg-red-100"
         />
+
         <StatCard
           icon={<Activity className="w-5 h-5 text-purple-600" />}
           label="Akurasi Model"
@@ -78,6 +83,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
         />
       </div>
 
+      {/* Main content */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Donut */}
         <div className="lg:col-span-2 bg-background rounded-2xl border border-gray-200 shadow-sm p-6">
@@ -85,10 +91,11 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
             <BarChart3 className="w-4.5 h-4.5 text-foreground" />
             <h3 className="text-sm font-bold text-foreground">Distribusi Klasifikasi</h3>
           </div>
+
           <DonutChart normal={cls.normal} tidakNormal={cls.tidak_normal} />
         </div>
 
-        {/* Detail card */}
+        {/* Detail */}
         <div className="lg:col-span-3 bg-background rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -100,6 +107,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
                 <p className="text-xs text-muted-foreground">{data.nama_arsip}</p>
               </div>
             </div>
+
             <Link
               href="/archives/classification"
               className="inline-flex items-center gap-1 text-xs font-medium text-green-600 hover:text-green-700 transition-colors"
@@ -111,9 +119,21 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
           <div className="p-6 space-y-5">
             <MetaInfoGrid
               items={[
-                { icon: <UsersIcon className="w-3 h-3" />, label: 'Operator', value: data.user_nama },
-                { icon: <Clock className="w-3 h-3" />, label: 'Waktu', value: formatDate(data.created_at) },
-                { icon: <Database className="w-3 h-3" />, label: 'Total Data', value: `${cls.total_petani} petani` },
+                {
+                  icon: <UsersIcon className="w-3 h-3" />,
+                  label: 'Operator',
+                  value: data.user_nama,
+                },
+                {
+                  icon: <Clock className="w-3 h-3" />,
+                  label: 'Waktu',
+                  value: formatDate(data.created_at),
+                },
+                {
+                  icon: <Database className="w-3 h-3" />,
+                  label: 'Total Data',
+                  value: `${cls.total_petani} petani`,
+                },
               ]}
             />
 
@@ -127,6 +147,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
                   <p className="text-lg font-bold text-green-700">{cls.normal}</p>
                 </div>
               </div>
+
               <div className="flex items-center gap-3 bg-red-50 rounded-xl p-3.5">
                 <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-red-600" />

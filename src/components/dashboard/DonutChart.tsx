@@ -1,5 +1,3 @@
-'use client';
-
 interface DonutChartProps {
   normal: number;
   tidakNormal: number;
@@ -24,7 +22,7 @@ export default function DonutChart({ normal, tidakNormal, size = 180 }: DonutCha
     <div className="flex flex-col items-center gap-4">
       <div className="relative" style={{ width: size, height: size }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-          {/* Background circle */}
+          {/* Background */}
           <circle
             cx={center}
             cy={center}
@@ -33,7 +31,8 @@ export default function DonutChart({ normal, tidakNormal, size = 180 }: DonutCha
             stroke="#f3f4f6"
             strokeWidth={strokeWidth}
           />
-          {/* Tidak Normal arc */}
+
+          {/* Tidak Normal */}
           <circle
             cx={center}
             cy={center}
@@ -42,12 +41,11 @@ export default function DonutChart({ normal, tidakNormal, size = 180 }: DonutCha
             stroke="#ef4444"
             strokeWidth={strokeWidth}
             strokeDasharray={`${circumference} ${circumference}`}
-            strokeDashoffset={0}
             strokeLinecap="round"
             transform={`rotate(-90 ${center} ${center})`}
-            className="transition-all duration-700 ease-out"
           />
-          {/* Normal arc (on top) */}
+
+          {/* Normal */}
           <circle
             cx={center}
             cy={center}
@@ -56,13 +54,12 @@ export default function DonutChart({ normal, tidakNormal, size = 180 }: DonutCha
             stroke="#22c55e"
             strokeWidth={strokeWidth}
             strokeDasharray={`${normalLength} ${circumference - normalLength}`}
-            strokeDashoffset={0}
             strokeLinecap="round"
             transform={`rotate(-90 ${center} ${center})`}
-            className="transition-all duration-700 ease-out"
           />
         </svg>
-        {/* Center text */}
+
+        {/* Center */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-bold text-foreground">{total}</span>
           <span className="text-[10px] text-foreground uppercase tracking-wide">Petani</span>
@@ -81,6 +78,7 @@ export default function DonutChart({ normal, tidakNormal, size = 180 }: DonutCha
             </p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-red-500" />
           <div>

@@ -17,20 +17,33 @@ export function useDashboard(user: User) {
   const canViewDashboard = hasPermission(user.role, 'view_dashboard');
   const canViewApiStatus = hasPermission(user.role, 'view_api');
 
+  /**
+   * ✅ Health check hanya sekali
+   */
   useEffect(() => {
+    let mounted = true;
+
     healthCheck()
-      .then(() => setServerStatus('online'))
-      .catch(() => setServerStatus('offline'));
+      .then(() => mounted && setServerStatus('online'))
+      .catch(() => mounted && setServerStatus('offline'));
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
+  /**
+   * ✅ Interval stabil (tidak recreate setiap slide berubah)
+   */
   useEffect(() => {
     if (paused) return;
-    const id = setInterval(
-      () => setSlide((s) => ((s + 1) % SLIDE_COUNT) as SlideIndex),
-      SLIDE_DURATION,
-    );
+
+    const id = setInterval(() => {
+      setSlide((s) => ((s + 1) % SLIDE_COUNT) as SlideIndex);
+    }, SLIDE_DURATION);
+
     return () => clearInterval(id);
-  }, [paused, slide]);
+  }, [paused]); // ❌ sebelumnya ada "slide" → ini bikin interval reset terus
 
   const goTo = (i: number) => setSlide(i as SlideIndex);
   const prev = () => setSlide((s) => ((s - 1 + SLIDE_COUNT) % SLIDE_COUNT) as SlideIndex);

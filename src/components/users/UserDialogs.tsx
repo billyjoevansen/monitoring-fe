@@ -13,19 +13,29 @@ import type { User } from '@/types';
 interface UserDialogsProps {
   toggleDialogUser: User | null;
   deleteDialogUser: User | null;
+  bulkDeleteDialogUser: User[];
+  bulkDeleteCount: number;
   onConfirmToggle: (user: User) => void;
   onConfirmDelete: (user: User) => void;
+  onConfirmBulkDelete: () => void;
   onCancelToggle: () => void;
   onCancelDelete: () => void;
+  onCancelBulkDelete: () => void;
+  bulkDeleteDialogOpen: boolean;
 }
 
 export function UserDialogs({
   toggleDialogUser,
   deleteDialogUser,
+  bulkDeleteDialogUser,
+  bulkDeleteCount,
   onConfirmToggle,
   onConfirmDelete,
+  onConfirmBulkDelete,
+  onCancelBulkDelete,
   onCancelToggle,
   onCancelDelete,
+  bulkDeleteDialogOpen,
 }: UserDialogsProps) {
   const isActive = toggleDialogUser?.is_active;
 
@@ -72,6 +82,40 @@ export function UserDialogs({
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteDialogUser && onConfirmDelete(deleteDialogUser)}
+              className="bg-red-600 hover:bg-red-700 text-foreground"
+            >
+              Ya, Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Dialog Hapus Banyak User */}
+      <AlertDialog
+        open={bulkDeleteDialogOpen}
+        onOpenChange={(open) => !open && onCancelBulkDelete()}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus User?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {bulkDeleteCount === 1 ? (
+                <span>
+                  User <span className="font-semibold">{bulkDeleteDialogUser[0]?.nama}</span> akan
+                  dihapus permanen dan tidak dapat dikembalikan. Yakin ingin menghapus?
+                </span>
+              ) : (
+                <span>
+                  {bulkDeleteCount} user akan dihapus permanen dan tidak dapat dikembalikan. Yakin
+                  ingin menghapus?
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={onConfirmBulkDelete}
               className="bg-red-600 hover:bg-red-700 text-foreground"
             >
               Ya, Hapus

@@ -1,7 +1,13 @@
+import { Metadata } from 'next';
 import { getUser } from '@/lib/getUser';
 import { hasPermission } from '@/config/rbac';
 import { redirect } from 'next/navigation';
 import ReconciliationArchivesClient from './ReconciliationArchivesClient';
+
+export const metadata: Metadata = {
+  title: 'Arsip Rekonsiliasi',
+  description: 'Lihat dan kelola arsip rekonsiliasi data petani.',
+};
 
 export default async function ReconciliationArchivesPage() {
   let user;

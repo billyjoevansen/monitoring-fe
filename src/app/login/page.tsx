@@ -4,9 +4,8 @@ import LoginForm from '@/components/auth/LoginForm';
 import SlidePanel from '@/components/auth/SlidePanel';
 
 export const metadata: Metadata = {
-  title: 'Login - SimpubesSRG',
-  description:
-    'Masuk ke akun SimpubesSRG Anda untuk mencocokkan data dan informasi terkait subsidi pupuk di Kota Serang.',
+  title: 'Login',
+  description: 'Masuk untuk pencocokkan data dan informasi terkait subsidi pupuk di Kota Serang.',
 };
 
 export default function LoginPage() {

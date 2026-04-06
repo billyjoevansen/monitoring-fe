@@ -38,6 +38,8 @@ export default function UsersClient({ currentUser }: { currentUser: User }) {
     toggleSelectUser,
     toggleSelectAll,
     handleBulkDelete,
+    setBulkDeleteDialogOpen,
+    bulkDeleteDialogOpen,
   } = useUsers(currentUser);
 
   if (loading) {
@@ -85,7 +87,7 @@ export default function UsersClient({ currentUser }: { currentUser: User }) {
         <div className="flex items-center justify-between bg-red-50 border border-red-200 rounded-xl px-5 py-3 mb-4">
           <p className="text-sm font-medium text-red-700">{selectedIds.size} user dipilih</p>
           <button
-            onClick={handleBulkDelete}
+            onClick={() => setBulkDeleteDialogOpen(true)}
             disabled={bulkDeleting}
             className="flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
           >
@@ -126,10 +128,15 @@ export default function UsersClient({ currentUser }: { currentUser: User }) {
       <UserDialogs
         toggleDialogUser={toggleDialogUser}
         deleteDialogUser={deleteDialogUser}
+        bulkDeleteDialogUser={users.filter((u) => selectedIds.has(u.id))}
+        bulkDeleteCount={selectedIds.size}
+        onConfirmBulkDelete={handleBulkDelete}
         onConfirmToggle={handleToggleActive}
         onConfirmDelete={handleDeleteUser}
         onCancelToggle={() => setToggleDialogUser(null)}
         onCancelDelete={() => setDeleteDialogUser(null)}
+        onCancelBulkDelete={() => setBulkDeleteDialogOpen(false)}
+        bulkDeleteDialogOpen={bulkDeleteDialogOpen}
       />
     </div>
   );

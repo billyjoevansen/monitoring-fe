@@ -83,10 +83,9 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 
   const totalPages = Math.ceil(total / pageSize);
 
-  // 🔥 tetap return API lama
   return {
     archives,
-    filtered: archives, // sekarang sudah difilter dari server
+    filtered: archives,
     loading,
     error,
 

@@ -5,9 +5,17 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 export const metadata: Metadata = {
   title: {
     template: '%s | Simpubes Serang',
-    default: 'Simpubes Serang',
+    default: 'Simpubes Serang - Sistem Monitoring Pupuk Bersubsidi',
   },
   description: 'Sistem Informasi Monitoring Pupuk Bersubsidi Kota Serang',
+  metadataBase: new URL('https://simpubes-serang.vercel.app'),
+  alternates: {
+    canonical: 'https://simpubes-serang.vercel.app',
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
   /*
   openGraph: {
     title: 'Simpubes - Serang',

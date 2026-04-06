@@ -36,6 +36,7 @@ export default function DashboardClient({
     <div className="space-y-8">
       {canViewApiStatus && <ServerStatusBadge status={serverStatus} />}
 
+      {/* animation tetap, tapi tidak trigger remount */}
       <style>{`
         @keyframes dashProgress {
           from { transform: scaleX(0); }
@@ -46,7 +47,9 @@ export default function DashboardClient({
       <Hero
         icon={<LayoutDashboard className="w-10 h-10 text-white" />}
         title="Dashboard"
-        subtitle={`Selamat datang, ${user.nama} — ${ROLE_LABELS[user.role]}${user.kecamatan ? ` · Kec. ${user.kecamatan}` : ''}`}
+        subtitle={`Selamat datang, ${user.nama} — ${ROLE_LABELS[user.role]}${
+          user.kecamatan ? ` · Kec. ${user.kecamatan}` : ''
+        }`}
         className="bg-background"
         actions={
           <Button asChild variant="outline" size="sm">
@@ -69,9 +72,13 @@ export default function DashboardClient({
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           />
-          <div key={slide} className="animate-in fade-in duration-300">
+
+          {/* ❌ HAPUS key={slide} */}
+          <div className="animate-in fade-in duration-300">
             {slide === 0 && <ClassificationSlide data={latestClassification} />}
+
             {slide === 1 && <ReconciliationSlide data={latestReconciliation} />}
+
             {slide === 2 && (
               <ArchiveSlide
                 totalClassifications={totalClassifications}

@@ -34,15 +34,18 @@ export default function LoginForm() {
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="mb-8">
-          <div className="border-y-2 pb-2 mb-6 border-foreground/20 text-center">
-            <h2 className="text-2xl font-bold tracking-wide text-foreground">Log In</h2>
+          <h2 className="mb-1 text-lg font-semibold tracking-wide text-center text-foreground">
+            - Log In -
+          </h2>
+          <div className="border-y-2 pb-2 mb-6 border-foreground/20 text-center bg-linear-to-r from-black/5 via-black/30 to-black/5 dark:bg-linear-to-r dark:from-white/5 dark:via-white/30 dark:to-white/5">
+            <h1 className="text-2xl font-bold tracking-wide text-foreground">SIMPUBES SERANG</h1>
           </div>
           <div className="flex justify-center mb-8">
             <Image
               src="/Logo_Kota_Serang.webp"
               alt="Logo SimpubesSRG"
-              width={100}
-              height={100}
+              width={120}
+              height={120}
               className="object-contain"
               priority
             />

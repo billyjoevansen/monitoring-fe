@@ -41,6 +41,7 @@ export function useUsers(currentUser: User) {
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -105,8 +106,6 @@ export function useUsers(currentUser: User) {
 
     try {
       if (editingUser) {
-        // ── EDIT USER ──────────────────────────────────────────────────────
-        // Hanya update kolom di tabel users — tidak menyentuh sesi auth sama sekali
         const updateData: Partial<User> = {
           nama: form.nama,
           role: form.role,
@@ -120,7 +119,7 @@ export function useUsers(currentUser: User) {
 
         if (updateErr) throw updateErr;
 
-        // Update password via server action (admin API) jika diisi
+        // Update password
         if (form.password && form.password.length >= 8) {
           await updateUserPassword(editingUser.id, form.password);
         } else if (form.password && form.password.length > 0) {
@@ -135,15 +134,12 @@ export function useUsers(currentUser: User) {
         showSuccessMessage(`User ${form.nama} berhasil diperbarui.`);
       } else {
         // ── BUAT USER BARU ─────────────────────────────────────────────────
-        // Validasi password
         if (!form.password || form.password.length < 8) {
           setError('Password minimal 8 karakter.');
           setSaving(false);
           return;
         }
 
-        // PENTING: Gunakan server action (admin API) — bukan supabase.auth.signUp()
-        // signUp() di browser client akan menggantikan sesi aktif (auto-login sebagai user baru)
         const newAuthUser = await createUser(form.email, form.password, form.nama);
 
         // Insert profil ke tabel users
@@ -173,7 +169,6 @@ export function useUsers(currentUser: User) {
 
   const handleDeleteUser = async (user: User) => {
     try {
-      // Gunakan server action (admin API) — tidak menyentuh sesi browser
       await deleteUserCompletely(user.id);
       await logActivity('delete_user', `Menghapus user ${user.nama} (${user.role})`);
       await loadData();
@@ -232,13 +227,16 @@ export function useUsers(currentUser: User) {
   };
 
   const handleBulkDelete = async () => {
-    if (selectedIds.size === 0) return;
+    if (selectedIds.size === 0) {
+      setBulkDeleteDialogOpen(false);
+      setBulkDeleting(false);
+      return;
+    }
 
     setBulkDeleting(true);
     const ids = Array.from(selectedIds);
 
     try {
-      // Semua delete via server action (admin API) — tidak menyentuh sesi browser
       await Promise.all(ids.map((id) => deleteUserCompletely(id)));
       await logActivity('delete_user', `Bulk delete ${ids.length} user`);
       setSelectedIds(new Set());
@@ -250,6 +248,7 @@ export function useUsers(currentUser: User) {
     }
 
     setBulkDeleting(false);
+    setBulkDeleteDialogOpen(false);
   };
 
   return {
@@ -281,5 +280,7 @@ export function useUsers(currentUser: User) {
     toggleSelectUser,
     toggleSelectAll,
     handleBulkDelete,
+    bulkDeleteDialogOpen,
+    setBulkDeleteDialogOpen,
   };
 }

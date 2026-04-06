@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 import { formatDate } from '@/lib/format';
 import type { ReconciliationArchive } from '@/types';
+
 import StatCard from '@/components/dashboard/StatCard';
 import MetaInfoGrid from '@/components/dashboard/MetaInfoGrid';
 import EmptySlide from './EmptySlide';
@@ -41,10 +42,12 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
 
   const rec = data.summary;
   const total = rec.total_petani;
+
   const pct = (value: number) => (total > 0 ? ((value / total) * 100).toFixed(1) : '—');
 
   return (
     <div className="space-y-6">
+      {/* Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         <StatCard
           icon={<UsersIcon className="w-5 h-5 text-blue-600" />}
@@ -54,6 +57,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
           gradient="bg-blue-50 border-blue-200 text-blue-900"
           iconBg="bg-blue-100"
         />
+
         <StatCard
           icon={<ShieldCheck className="w-5 h-5 text-green-600" />}
           label="Tebus Lengkap"
@@ -62,6 +66,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
           gradient="bg-green-50 border-green-200 text-green-900"
           iconBg="bg-green-100"
         />
+
         <StatCard
           icon={<AlertTriangle className="w-5 h-5 text-yellow-600" />}
           label="Tebus Sebagian"
@@ -70,6 +75,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
           gradient="bg-yellow-50 border-yellow-200 text-yellow-900"
           iconBg="bg-yellow-100"
         />
+
         <StatCard
           icon={<AlertTriangle className="w-5 h-5 text-orange-600" />}
           label="Belum Menebus"
@@ -78,6 +84,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
           gradient="bg-orange-50 border-orange-200 text-orange-900"
           iconBg="bg-orange-100"
         />
+
         <StatCard
           icon={<Activity className="w-5 h-5 text-purple-600" />}
           label="Kios Sesuai"
@@ -88,6 +95,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
         />
       </div>
 
+      {/* Detail */}
       <div className="bg-background rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -99,6 +107,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
               <p className="text-xs text-muted-foreground">{data.nama_arsip}</p>
             </div>
           </div>
+
           <Link
             href="/archives/reconciliation"
             className="inline-flex items-center gap-1 text-xs font-medium text-green-600 hover:text-green-700 transition-colors"
@@ -112,8 +121,16 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
           <div className="space-y-3">
             <MetaInfoGrid
               items={[
-                { icon: <UsersIcon className="w-3 h-3" />, label: 'Operator', value: data.user_nama },
-                { icon: <Clock className="w-3 h-3" />, label: 'Waktu', value: formatDate(data.created_at) },
+                {
+                  icon: <UsersIcon className="w-3 h-3" />,
+                  label: 'Operator',
+                  value: data.user_nama,
+                },
+                {
+                  icon: <Clock className="w-3 h-3" />,
+                  label: 'Waktu',
+                  value: formatDate(data.created_at),
+                },
               ]}
             />
 
@@ -131,6 +148,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
                   {rec.total_pupuk_diajukan_kg?.toLocaleString('id-ID')} kg
                 </p>
               </div>
+
               <div className="bg-blue-50 rounded-xl p-3">
                 <p className="text-xs text-blue-600">Total Ditebus</p>
                 <p className="text-sm font-bold text-blue-700">
@@ -140,14 +158,16 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
             </div>
           </div>
 
-          {/* Status breakdown bars */}
+          {/* Bars */}
           <div className="space-y-3">
             <p className="text-xs font-semibold text-foreground uppercase tracking-wide">
               Distribusi Status Penebusan
             </p>
+
             {STATUS_ROWS.map(({ key, label, color }) => {
               const value = rec.status_penebusan[key];
               const barPct = total > 0 ? (value / total) * 100 : 0;
+
               return (
                 <div key={key}>
                   <div className="flex justify-between text-xs mb-1">
@@ -159,9 +179,10 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
                       </span>
                     </span>
                   </div>
+
                   <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${color} rounded-full transition-all duration-700`}
+                      className={`${color} h-full rounded-full transition-all duration-500`}
                       style={{ width: `${barPct}%` }}
                     />
                   </div>

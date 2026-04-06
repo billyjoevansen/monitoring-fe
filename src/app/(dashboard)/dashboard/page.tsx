@@ -31,30 +31,27 @@ export default async function DashboardPage() {
     redirect('/deactivated');
   }
 
-  // Fetch latest classification archive
-  const { data: latestClassification } = await supabase
-    .from('classification_archives')
-    .select('id, user_nama, nama_arsip, summary, model_info, reconciliation_id, created_at')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
-
-  // Fetch latest reconciliation archive
-  const { data: latestReconciliation } = await supabase
-    .from('reconciliation_archives')
-    .select('id, user_id, user_nama, nama_arsip, summary, detail, created_at')
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
-
-  // Fetch total archives count
-  const { count: totalClassifications } = await supabase
-    .from('classification_archives')
-    .select('*', { count: 'exact', head: true });
-
-  const { count: totalReconciliations } = await supabase
-    .from('reconciliation_archives')
-    .select('*', { count: 'exact', head: true });
+  const [
+    { data: latestClassification },
+    { data: latestReconciliation },
+    { count: totalClassifications },
+    { count: totalReconciliations },
+  ] = await Promise.all([
+    supabase
+      .from('classification_archives')
+      .select('id, user_nama, nama_arsip, summary, model_info, reconciliation_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single(),
+    supabase
+      .from('reconciliation_archives')
+      .select('id, user_id, user_nama, nama_arsip, summary, detail, created_at')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single(),
+    supabase.from('classification_archives').select('*', { count: 'exact', head: true }),
+    supabase.from('reconciliation_archives').select('*', { count: 'exact', head: true }),
+  ]);
 
   return (
     <DashboardClient
