@@ -1,10 +1,11 @@
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import DashboardClient from './DashboardClient';
 import type { User } from '@/types';
 import type { ClassificationArchive, ReconciliationArchive } from '@/types';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Dashboard',
 };
 

@@ -7,6 +7,20 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
+export async function createUser(email: string, password: string, nama: string) {
+  const { data, error } = await supabaseAdmin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: { nama },
+  });
+
+  if (error) throw new Error(`Gagal membuat akun: ${error.message}`);
+  if (!data.user) throw new Error('Gagal membuat akun: user tidak ditemukan.');
+
+  return data.user;
+}
+
 export async function deleteUserCompletely(userId: string) {
   const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
@@ -17,7 +31,7 @@ export async function deleteUserCompletely(userId: string) {
   const { error: dbError } = await supabaseAdmin.from('users').delete().eq('id', userId);
 
   if (dbError) {
-    throw new Error(`DB delete failed: ${dbError.message}`);
+    throw new Error(`[Error] Gagal menghapus pengguna: ${dbError.message}`);
   }
 
   return { success: true };

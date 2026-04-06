@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { getCreatableRoles } from '@/config/rbac';
 import { logActivity } from '@/lib/auth-client';
-import { deleteUserCompletely, updateUserPassword } from '@/lib/auth-server';
+import { createUser, deleteUserCompletely, updateUserPassword } from '@/lib/auth-server';
 import type { User, Role } from '@/types';
 
 export interface UserFormState {
@@ -49,12 +49,13 @@ export function useUsers(currentUser: User) {
   const loadData = async () => {
     const supabase = manageClient();
 
-    const [usersRes] = await Promise.all([
-      supabase.from('users').select('*').order('created_at', { ascending: false }),
-    ]);
+    const { data } = await supabase
+      .from('users')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-    if (usersRes.data) {
-      let filtered = usersRes.data as User[];
+    if (data) {
+      let filtered = data as User[];
       if (currentUser.role === 'kabid') {
         filtered = filtered.filter(
           (u) => u.role === 'kasie' || u.role === 'bpp' || u.id === currentUser.id,
@@ -104,6 +105,8 @@ export function useUsers(currentUser: User) {
 
     try {
       if (editingUser) {
+        // ── EDIT USER ──────────────────────────────────────────────────────
+        // Hanya update kolom di tabel users — tidak menyentuh sesi auth sama sekali
         const updateData: Partial<User> = {
           nama: form.nama,
           role: form.role,
@@ -117,38 +120,40 @@ export function useUsers(currentUser: User) {
 
         if (updateErr) throw updateErr;
 
+        // Update password via server action (admin API) jika diisi
         if (form.password && form.password.length >= 8) {
           await updateUserPassword(editingUser.id, form.password);
+        } else if (form.password && form.password.length > 0) {
+          throw new Error('Password minimal 8 karakter.');
         }
 
         await logActivity(
           'update_user',
-          `${form.nama} ${form.role ? 'menjadi ' + form.role : `(${form.role})`} ${form.password ? 'dengan password baru' : 'tanpa mengubah password'})`,
+          `Mengedit user ${form.nama} (${form.role})${form.password ? ' + password baru' : ''}`,
         );
 
         showSuccessMessage(`User ${form.nama} berhasil diperbarui.`);
       } else {
+        // ── BUAT USER BARU ─────────────────────────────────────────────────
+        // Validasi password
         if (!form.password || form.password.length < 8) {
           setError('Password minimal 8 karakter.');
           setSaving(false);
           return;
         }
 
-        const { data: authData, error: authErr } = await supabase.auth.signUp({
-          email: form.email,
-          password: form.password,
-          options: { data: { nama: form.nama } },
-        });
+        // PENTING: Gunakan server action (admin API) — bukan supabase.auth.signUp()
+        // signUp() di browser client akan menggantikan sesi aktif (auto-login sebagai user baru)
+        const newAuthUser = await createUser(form.email, form.password, form.nama);
 
-        if (authErr) throw authErr;
-        if (!authData.user) throw new Error('Gagal membuat akun.');
-
+        // Insert profil ke tabel users
         const { error: insertErr } = await supabase.from('users').insert({
-          id: authData.user.id,
+          id: newAuthUser.id,
           email: form.email,
           nama: form.nama,
           role: form.role,
           kecamatan: form.role === 'bpp' ? form.kecamatan : null,
+          is_active: true,
         });
 
         if (insertErr) throw insertErr;
@@ -168,14 +173,14 @@ export function useUsers(currentUser: User) {
 
   const handleDeleteUser = async (user: User) => {
     try {
+      // Gunakan server action (admin API) — tidak menyentuh sesi browser
       await deleteUserCompletely(user.id);
-
-      await logActivity('delete_user', `Menghapus user ${user.nama}`);
+      await logActivity('delete_user', `Menghapus user ${user.nama} (${user.role})`);
       await loadData();
       showSuccessMessage(`User ${user.nama} berhasil dihapus.`);
     } catch (err) {
       console.error(err);
-      setError('Gagal menghapus user.');
+      setError(err instanceof Error ? err.message : 'Gagal menghapus user.');
     }
 
     setDeleteDialogUser(null);
@@ -190,14 +195,18 @@ export function useUsers(currentUser: User) {
       .update({ is_active: newStatus })
       .eq('id', user.id);
 
-    if (!toggleErr) {
-      await logActivity(
-        newStatus ? 'activate_user' : 'deactivate_user',
-        `${newStatus ? 'Mengaktifkan' : 'Menonaktifkan'} user ${user.nama}`,
-      );
-      await loadData();
-      showSuccessMessage(`User ${user.nama} ${newStatus ? 'diaktifkan' : 'dinonaktifkan'}.`);
+    if (toggleErr) {
+      setError('Gagal mengubah status user.');
+      setToggleDialogUser(null);
+      return;
     }
+
+    await logActivity(
+      newStatus ? 'activate_user' : 'deactivate_user',
+      `${newStatus ? 'Mengaktifkan' : 'Menonaktifkan'} user ${user.nama}`,
+    );
+    await loadData();
+    showSuccessMessage(`User ${user.nama} ${newStatus ? 'diaktifkan' : 'dinonaktifkan'}.`);
 
     setToggleDialogUser(null);
   };
@@ -229,15 +238,15 @@ export function useUsers(currentUser: User) {
     const ids = Array.from(selectedIds);
 
     try {
+      // Semua delete via server action (admin API) — tidak menyentuh sesi browser
       await Promise.all(ids.map((id) => deleteUserCompletely(id)));
-
       await logActivity('delete_user', `Bulk delete ${ids.length} user`);
       setSelectedIds(new Set());
       await loadData();
       showSuccessMessage(`${ids.length} user berhasil dihapus.`);
     } catch (err) {
       console.error(err);
-      setError('Gagal bulk delete user.');
+      setError(err instanceof Error ? err.message : 'Gagal bulk delete user.');
     }
 
     setBulkDeleting(false);
