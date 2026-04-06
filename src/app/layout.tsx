@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     index: false,
     follow: false,
   },
+  verification: {
+    google: 'FhKgRJuzYIYPHhKzU2bk__2cTEcn-ZumeQ-1Ij9_Kvs',
+  },
   /*
   openGraph: {
     title: 'Simpubes - Serang',
