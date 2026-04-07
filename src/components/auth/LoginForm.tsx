@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { login } from '@/lib/auth-client';
-import Link from 'next/link';
+import Turnstile from './Turnstile';
 import Image from 'next/image';
 
 export default function LoginForm() {
