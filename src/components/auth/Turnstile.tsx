@@ -24,27 +24,52 @@ export default function Turnstile({ onVerify, onExpire }: TurnstileProps) {
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
     if (!siteKey) return;
 
-    // Load Turnstile script
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad';
-    script.async = true;
+    const renderWidget = () => {
+      if (!containerRef.current || widgetIdRef.current || !window.turnstile) return;
 
-    // Callback saat script loaded
-    (window as unknown as Record<string, unknown>).onTurnstileLoad = () => {
-      if (containerRef.current && window.turnstile) {
-        widgetIdRef.current = window.turnstile.render(containerRef.current, {
-          sitekey: siteKey,
-          callback: (token: string) => onVerify(token),
-          'expired-callback': () => onExpire?.(),
-          theme: 'light',
-        });
-      }
+      widgetIdRef.current = window.turnstile.render(containerRef.current, {
+        sitekey: siteKey,
+        callback: (token: string) => onVerify(token),
+        'expired-callback': () => {
+          widgetIdRef.current && window.turnstile.reset(widgetIdRef.current);
+          onExpire?.();
+        },
+        theme: 'light',
+      });
     };
 
-    document.head.appendChild(script);
+    // kalau script sudah ada
+    if (window.turnstile) {
+      renderWidget();
+      return;
+    }
 
+    let script: HTMLScriptElement | null = null;
+
+    const existingScript = document.querySelector(
+      'script[src*="challenges.cloudflare.com/turnstile"]',
+    ) as HTMLScriptElement | null;
+
+    if (!existingScript) {
+      script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.async = true;
+      script.onload = renderWidget;
+      document.head.appendChild(script);
+    } else {
+      if ((window as any).turnstile) {
+        renderWidget();
+      } else {
+        existingScript.addEventListener('load', renderWidget);
+      }
+    }
     return () => {
-      document.head.removeChild(script);
+      if (script) {
+        script.onload = null;
+      }
+      if (existingScript) {
+        existingScript.removeEventListener('load', renderWidget);
+      }
     };
   }, [onVerify, onExpire]);
 

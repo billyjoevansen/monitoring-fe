@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { login } from '@/lib/auth-client';
@@ -15,6 +15,15 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const handleVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setError(null);
+  }, []);
+
+  const handleExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -27,9 +36,9 @@ export default function LoginForm() {
     try {
       await login(email, password);
       router.push('/dashboard');
-      router.refresh();
     } catch {
       setError('Email atau password salah.');
+      setTurnstileToken(null);
     } finally {
       setLoading(false);
     }
@@ -112,13 +121,7 @@ export default function LoginForm() {
               </button>
             </div>
           </div>
-          <Turnstile
-            onVerify={(token) => {
-              setTurnstileToken(token);
-              setError(null);
-            }}
-            onExpire={() => setTurnstileToken(null)}
-          />
+          <Turnstile onVerify={handleVerify} onExpire={handleExpire} />
           {/* Submit */}
           <button
             type="submit"
