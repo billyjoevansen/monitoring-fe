@@ -14,7 +14,6 @@ export function useNavbar({ user }: { user: User }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<DropdownKey | null>(null);
 
-  // Tambahkan state untuk dialog logout
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const dropdownRefs = useRef<Partial<Record<DropdownKey, HTMLDivElement | null>>>({});
@@ -48,13 +47,11 @@ export function useNavbar({ user }: { user: User }) {
     closeDropdown();
   }, [pathname, closeDropdown]);
 
-  // Fungsi untuk membuka dialog (dipanggil saat klik tombol logout)
   const handleLogoutClick = () => {
     setLogoutDialogOpen(true);
-    closeDropdown(); // Tutup dropdown profile
+    closeDropdown();
   };
 
-  // Fungsi untuk eksekusi logout setelah konfirmasi
   const confirmLogout = async () => {
     try {
       await logout();
