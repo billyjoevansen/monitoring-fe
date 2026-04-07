@@ -23,12 +23,12 @@ export default function CarouselControls({
   onMouseLeave,
 }: CarouselControlsProps) {
   return (
-    <div
-      className="flex items-center justify-between mb-4"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
-      <div className="flex gap-1 bg-gray-100 dark:bg-slate-800 p-1 rounded-xl">
+    <div className="flex items-center justify-between mb-4">
+      <div
+        className="flex gap-1 bg-gray-100 dark:bg-slate-800 p-1 rounded-xl"
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
         {SLIDE_LABELS.map((label, i) => (
           <button
             key={label}

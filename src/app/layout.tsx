@@ -19,24 +19,6 @@ export const metadata: Metadata = {
   verification: {
     google: 'FhKgRJuzYIYPHhKzU2bk__2cTEcn-ZumeQ-1Ij9_Kvs',
   },
-  /*
-  openGraph: {
-    title: 'Simpubes - Serang',
-    description: 'Sistem Informasi Monitoring Pupuk Bersubsidi Kota Serang',
-    url: 'https://simpubes-serang.vercel.app',
-    siteName: 'Simpubes Serang',
-    images: [
-      {
-        url: 'https://simpubes-serang.vercel.app/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Simpubes Serang',
-      },
-    ],
-    locale: 'id_ID',
-    type: 'website',
-  },
-  */
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

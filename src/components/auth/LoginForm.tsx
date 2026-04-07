@@ -123,16 +123,6 @@ export default function LoginForm() {
             )}
           </button>
         </form>
-
-        {/* Forgot password */}
-        <div className="mt-4">
-          <Link
-            href="/forgot-password"
-            className="text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
-          >
-            Lupa Password?
-          </Link>
-        </div>
       </div>
     </div>
   );

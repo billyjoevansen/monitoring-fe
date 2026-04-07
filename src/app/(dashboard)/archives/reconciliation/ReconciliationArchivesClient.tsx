@@ -5,6 +5,7 @@ import { FileStack, Download, Filter, MapPin } from 'lucide-react';
 import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
+import { ArchiveDeleteDialog } from '@/components/archive/ArchiveDeleteDialog';
 import MiniCard from '@/components/ui/MiniCard';
 import SummaryCard from '@/components/ui/SummaryCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
@@ -22,7 +23,6 @@ export default function ReconciliationArchivesClient({
   userRole,
   userKecamatan,
 }: ReconciliationArchivesClientProps) {
-  // BPP hanya bisa melihat arsip kecamatannya sendiri
   const filterByKecamatan = userRole === 'bpp' ? (userKecamatan ?? undefined) : undefined;
 
   const {
@@ -38,13 +38,20 @@ export default function ReconciliationArchivesClient({
     toggleExpand,
     deleting,
     handleDelete,
+    confirmDelete,
+    cancelDelete,
+    deleteDialogOpen,
+    archiveToDelete,
     formatDate,
     selectedIds,
     allSelected,
     bulkDeleting,
+    bulkDeleteDialogOpen,
     toggleSelectArchive,
     toggleSelectAll,
     handleBulkDelete,
+    confirmBulkDelete,
+    cancelBulkDelete,
   } = useArchive<ReconciliationArchive>({
     table: 'reconciliation_archives',
     deleteActivityKey: 'delete_archive',
@@ -86,7 +93,6 @@ export default function ReconciliationArchivesClient({
           formatDate={formatDate}
         />
 
-        {/* Badge kecamatan arsip */}
         {viewingArchive.kecamatan && (
           <div className="inline-flex items-center gap-1.5 text-xs text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-lg mb-4">
             <MapPin className="w-3.5 h-3.5" />
@@ -147,52 +153,73 @@ export default function ReconciliationArchivesClient({
     );
   }
 
-  // Subtitle dinamis: BPP tampilkan wilayahnya
   const subtitle =
     userRole === 'bpp' && userKecamatan
       ? `Riwayat hasil rekonsiliasi wilayah ${userKecamatan}`
       : 'Riwayat hasil rekonsiliasi yang telah disimpan';
 
   return (
-    <ArchiveListLayout
-      icon={
-        <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-          <FileStack className="w-5 h-5 text-amber-600" />
-        </div>
-      }
-      title="Arsip Rekonsiliasi"
-      subtitle={subtitle}
-      emptyIcon={<FileStack className="w-full h-full" />}
-      emptyTitle="Belum ada arsip rekonsiliasi."
-      emptySubtitle="Lakukan rekonsiliasi dan simpan hasilnya."
-      filtered={filtered}
-      filterWilayah={filterWilayah}
-      onFilterWilayahChange={setFilterWilayah}
-      loading={loading}
-      search={search}
-      expandedId={expandedId}
-      deleting={deleting}
-      canEdit={canEdit}
-      onSearchChange={setSearch}
-      onToggleExpand={toggleExpand}
-      onView={setViewingArchive}
-      onDelete={handleDelete}
-      formatDate={formatDate}
-      renderExpandedSummary={({ summary }) => (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          <MiniCard label="Total Petani" value={summary.total_petani} />
-          <MiniCard label="Tebus Lengkap" value={summary.status_penebusan.tebus_lengkap} />
-          <MiniCard label="Tebus Sebagian" value={summary.status_penebusan.tebus_sebagian} />
-          <MiniCard label="Kios Sesuai" value={`${summary.kios.persentase_sesuai}%`} />
-        </div>
-      )}
-      selectedIds={selectedIds}
-      allSelected={allSelected}
-      bulkDeleting={bulkDeleting}
-      onToggleSelect={toggleSelectArchive}
-      onToggleSelectAll={toggleSelectAll}
-      onBulkDelete={handleBulkDelete}
-      userKecamatan={userKecamatan}
-    />
+    <>
+      <ArchiveListLayout
+        icon={
+          <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+            <FileStack className="w-5 h-5 text-amber-600" />
+          </div>
+        }
+        title="Arsip Rekonsiliasi"
+        subtitle={subtitle}
+        emptyIcon={<FileStack className="w-full h-full" />}
+        emptyTitle="Belum ada arsip rekonsiliasi."
+        emptySubtitle="Lakukan rekonsiliasi dan simpan hasilnya."
+        filtered={filtered}
+        filterWilayah={filterWilayah}
+        onFilterWilayahChange={setFilterWilayah}
+        loading={loading}
+        search={search}
+        expandedId={expandedId}
+        deleting={deleting}
+        canEdit={canEdit}
+        onSearchChange={setSearch}
+        onToggleExpand={toggleExpand}
+        onView={setViewingArchive}
+        onDelete={handleDelete}
+        formatDate={formatDate}
+        renderExpandedSummary={({ summary }) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <MiniCard label="Total Petani" value={summary.total_petani} />
+            <MiniCard label="Tebus Lengkap" value={summary.status_penebusan.tebus_lengkap} />
+            <MiniCard label="Tebus Sebagian" value={summary.status_penebusan.tebus_sebagian} />
+            <MiniCard label="Kios Sesuai" value={`${summary.kios.persentase_sesuai}%`} />
+          </div>
+        )}
+        selectedIds={selectedIds}
+        allSelected={allSelected}
+        bulkDeleting={bulkDeleting}
+        onToggleSelect={toggleSelectArchive}
+        onToggleSelectAll={toggleSelectAll}
+        onBulkDelete={handleBulkDelete}
+        userKecamatan={userKecamatan}
+      />
+
+      <ArchiveDeleteDialog
+        open={deleteDialogOpen}
+        isBulkDelete={false}
+        archiveToDelete={archiveToDelete}
+        bulkDeleteCount={0}
+        deleting={!!deleting}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+
+      <ArchiveDeleteDialog
+        open={bulkDeleteDialogOpen}
+        isBulkDelete={true}
+        archiveToDelete={null}
+        bulkDeleteCount={selectedIds.size}
+        deleting={bulkDeleting}
+        onConfirm={confirmBulkDelete}
+        onCancel={cancelBulkDelete}
+      />
+    </>
   );
 }
