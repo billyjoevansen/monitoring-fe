@@ -14,6 +14,9 @@ export function useNavbar({ user }: { user: User }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<DropdownKey | null>(null);
 
+  // Tambahkan state untuk dialog logout
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
   const dropdownRefs = useRef<Partial<Record<DropdownKey, HTMLDivElement | null>>>({});
   const setRef = useCallback(
     (key: DropdownKey) => (el: HTMLDivElement | null) => {
@@ -45,7 +48,14 @@ export function useNavbar({ user }: { user: User }) {
     closeDropdown();
   }, [pathname, closeDropdown]);
 
-  const handleLogout = async () => {
+  // Fungsi untuk membuka dialog (dipanggil saat klik tombol logout)
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+    closeDropdown(); // Tutup dropdown profile
+  };
+
+  // Fungsi untuk eksekusi logout setelah konfirmasi
+  const confirmLogout = async () => {
     try {
       await logout();
       sessionStorage.clear();
@@ -53,6 +63,8 @@ export function useNavbar({ user }: { user: User }) {
       router.replace('/login');
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setLogoutDialogOpen(false);
     }
   };
 
@@ -61,15 +73,12 @@ export function useNavbar({ user }: { user: User }) {
   );
 
   const isActive = (href: string) => {
-    // 1. Jika href biasa (misal /dashboard)
     if (href.startsWith('/')) {
       return pathname === href;
     }
 
-    // 2. Jika href diawali '#' (misal #training)
     if (href.startsWith('#')) {
-      const slug = href.replace('#', ''); // 'training'
-      // Cek apakah pathname mengandung kata 'training' (misal /training atau /training/settings)
+      const slug = href.replace('#', '');
       return pathname.includes(slug);
     }
 
@@ -89,6 +98,9 @@ export function useNavbar({ user }: { user: User }) {
     openDropdown,
     toggleDropdown,
     setRef,
-    handleLogout,
+    logoutDialogOpen,
+    setLogoutDialogOpen,
+    handleLogoutClick,
+    confirmLogout,
   };
 }

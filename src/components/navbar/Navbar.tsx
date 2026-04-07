@@ -10,6 +10,18 @@ import { useNavbar } from '@/hooks/useNavbar';
 import type { User } from '@/types';
 import DarkModeToggle from './DarkModeToggle';
 
+// Import komponen AlertDialog
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 function getDropdownKey(href: string): 'arsip' | 'train' {
   return href === '#training' ? 'train' : 'arsip';
 }
@@ -24,7 +36,11 @@ export default function Navbar({ user }: { user: User }) {
     openDropdown,
     toggleDropdown,
     setRef,
-    handleLogout,
+    // Destructure state dan fungsi logout baru
+    logoutDialogOpen,
+    setLogoutDialogOpen,
+    handleLogoutClick,
+    confirmLogout,
   } = useNavbar({ user });
 
   return (
@@ -110,7 +126,7 @@ export default function Navbar({ user }: { user: User }) {
                 user={user}
                 isOpen={openDropdown === 'profile'}
                 onToggle={() => toggleDropdown('profile')}
-                onLogout={handleLogout}
+                onLogout={handleLogoutClick} // <-- Ubah ke fungsi baru
                 dropdownRef={setRef('profile')}
               />
 
@@ -190,12 +206,34 @@ export default function Navbar({ user }: { user: User }) {
 
               {/* Mobile profile actions */}
               <div className="border-t border-gray-100 dark:border-slate-700 pt-2 mt-2 space-y-1">
-                <ProfileActions onLogout={handleLogout} />
+                <ProfileActions onLogout={handleLogoutClick} /> {/* <-- Ubah di sini juga */}
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Konfirmasi Logout */}
+      <AlertDialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Keluar dari Sistem?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Anda akan keluar dari akun <span className="font-semibold">{user.nama}</span>. Yakin
+              ingin melanjutkan?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setLogoutDialogOpen(false)}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmLogout}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Ya, Keluar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
