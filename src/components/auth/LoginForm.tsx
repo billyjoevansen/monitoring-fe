@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { login } from '@/lib/auth-client';
 import Turnstile, { TurnstileRef } from './Turnstile';
+import { RouteChangeOverlay } from '@/components/ui/RouteChangeOverlay';
 import Image from 'next/image';
 
 export default function LoginForm() {
@@ -17,6 +18,7 @@ export default function LoginForm() {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleVerify = useCallback((token: string) => {
@@ -42,124 +44,131 @@ export default function LoginForm() {
     try {
       await login(email, password);
 
-      // reset captcha sebelum redirect (optional, tapi clean)
+      // Reset captcha
       turnstileRef.current?.reset();
       setTurnstileToken(null);
 
+      // Show full-screen redirect overlay before navigating
+      setRedirecting(true);
       router.push('/dashboard');
     } catch {
       setError('Email atau password salah.');
-
-      // 🔥 sinkronkan UI + state
       setTurnstileToken(null);
       turnstileRef.current?.reset();
-    } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="w-full md:w-[45%] flex items-center justify-center px-10 py-12 bg-background transition-colors duration-200">
-      <div className="w-full max-w-sm">
-        {/* Header */}
-        <div className="mb-8">
-          <h2 className="mb-1 text-lg font-semibold tracking-wide text-center text-foreground">
-            - Log In -
-          </h2>
+    <>
+      {/* Full-screen overlay when redirecting to dashboard */}
+      <RouteChangeOverlay visible={redirecting} message="Memuat dashboard..." />
 
-          <div className="border-y-2 pb-2 mb-6 border-foreground/20 text-center bg-linear-to-r from-black/5 via-black/30 to-black/5 dark:bg-linear-to-r dark:from-white/5 dark:via-white/30 dark:to-white/5">
-            <h1 className="text-2xl font-bold tracking-wide text-foreground">SIMPUBES SERANG</h1>
-          </div>
+      <div className="w-full md:w-[45%] flex items-center justify-center px-10 py-12 bg-background transition-colors duration-200">
+        <div className="w-full max-w-sm">
+          {/* Header */}
+          <div className="mb-8">
+            <h2 className="mb-1 text-lg font-semibold tracking-wide text-center text-foreground">
+              - Log In -
+            </h2>
 
-          <div className="flex justify-center mb-8">
-            <Image
-              src="/Logo_Kota_Serang.webp"
-              alt="Logo SimpubesSRG"
-              width={120}
-              height={120}
-              className="object-contain"
-              priority
-            />
-          </div>
-        </div>
+            <div className="border-y-2 pb-2 mb-6 border-foreground/20 text-center bg-linear-to-r from-black/5 via-black/30 to-black/5 dark:bg-linear-to-r dark:from-white/5 dark:via-white/30 dark:to-white/5">
+              <h1 className="text-2xl font-bold tracking-wide text-foreground">SIMPUBES SERANG</h1>
+            </div>
 
-        {/* Error */}
-        {error && (
-          <div className="text-sm p-3 rounded mb-4 border bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400">
-            {error}
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-1 text-muted-foreground">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Masukan alamat email"
-              required
-              className="w-full px-3 py-2.5 rounded text-sm border bg-background text-foreground border-gray-300 dark:border-gray-600 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-transparent transition-colors duration-200"
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium mb-1 text-muted-foreground"
-            >
-              Password
-            </label>
-
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Masukan Password"
-                required
-                className="w-full px-3 py-2.5 pr-10 rounded text-sm border bg-background text-foreground border-gray-300 dark:border-gray-600 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-transparent transition-colors duration-200"
+            <div className="flex justify-center mb-8">
+              <Image
+                src="/Logo_Kota_Serang.webp"
+                alt="Logo SimpubesSRG"
+                width={120}
+                height={120}
+                className="object-contain"
+                priority
               />
-
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
             </div>
           </div>
 
-          {/* Turnstile */}
-          <Turnstile ref={turnstileRef} onVerify={handleVerify} onExpire={handleExpire} />
+          {/* Error */}
+          {error && (
+            <div className="text-sm p-3 rounded mb-4 border bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400">
+              {error}
+            </div>
+          )}
 
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading || !turnstileToken}
-            className="w-full py-2.5 mt-2 rounded font-semibold text-sm flex items-center justify-center gap-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-900 text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Memproses...
-              </>
-            ) : (
-              'Masuk'
-            )}
-          </button>
-        </form>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium mb-1 text-muted-foreground"
+              >
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Masukan alamat email"
+                required
+                className="w-full px-3 py-2.5 rounded text-sm border bg-background text-foreground border-gray-300 dark:border-gray-600 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-transparent transition-colors duration-200"
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium mb-1 text-muted-foreground"
+              >
+                Password
+              </label>
+
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Masukan Password"
+                  required
+                  className="w-full px-3 py-2.5 pr-10 rounded text-sm border bg-background text-foreground border-gray-300 dark:border-gray-600 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-transparent transition-colors duration-200"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Turnstile */}
+            <Turnstile ref={turnstileRef} onVerify={handleVerify} onExpire={handleExpire} />
+
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={loading || !turnstileToken}
+              className="w-full py-2.5 mt-2 rounded font-semibold text-sm flex items-center justify-center gap-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-900 text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Memproses...
+                </>
+              ) : (
+                'Masuk'
+              )}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

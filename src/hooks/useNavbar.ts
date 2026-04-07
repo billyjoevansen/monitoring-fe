@@ -15,6 +15,7 @@ export function useNavbar({ user }: { user: User }) {
   const [openDropdown, setOpenDropdown] = useState<DropdownKey | null>(null);
 
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   const dropdownRefs = useRef<Partial<Record<DropdownKey, HTMLDivElement | null>>>({});
   const setRef = useCallback(
@@ -53,6 +54,8 @@ export function useNavbar({ user }: { user: User }) {
   };
 
   const confirmLogout = async () => {
+    setLogoutDialogOpen(false);
+    setLogoutLoading(true);
     try {
       await logout();
       sessionStorage.clear();
@@ -60,9 +63,9 @@ export function useNavbar({ user }: { user: User }) {
       router.replace('/login');
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      setLogoutDialogOpen(false);
+      setLogoutLoading(false);
     }
+    // Keep logoutLoading=true until the page unmounts/redirects
   };
 
   const visibleItems = NAV_ITEMS.filter(
@@ -99,5 +102,6 @@ export function useNavbar({ user }: { user: User }) {
     setLogoutDialogOpen,
     handleLogoutClick,
     confirmLogout,
+    logoutLoading,
   };
 }

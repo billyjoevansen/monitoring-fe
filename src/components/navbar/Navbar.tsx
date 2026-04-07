@@ -7,6 +7,7 @@ import { ROLE_COLORS, ROLE_LABELS } from '@/config/rbac';
 import { NavDropdown } from '@/components/navbar/NavDropdown';
 import { ProfileDropdown, ProfileActions } from '@/components/navbar/ProfileDropdown';
 import { useNavbar } from '@/hooks/useNavbar';
+import { RouteChangeOverlay } from '@/components/ui/RouteChangeOverlay';
 import type { User } from '@/types';
 import DarkModeToggle from './DarkModeToggle';
 
@@ -35,15 +36,18 @@ export default function Navbar({ user }: { user: User }) {
     openDropdown,
     toggleDropdown,
     setRef,
-    // Destructure state
     logoutDialogOpen,
     setLogoutDialogOpen,
     handleLogoutClick,
     confirmLogout,
+    logoutLoading,
   } = useNavbar({ user });
 
   return (
     <>
+      {/* Logout full-screen overlay */}
+      <RouteChangeOverlay visible={logoutLoading} message="Keluar dari sistem..." />
+
       <nav className="fixed top-3 left-1 right-1 z-50 border border-black/10 dark:border-white bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl supports-backdrop-filter:bg-white/60 dark:supports-backdrop-filter:bg-slate-900/60 rounded-md outline-2 outline-black dark:outline-white/10">
         <div className="max-w-400 mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">

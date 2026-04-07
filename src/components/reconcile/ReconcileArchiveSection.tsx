@@ -40,7 +40,7 @@ export default function ReconcileArchiveSection({
           </div>
           <div className="flex items-center gap-3">
             {isFiltered && (
-              <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-lg">
+              <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/40 px-2.5 py-1.5 rounded-lg">
                 <Filter className="w-3.5 h-3.5" />
                 <span>
                   Download {filteredDetail.length} dari {result.detail.length} data
@@ -106,7 +106,7 @@ export default function ReconcileArchiveSection({
 
             <div className="flex items-center gap-2">
               {isFiltered && (
-                <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-lg">
+                <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/40 px-2.5 py-1.5 rounded-lg">
                   <Filter className="w-3.5 h-3.5" />
                   <span>
                     {filteredDetail.length}/{result.detail.length}
