@@ -43,8 +43,8 @@ export default function LogsClient({ currentUser }: { currentUser: User }) {
     <div>
       <Hero
         icon={<ScrollText className="w-10 h-10 text-foreground" />}
-        title="Manajemen User"
-        subtitle="Kelola akun pengguna, atur peran, dan aktifkan atau nonaktifkan akses dengan mudah."
+        title="Log Aktivitas"
+        subtitle="Kelola & pantau log aktivitas pengguna dalam sistem"
         actions={
           <Button onClick={handleRefresh} variant="outline" size="sm">
             <RefreshCw className="w-4 h-4" />
