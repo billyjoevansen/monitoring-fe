@@ -10,6 +10,7 @@ export default function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +18,11 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    if (!turnstileToken) {
+      setError('Silakan verifikasi Captcha terlebih dahulu.');
+      return;
+    }
+
     setLoading(true);
     try {
       await login(email, password);
@@ -106,11 +112,17 @@ export default function LoginForm() {
               </button>
             </div>
           </div>
-
+          <Turnstile
+            onVerify={(token) => {
+              setTurnstileToken(token);
+              setError(null);
+            }}
+            onExpire={() => setTurnstileToken(null)}
+          />
           {/* Submit */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !turnstileToken}
             className="w-full py-2.5 mt-2 rounded font-semibold text-sm flex items-center justify-center gap-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-900 text-white hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
           >
             {loading ? (
