@@ -10,7 +10,6 @@ import { useNavbar } from '@/hooks/useNavbar';
 import type { User } from '@/types';
 import DarkModeToggle from './DarkModeToggle';
 
-// Import komponen AlertDialog
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,7 +35,7 @@ export default function Navbar({ user }: { user: User }) {
     openDropdown,
     toggleDropdown,
     setRef,
-    // Destructure state dan fungsi logout baru
+    // Destructure state
     logoutDialogOpen,
     setLogoutDialogOpen,
     handleLogoutClick,
@@ -126,7 +125,7 @@ export default function Navbar({ user }: { user: User }) {
                 user={user}
                 isOpen={openDropdown === 'profile'}
                 onToggle={() => toggleDropdown('profile')}
-                onLogout={handleLogoutClick} // <-- Ubah ke fungsi baru
+                onLogout={handleLogoutClick}
                 dropdownRef={setRef('profile')}
               />
 
@@ -206,7 +205,7 @@ export default function Navbar({ user }: { user: User }) {
 
               {/* Mobile profile actions */}
               <div className="border-t border-gray-100 dark:border-slate-700 pt-2 mt-2 space-y-1">
-                <ProfileActions onLogout={handleLogoutClick} /> {/* <-- Ubah di sini juga */}
+                <ProfileActions onLogout={handleLogoutClick} />
               </div>
             </div>
           </div>
