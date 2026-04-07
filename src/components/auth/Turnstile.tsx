@@ -1,10 +1,14 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 
 interface TurnstileProps {
   onVerify: (token: string) => void;
   onExpire?: () => void;
+}
+
+export interface TurnstileRef {
+  reset: () => void;
 }
 
 declare global {
@@ -16,29 +20,40 @@ declare global {
   }
 }
 
-export default function Turnstile({ onVerify, onExpire }: TurnstileProps) {
+const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({ onVerify, onExpire }, ref) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
+
+  // expose reset ke parent
+  useImperativeHandle(ref, () => ({
+    reset() {
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.reset(widgetIdRef.current);
+      }
+    },
+  }));
 
   useEffect(() => {
     const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
     if (!siteKey) return;
 
     const renderWidget = () => {
-      if (!containerRef.current || widgetIdRef.current || !window.turnstile) return;
+      if (!containerRef.current || widgetIdRef.current !== null || !window.turnstile) return;
 
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
         callback: (token: string) => onVerify(token),
         'expired-callback': () => {
-          widgetIdRef.current && window.turnstile.reset(widgetIdRef.current);
+          if (widgetIdRef.current && window.turnstile) {
+            window.turnstile.reset(widgetIdRef.current);
+          }
           onExpire?.();
         },
         theme: 'light',
       });
     };
 
-    // kalau script sudah ada
+    // jika sudah ada di window
     if (window.turnstile) {
       renderWidget();
       return;
@@ -57,12 +72,14 @@ export default function Turnstile({ onVerify, onExpire }: TurnstileProps) {
       script.onload = renderWidget;
       document.head.appendChild(script);
     } else {
+      // handle race condition
       if ((window as any).turnstile) {
         renderWidget();
       } else {
         existingScript.addEventListener('load', renderWidget);
       }
     }
+
     return () => {
       if (script) {
         script.onload = null;
@@ -74,4 +91,8 @@ export default function Turnstile({ onVerify, onExpire }: TurnstileProps) {
   }, [onVerify, onExpire]);
 
   return <div ref={containerRef} className="flex justify-center" />;
-}
+});
+
+Turnstile.displayName = 'Turnstile';
+
+export default Turnstile;

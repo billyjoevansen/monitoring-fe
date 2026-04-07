@@ -1,13 +1,17 @@
 'use client';
-import { useState, useCallback } from 'react';
+
+import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { login } from '@/lib/auth-client';
-import Turnstile from './Turnstile';
+import Turnstile, { TurnstileRef } from './Turnstile';
 import Image from 'next/image';
 
 export default function LoginForm() {
   const router = useRouter();
+
+  const turnstileRef = useRef<TurnstileRef>(null);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -27,18 +31,28 @@ export default function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
     if (!turnstileToken) {
       setError('Silakan verifikasi Captcha terlebih dahulu.');
       return;
     }
 
     setLoading(true);
+
     try {
       await login(email, password);
+
+      // reset captcha sebelum redirect (optional, tapi clean)
+      turnstileRef.current?.reset();
+      setTurnstileToken(null);
+
       router.push('/dashboard');
     } catch {
       setError('Email atau password salah.');
+
+      // 🔥 sinkronkan UI + state
       setTurnstileToken(null);
+      turnstileRef.current?.reset();
     } finally {
       setLoading(false);
     }
@@ -52,9 +66,11 @@ export default function LoginForm() {
           <h2 className="mb-1 text-lg font-semibold tracking-wide text-center text-foreground">
             - Log In -
           </h2>
+
           <div className="border-y-2 pb-2 mb-6 border-foreground/20 text-center bg-linear-to-r from-black/5 via-black/30 to-black/5 dark:bg-linear-to-r dark:from-white/5 dark:via-white/30 dark:to-white/5">
             <h1 className="text-2xl font-bold tracking-wide text-foreground">SIMPUBES SERANG</h1>
           </div>
+
           <div className="flex justify-center mb-8">
             <Image
               src="/Logo_Kota_Serang.webp"
@@ -101,6 +117,7 @@ export default function LoginForm() {
             >
               Password
             </label>
+
             <div className="relative">
               <input
                 id="password"
@@ -112,6 +129,7 @@ export default function LoginForm() {
                 required
                 className="w-full px-3 py-2.5 pr-10 rounded text-sm border bg-background text-foreground border-gray-300 dark:border-gray-600 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-transparent transition-colors duration-200"
               />
+
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -121,7 +139,10 @@ export default function LoginForm() {
               </button>
             </div>
           </div>
-          <Turnstile onVerify={handleVerify} onExpire={handleExpire} />
+
+          {/* Turnstile */}
+          <Turnstile ref={turnstileRef} onVerify={handleVerify} onExpire={handleExpire} />
+
           {/* Submit */}
           <button
             type="submit"
