@@ -7,10 +7,7 @@ interface RouteChangeOverlayProps {
   message?: string;
 }
 
-export function RouteChangeOverlay({
-  visible,
-  message = 'Memuat...',
-}: RouteChangeOverlayProps) {
+export function RouteChangeOverlay({ visible, message = 'Memuat...' }: RouteChangeOverlayProps) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -45,7 +42,7 @@ export function RouteChangeOverlay({
         transition: 'opacity 0.22s ease',
         pointerEvents: show ? 'all' : 'none',
       }}
-      className="dark:!bg-slate-950/80"
+      className="dark:bg-slate-950/80!"
     >
       {/* Spinner */}
       <div style={{ position: 'relative', width: 48, height: 48 }}>
@@ -85,7 +82,7 @@ export function RouteChangeOverlay({
           color: '#374151',
           letterSpacing: '0.01em',
         }}
-        className="dark:!text-slate-300"
+        className="dark:text-slate-300!"
       >
         {message}
       </p>
