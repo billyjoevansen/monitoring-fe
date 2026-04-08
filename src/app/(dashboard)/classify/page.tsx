@@ -6,6 +6,10 @@ import ClassifyClient from './ClassifyClient';
 export const metadata: Metadata = {
   title: 'Klasifikasi',
   description: 'klasifikasikan data petani sebagai transaksi normal atau tidak normal.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function ClassifyPage() {

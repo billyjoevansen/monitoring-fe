@@ -7,6 +7,10 @@ import ReconciliationArchivesClient from './ReconciliationArchivesClient';
 export const metadata: Metadata = {
   title: 'Arsip Rekonsiliasi',
   description: 'Lihat dan kelola arsip rekonsiliasi data petani.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function ReconciliationArchivesPage() {

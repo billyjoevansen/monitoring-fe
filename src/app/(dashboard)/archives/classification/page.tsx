@@ -7,6 +7,10 @@ import ClassificationArchivesClient from './ClassificationArchivesClient';
 export const metadata: Metadata = {
   title: 'Arsip Klasifikasi',
   description: 'Lihat dan kelola arsip klasifikasi data petani.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function ClassificationArchivesPage() {

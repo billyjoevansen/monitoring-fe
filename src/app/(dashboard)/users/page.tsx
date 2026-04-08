@@ -6,6 +6,10 @@ import UsersClient from './UsersClient';
 export const metadata: Metadata = {
   title: 'Users',
   description: 'Kelola pengguna dan hak akses dalam sistem.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function UsersPage() {

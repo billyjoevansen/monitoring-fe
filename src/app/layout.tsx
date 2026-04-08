@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     canonical: 'https://simpubes-serang.vercel.app',
   },
   robots: {
-    index: false,
-    follow: false,
+    index: true,
+    follow: true,
   },
   verification: {
     google: 'FhKgRJuzYIYPHhKzU2bk__2cTEcn-ZumeQ-1Ij9_Kvs',

@@ -6,6 +6,10 @@ import LogsClient from './LogsClient';
 export const metadata: Metadata = {
   title: 'Log',
   description: 'Lihat log aktivitas pengguna dalam sistem.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function LogsPage() {
