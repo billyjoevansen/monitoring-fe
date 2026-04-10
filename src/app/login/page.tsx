@@ -14,7 +14,7 @@ export default function LoginPage() {
       <LoginForm />
       <SlidePanel />
 
-      <div className="fixed bottom-4 left-4 z-50">
+      <div className="fixed top-4 left-4 z-50">
         <DarkModeToggle />
       </div>
     </div>

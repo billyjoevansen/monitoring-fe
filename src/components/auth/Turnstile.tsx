@@ -16,6 +16,7 @@ declare global {
     turnstile: {
       render: (element: HTMLElement, options: Record<string, unknown>) => string;
       reset: (widgetId: string) => void;
+      remove?: (widgetId: string) => void;
     };
   }
 }
@@ -24,7 +25,12 @@ const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({ onVerify, onExpire
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
-  // expose reset ke parent
+  const onVerifyRef = useRef(onVerify);
+  const onExpireRef = useRef(onExpire);
+
+  onVerifyRef.current = onVerify;
+  onExpireRef.current = onExpire;
+
   useImperativeHandle(ref, () => ({
     reset() {
       if (widgetIdRef.current && window.turnstile) {
@@ -33,62 +39,79 @@ const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({ onVerify, onExpire
     },
   }));
 
-  useEffect(() => {
-    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-    if (!siteKey) return;
+  const getTheme = () => (document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 
-    const renderWidget = () => {
-      if (!containerRef.current || widgetIdRef.current !== null || !window.turnstile) return;
+  const destroyWidget = () => {
+    if (!containerRef.current) return;
 
-      widgetIdRef.current = window.turnstile.render(containerRef.current, {
-        sitekey: siteKey,
-        callback: (token: string) => onVerify(token),
-        'expired-callback': () => {
-          if (widgetIdRef.current && window.turnstile) {
-            window.turnstile.reset(widgetIdRef.current);
-          }
-          onExpire?.();
-        },
-        theme: 'light',
-      });
-    };
-
-    // jika sudah ada di window
-    if (window.turnstile) {
-      renderWidget();
-      return;
+    if (widgetIdRef.current && window.turnstile?.remove) {
+      try {
+        window.turnstile.remove(widgetIdRef.current);
+      } catch {}
     }
 
+    containerRef.current.innerHTML = '';
+    widgetIdRef.current = null;
+  };
+
+  const renderWidget = () => {
+    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    if (!containerRef.current || !window.turnstile || !siteKey) return;
+
+    destroyWidget();
+
+    widgetIdRef.current = window.turnstile.render(containerRef.current, {
+      sitekey: siteKey,
+      theme: getTheme(),
+      callback: (token: string) => onVerifyRef.current(token),
+      'expired-callback': () => onExpireRef.current?.(),
+    });
+  };
+
+  useEffect(() => {
     let script: HTMLScriptElement | null = null;
 
     const existingScript = document.querySelector(
       'script[src*="challenges.cloudflare.com/turnstile"]',
     ) as HTMLScriptElement | null;
 
+    const init = () => {
+      if (window.turnstile) renderWidget();
+    };
+
     if (!existingScript) {
       script = document.createElement('script');
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
       script.async = true;
-      script.onload = renderWidget;
+      script.onload = init;
       document.head.appendChild(script);
     } else {
-      // handle race condition
-      if ((window as any).turnstile) {
-        renderWidget();
+      if (window.turnstile) {
+        init();
       } else {
-        existingScript.addEventListener('load', renderWidget);
+        existingScript.addEventListener('load', init);
       }
     }
 
+    const observer = new MutationObserver(() => {
+      renderWidget();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class'],
+    });
+
     return () => {
-      if (script) {
-        script.onload = null;
-      }
+      observer.disconnect();
+      destroyWidget();
+
+      if (script) script.onload = null;
       if (existingScript) {
-        existingScript.removeEventListener('load', renderWidget);
+        existingScript.removeEventListener('load', init);
       }
     };
-  }, [onVerify, onExpire]);
+  }, []);
 
   return <div ref={containerRef} className="flex justify-center" />;
 });
