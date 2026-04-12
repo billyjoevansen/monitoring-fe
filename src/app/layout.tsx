@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { NavigationProgress } from '@/components/ui/NavigationProgress';
 
 export const metadata: Metadata = {
+  applicationName: 'Simpubes Serang',
   title: {
     template: '%s | Simpubes Serang',
     default: 'Simpubes Serang - Sistem Monitoring Pupuk Bersubsidi',
