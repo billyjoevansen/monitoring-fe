@@ -14,6 +14,18 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://simpubes-serang.vercel.app',
   },
+  openGraph: {
+    title: 'Simpubes Serang',
+    description: 'Sistem Informasi Monitoring Pupuk Bersubsidi Kota Serang',
+    url: 'https://simpubes-serang.vercel.app',
+    siteName: 'Simpubes Serang',
+    locale: 'id_ID',
+    type: 'website',
+  },
+  other: {
+    'og:site_name': 'Simpubes Serang',
+    keywords: 'simpubes, serang, pupuk bersubsidi, monitoring, petani, kios',
+  },
   robots: {
     index: true,
     follow: true,
@@ -24,9 +36,19 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Simpubes Serang',
+    url: 'https://simpubes-serang.vercel.app',
+  };
   return (
     <html lang="id" suppressHydrationWarning>
       <body className="min-h-screen antialiased">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ThemeProvider>
           <NavigationProgress />
           {children}
