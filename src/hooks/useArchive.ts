@@ -14,26 +14,29 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // input realtime
   const [search, setSearch] = useState('');
-  const [filterWilayah, setFilterWilayah] = useState('');
+  // keyword aktif untuk query (hanya berubah saat Enter)
+  const [appliedSearch, setAppliedSearch] = useState('');
 
+  const [filterWilayah, setFilterWilayah] = useState('');
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const [total, setTotal] = useState(0);
-
   const [viewingArchive, setViewingArchive] = useState<T | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  // Single delete — `deleting` stores the archive id so ArchiveListLayout can
-  // show a per-row spinner via `deleting === archive.id`
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [archiveToDelete, setArchiveToDelete] = useState<T | null>(null);
-
-  // Bulk delete
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+
+  // Panggil ini saat user tekan Enter
+  const submitSearch = useCallback(() => {
+    setAppliedSearch(search.trim());
+    setPage(1);
+  }, [search]);
 
   const loadArchives = useCallback(async () => {
     setLoading(true);
@@ -51,8 +54,9 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
         query = query.eq('kecamatan', filterByKecamatan);
       }
 
-      if (search) {
-        query = query.or(`nama_arsip.ilike.%${search}%,user_nama.ilike.%${search}%`);
+      // hanya pakai keyword yang sudah di-submit (Enter)
+      if (appliedSearch.length >= 2) {
+        query = query.or(`nama_arsip.ilike.%${appliedSearch}%,user_nama.ilike.%${appliedSearch}%`);
       }
 
       if (filterWilayah) {
@@ -63,7 +67,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
       const to = from + pageSize - 1;
 
       const { data, error, count } = await query.range(from, to);
-
       if (error) throw error;
 
       setArchives((data as T[]) ?? []);
@@ -74,7 +77,7 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     } finally {
       setLoading(false);
     }
-  }, [table, search, filterWilayah, page, filterByKecamatan]);
+  }, [table, appliedSearch, filterWilayah, page, filterByKecamatan]);
 
   useEffect(() => {
     loadArchives();
@@ -82,19 +85,15 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 
   useEffect(() => {
     setPage(1);
-  }, [search, filterWilayah]);
+  }, [filterWilayah]);
 
   const totalPages = Math.ceil(total / pageSize);
 
-  // ── Single delete ────────────────────────────────────────────────────────────
-
-  /** Opens the confirm dialog; does NOT delete yet. */
   const handleDelete = (archive: T) => {
     setArchiveToDelete(archive);
     setDeleteDialogOpen(true);
   };
 
-  /** Called when the user presses confirm in the dialog. */
   const confirmDelete = async () => {
     if (!archiveToDelete) return;
 
@@ -113,22 +112,17 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     setArchiveToDelete(null);
   };
 
-  /** Closes the dialog without deleting. */
   const cancelDelete = () => {
-    if (deleting) return; // block close while request is in-flight
+    if (deleting) return;
     setDeleteDialogOpen(false);
     setArchiveToDelete(null);
   };
 
-  // ── Bulk delete ──────────────────────────────────────────────────────────────
-
-  /** Opens the bulk confirm dialog; does NOT delete yet. */
   const handleBulkDelete = () => {
     if (selectedIds.size === 0) return;
     setBulkDeleteDialogOpen(true);
   };
 
-  /** Called when the user presses confirm in the bulk dialog. */
   const confirmBulkDelete = async () => {
     if (selectedIds.size === 0) return;
 
@@ -146,7 +140,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     setBulkDeleteDialogOpen(false);
   };
 
-  /** Closes the bulk dialog without deleting. */
   const cancelBulkDelete = () => {
     if (bulkDeleting) return;
     setBulkDeleteDialogOpen(false);
@@ -160,6 +153,7 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 
     search,
     setSearch,
+    submitSearch,
 
     filterWilayah,
     setFilterWilayah,
@@ -174,7 +168,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     expandedId,
     toggleExpand: (id: string) => setExpandedId((prev) => (prev === id ? null : id)),
 
-    // Single delete — `deleting` is string | null, passed straight to ArchiveListLayout
     deleting,
     handleDelete,
     confirmDelete,
@@ -187,7 +180,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     selectedIds,
     allSelected: archives.length > 0 && archives.every((a) => selectedIds.has(a.id)),
 
-    // Bulk delete
     bulkDeleting,
     handleBulkDelete,
     confirmBulkDelete,

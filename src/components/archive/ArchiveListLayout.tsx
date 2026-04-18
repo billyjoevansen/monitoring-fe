@@ -16,6 +16,7 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
   deleting,
   canEdit,
   onSearchChange,
+  onSearchSubmit,
   onFilterWilayahChange,
   onToggleExpand,
   onView,
@@ -56,10 +57,15 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Cari arsip..."
+            placeholder="Cari arsip dengan menekan tombol enter..."
             autoComplete="off"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                onSearchSubmit?.();
+              }
+            }}
             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>

@@ -75,6 +75,7 @@ export interface ArchiveListLayoutProps<T extends BaseArchive<BaseSummary>> {
   deleting: string | null;
   canEdit: boolean;
   onSearchChange: (v: string) => void;
+  onSearchSubmit?: () => void;
   onToggleExpand: (id: string) => void;
   onView: (archive: T) => void;
   onDelete: (archive: T) => void;

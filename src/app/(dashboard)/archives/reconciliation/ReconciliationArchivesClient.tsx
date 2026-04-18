@@ -30,6 +30,7 @@ export default function ReconciliationArchivesClient({
     loading,
     search,
     setSearch,
+    submitSearch,
     filterWilayah,
     setFilterWilayah,
     viewingArchive,
@@ -180,6 +181,7 @@ export default function ReconciliationArchivesClient({
         deleting={deleting}
         canEdit={canEdit}
         onSearchChange={setSearch}
+        onSearchSubmit={submitSearch}
         onToggleExpand={toggleExpand}
         onView={setViewingArchive}
         onDelete={handleDelete}

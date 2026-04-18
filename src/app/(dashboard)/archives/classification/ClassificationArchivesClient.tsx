@@ -17,6 +17,7 @@ export default function ClassificationArchivesClient({ canEdit }: { canEdit: boo
     loading,
     search,
     setSearch,
+    submitSearch,
     filterWilayah,
     setFilterWilayah,
     viewingArchive,
@@ -100,6 +101,7 @@ export default function ClassificationArchivesClient({ canEdit }: { canEdit: boo
         deleting={deleting}
         canEdit={canEdit}
         onSearchChange={setSearch}
+        onSearchSubmit={submitSearch}
         onToggleExpand={toggleExpand}
         onView={setViewingArchive}
         onDelete={handleDelete}
