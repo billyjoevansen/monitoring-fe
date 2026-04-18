@@ -9,31 +9,36 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // Strongest — filled inversion of the theme: foreground bg, background text.
-        // Pairs with outline as the two ends of the visual hierarchy.
+        // Strongest — solid fill, foreground bg. Hero CTA.
+        // Hover: opacity turun + shadow naik untuk kesan "lift yang nyata".
         default:
-          'bg-foreground text-background shadow-xs transition-all duration-200 hover:opacity-85 hover:scale-[1.02] dark:bg-foreground dark:text-background data-[state=open]:opacity-85',
+          'bg-foreground text-background shadow-xs transition-all duration-200 hover:bg-foreground/80 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:shadow-xs dark:bg-foreground dark:text-background dark:hover:bg-foreground/75 data-[state=open]:bg-foreground/80 data-[state=open]:shadow-md',
 
         // The reference — kept exactly as-is.
         outline:
           'border border-black bg-background shadow-xs transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:scale-[1.02] dark:bg-input/30 dark:border-gray-200 dark:hover:bg-input/50 dark:border-white data-[state=open]:bg-accent dark:data-[state=open]:bg-accent',
 
-        // Middle ground — muted text + muted border at rest; steps up to foreground on hover.
-        // No fill, so it sits between outline and ghost in visual weight.
+        // Filled-muted — BUKAN border button. Pakai bg-muted sebagai identitasnya
+        // sehingga jelas berbeda dari outline yang berbasis border.
+        // Cocok untuk aksi tersier atau "soft secondary".
         secondary:
-          'border border-muted-foreground/40 bg-background text-muted-foreground shadow-xs transition-all duration-200 hover:border-foreground hover:text-foreground hover:scale-[1.02] dark:bg-input/30 dark:border-muted-foreground/30 dark:hover:border-foreground data-[state=open]:border-foreground data-[state=open]:text-foreground',
+          'bg-muted text-foreground/65 transition-all duration-200 hover:bg-muted/60 hover:text-foreground hover:scale-[1.02] active:scale-[0.98] active:bg-muted/80 dark:bg-muted/40 dark:text-foreground/55 dark:hover:bg-muted/60 dark:hover:text-foreground data-[state=open]:bg-muted/60 data-[state=open]:text-foreground dark:data-[state=open]:bg-muted/60',
 
-        // Lightest interactive — no border, no fill; a subtle bg tint appears on hover.
+        // "Invisible button" — tidak terlihat sampai di-hover.
+        // Hover memberikan bg fill (accent) — inilah yang membedakannya dari link.
+        // Ideal untuk toolbar, icon button, dan aksi kontekstual.
         ghost:
-          'text-foreground transition-all duration-200 hover:bg-foreground/8 hover:scale-[1.02] dark:hover:bg-foreground/10 data-[state=open]:bg-foreground/8 dark:data-[state=open]:bg-foreground/10',
+          'text-foreground/65 transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:scale-[1.02] active:scale-[0.98] active:bg-accent/70 dark:text-foreground/55 dark:hover:bg-accent/80 dark:hover:text-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground dark:data-[state=open]:bg-accent/80',
 
-        // Text-only — uses foreground colour and a clean underline on hover.
-        link: 'text-foreground underline-offset-4 transition-all duration-200 hover:underline hover:text-muted-foreground',
+        // Pure teks — TIDAK PERNAH mendapat background, bahkan saat hover.
+        // Hanya underline treatment. Cocok untuk link inline atau navigasi.
+        link: 'text-foreground/70 underline-offset-4 transition-colors duration-150 hover:text-foreground hover:underline active:opacity-50 dark:text-foreground/60 dark:hover:text-foreground',
 
-        // Destructive — red fill at rest, darkens on hover. Works in both modes.
+        // Destructive — kept as-is.
         destructive:
           'bg-red-600 text-white shadow-xs transition-all duration-200 hover:bg-red-700 hover:scale-[1.02] dark:bg-red-700 dark:hover:bg-red-800 data-[state=open]:bg-red-700',
 
+        // Pagination — kept as-is.
         pagination:
           'text-accent hover:text-foreground bg-gray-200 border border-gray-300 transition-all duration-200 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-500 dark:hover:border-foreground/10 aria-current:bg-foreground aria-current:text-background aria-current:border-transparent aria-current:shadow-xs',
       },
