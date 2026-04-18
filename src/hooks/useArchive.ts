@@ -203,7 +203,12 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     },
 
     toggleSelectAll: () => {
-      setSelectedIds(new Set(archives.map((a) => a.id)));
+      setSelectedIds((prev) => {
+        if (prev.size === archives.length) {
+          return new Set();
+        }
+        return new Set(archives.map((a) => a.id));
+      });
     },
   };
 }
