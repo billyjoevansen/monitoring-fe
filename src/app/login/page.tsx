@@ -4,8 +4,13 @@ import LoginForm from '@/components/auth/LoginForm';
 import SlidePanel from '@/components/auth/SlidePanel';
 
 export const metadata: Metadata = {
+  applicationName: 'Simpubes Serang',
   title: 'Login',
   description: 'Masuk untuk pencocokkan data dan informasi terkait subsidi pupuk di Kota Serang.',
+  other: {
+    'og:site_name': 'Simpubes Serang',
+    keywords: 'simpubes, serang, pupuk bersubsidi, monitoring, petani, kios',
+  },
 };
 
 export default function LoginPage() {

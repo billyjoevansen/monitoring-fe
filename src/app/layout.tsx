@@ -9,14 +9,16 @@ export const metadata: Metadata = {
     template: '%s | Simpubes Serang',
     default: 'Simpubes Serang - Sistem Monitoring Pupuk Bersubsidi',
   },
-  description: 'Sistem Informasi Monitoring Pupuk Bersubsidi Kota Serang',
+  description:
+    'Sistem Informasi Monitoring Pupuk Bersubsidi Kota Serang, Masuk untuk pencocokkan data dan informasi terkait subsidi pupuk di Kota Serang.',
   metadataBase: new URL('https://simpubes-serang.vercel.app'),
   alternates: {
     canonical: 'https://simpubes-serang.vercel.app',
   },
   openGraph: {
     title: 'Simpubes Serang',
-    description: 'Sistem Informasi Monitoring Pupuk Bersubsidi Kota Serang',
+    description:
+      'Sistem Informasi Monitoring Pupuk Bersubsidi Kota Serang, Masuk untuk pencocokkan data dan informasi terkait subsidi pupuk di Kota Serang.',
     url: 'https://simpubes-serang.vercel.app',
     siteName: 'Simpubes Serang',
     locale: 'id_ID',
@@ -44,11 +46,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className="min-h-screen antialiased">
+      <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+      </head>
+      <body className="min-h-screen antialiased">
         <ThemeProvider>
           <NavigationProgress />
           {children}
