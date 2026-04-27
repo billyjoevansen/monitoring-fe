@@ -2,6 +2,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth-client';
 import { formatDate } from '@/lib/format';
+
+import { decryptNikInDetailArray } from '@/lib/nik-encryption';
+
 import type { BaseArchive, BaseSummary, UseArchiveOptions } from '@/types';
 
 export function useArchive<T extends BaseArchive<BaseSummary>>({
@@ -16,7 +19,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 
   // input realtime
   const [search, setSearch] = useState('');
-  // keyword aktif untuk query (hanya berubah saat Enter)
   const [appliedSearch, setAppliedSearch] = useState('');
 
   const [filterWilayah, setFilterWilayah] = useState('');
@@ -32,7 +34,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
-  // Panggil ini saat user tekan Enter
   const submitSearch = useCallback(() => {
     setAppliedSearch(search.trim());
     setPage(1);
@@ -41,7 +42,6 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
   const loadArchives = useCallback(async () => {
     setLoading(true);
     setError(null);
-
     try {
       const supabase = manageClient();
 
@@ -69,7 +69,14 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
       const { data, error, count } = await query.range(from, to);
       if (error) throw error;
 
-      setArchives((data as T[]) ?? []);
+      // DECRYPT NIK AFTER LOADING
+      const decryptedData =
+        data?.map((archive) => ({
+          ...archive,
+          detail: decryptNikInDetailArray(archive.detail),
+        })) ?? [];
+
+      setArchives((decryptedData as T[]) ?? []);
       setTotal(count ?? 0);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fetch error');

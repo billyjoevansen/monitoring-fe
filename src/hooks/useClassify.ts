@@ -5,6 +5,9 @@ import { logActivity } from '@/lib/auth-client';
 import { manageClient } from '@/lib/supabase/client';
 import { getApiErrorMessage } from '@/lib/errors';
 import { formatDate } from '@/lib/format';
+
+import { encryptNikInDetailArray, decryptNikInDetailArray } from '@/lib/nik-encryption';
+
 import type { ReconciliationArchive, ClassifyResult, User } from '@/types';
 
 export function useClassify(user: User) {
@@ -45,7 +48,8 @@ export function useClassify(user: User) {
     setNamaArsip(`Klasifikasi - ${archive.nama_arsip}`);
 
     try {
-      const data = await classify(archive.detail);
+      const decryptedDetail = decryptNikInDetailArray(archive.detail);
+      const data = await classify(decryptedDetail);
       setResult(data);
       await logActivity(
         'classify',
@@ -66,13 +70,14 @@ export function useClassify(user: User) {
 
     try {
       const supabase = manageClient();
+
       const { error: insertErr } = await supabase.from('classification_archives').insert({
         user_id: user.id,
         user_nama: user.nama,
         reconciliation_id: selectedArchive.id,
         nama_arsip: namaArsip.trim(),
         summary: result.summary,
-        detail: result.detail,
+        detail: encryptNikInDetailArray(result.detail),
         model_info: result.model_info,
       });
 

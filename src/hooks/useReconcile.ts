@@ -3,6 +3,9 @@ import { reconcile } from '@/lib/api';
 import { logActivity } from '@/lib/auth-client';
 import { manageClient } from '@/lib/supabase/client';
 import { getApiErrorMessage } from '@/lib/errors';
+
+import { encryptNikInDetailArray } from '@/lib/nik-encryption';
+
 import type { ReconcileResult, User } from '@/types';
 
 export function useReconcile(user: User) {
@@ -54,12 +57,13 @@ export function useReconcile(user: User) {
 
     try {
       const supabase = manageClient();
+
       const { error: insertErr } = await supabase.from('reconciliation_archives').insert({
         user_id: user.id,
         user_nama: user.nama,
         nama_arsip: namaArsip.trim(),
         summary: result.summary,
-        detail: result.detail,
+        detail: encryptNikInDetailArray(result.detail),
         kecamatan: kecamatan.trim() || null,
       });
 
