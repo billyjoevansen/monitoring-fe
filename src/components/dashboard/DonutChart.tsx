@@ -67,27 +67,25 @@ export default function DonutChart({ normal, tidakNormal, size = 180 }: DonutCha
       </div>
 
       {/* Legend */}
-      <div className="flex gap-5">
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-green-500" />
+      <div className="flex items-center gap-6">
+        <div className="flex items-start gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-green-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs text-foreground">Normal</p>
-            <p className="text-sm font-bold text-foreground">
-              {normal}{' '}
-              <span className="text-xs font-normal text-gray-400">({normalPct.toFixed(1)}%)</span>
+            <p className="text-xs text-gray-400 mb-0.5">Normal</p>
+            <p className="text-lg font-medium text-foreground leading-none">
+              {normalPct.toFixed(1)}%
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full bg-red-500" />
+        <div className="h-10 w-px bg-gray-200" />
+
+        <div className="flex items-start gap-2.5">
+          <span className="w-2.5 h-2.5 rounded-sm bg-red-500 mt-0.5 shrink-0" />
           <div>
-            <p className="text-xs text-foreground">Tidak Normal</p>
-            <p className="text-sm font-bold text-foreground">
-              {tidakNormal}{' '}
-              <span className="text-xs font-normal text-gray-400">
-                ({tidakNormalPct.toFixed(1)}%)
-              </span>
+            <p className="text-xs text-gray-400 mb-0.5">Tidak Normal</p>
+            <p className="text-lg font-medium text-foreground leading-none">
+              {tidakNormalPct.toFixed(1)}%
             </p>
           </div>
         </div>

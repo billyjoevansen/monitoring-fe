@@ -54,7 +54,7 @@ export default function StatCard({ icon, label, value, sub, gradient, iconBg }: 
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border p-5 ${gradient} transition-all duration-300`}
+      className={`relative overflow-hidden rounded-2xl border p-3 ${gradient} transition-all duration-300`}
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1">

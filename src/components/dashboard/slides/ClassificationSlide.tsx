@@ -39,11 +39,11 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
   const { summary: cls, model_info } = data;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          icon={<UsersIcon className="w-5 h-5 text-blue-600" />}
+          icon={<UsersIcon className="w-5 h-3 text-blue-600" />}
           label="Total Petani"
           value={cls.total_petani}
           sub="Data klasifikasi terakhir"
@@ -52,7 +52,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
         />
 
         <StatCard
-          icon={<ShieldCheck className="w-5 h-5 text-green-600" />}
+          icon={<ShieldCheck className="w-5 h-3 text-green-600" />}
           label="Normal"
           value={cls.normal}
           sub={`${cls.persentase_normal}% dari total`}
@@ -61,7 +61,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
         />
 
         <StatCard
-          icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
+          icon={<AlertTriangle className="w-5 h-3 text-red-600" />}
           label="Tidak Normal"
           value={cls.tidak_normal}
           sub={`${cls.persentase_tidak_normal}% dari total`}
@@ -70,7 +70,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
         />
 
         <StatCard
-          icon={<Activity className="w-5 h-5 text-purple-600" />}
+          icon={<Activity className="w-5 h-3 text-purple-600" />}
           label="Akurasi Model"
           value={model_info ? `${(model_info.accuracy * 100).toFixed(1)}%` : '—'}
           sub={
@@ -86,12 +86,11 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
       {/* Main content */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Donut */}
-        <div className="lg:col-span-2 bg-background rounded-2xl border border-gray-200 shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-6">
+        <div className="lg:col-span-2 bg-background rounded-2xl border border-gray-200 shadow-sm p-2">
+          <div className="flex bg-gray-100 dark:bg-slate-800 items-center rounded-lg gap-2 mb-6 p-1">
             <BarChart3 className="w-4.5 h-4.5 text-foreground" />
             <h3 className="text-sm font-bold text-foreground">Distribusi Klasifikasi</h3>
           </div>
-
           <DonutChart normal={cls.normal} tidakNormal={cls.tidak_normal} />
         </div>
 
@@ -116,7 +115,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
             </Link>
           </div>
 
-          <div className="p-6 space-y-5">
+          <div className="p-3 space-y-5">
             <MetaInfoGrid
               items={[
                 {
@@ -136,29 +135,6 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
                 },
               ]}
             />
-
-            <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-3 bg-green-50 rounded-xl p-3.5">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                  <ShieldCheck className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-xs text-green-600 font-medium">Normal</p>
-                  <p className="text-lg font-bold text-green-700">{cls.normal}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 bg-red-50 rounded-xl p-3.5">
-                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                  <AlertTriangle className="w-5 h-5 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-xs text-red-600 font-medium">Anomali</p>
-                  <p className="text-lg font-bold text-red-700">{cls.tidak_normal}</p>
-                </div>
-              </div>
-            </div>
-
             {model_info && <ModelPerformancePanel modelInfo={model_info} />}
           </div>
         </div>
