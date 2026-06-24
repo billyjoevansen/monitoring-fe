@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { StatusPenebusan, KiosSummary } from './rekonsiliasi';
+import type { StatusPenebusan } from './rekonsiliasi';
 import type { ClassificationSummary, ModelInfo } from './klasifikasi';
 
 //Base (useArchive & ArchiveListLayout)
@@ -25,7 +25,6 @@ export interface BaseArchive<TSummary extends BaseSummary = BaseSummary> {
 export interface ReconciliationSummary {
   total_petani: number;
   status_penebusan: StatusPenebusan;
-  kios: KiosSummary;
   total_pupuk_diajukan_kg: number;
   total_pupuk_ditebus_kg: number;
   selisih_total_kg: number;

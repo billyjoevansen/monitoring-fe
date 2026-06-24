@@ -24,6 +24,13 @@
 .DS_Store
 *.pem
 
+# opencode config & agent instructions (contains API keys)
+opencode.json
+AGENTS.md
+.opencode/
+opencode-ecosystem
+opencode-skills-docs
+
 # debug
 npm-debug.log*
 yarn-debug.log*

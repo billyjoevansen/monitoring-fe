@@ -1,10 +1,8 @@
 import { useCallback, useState } from 'react';
-import { reconcile } from '@/lib/api';
+import { reconcile, encryptNikArray } from '@/lib/api';
 import { logActivity } from '@/lib/auth-client';
 import { manageClient } from '@/lib/supabase/client';
 import { getApiErrorMessage } from '@/lib/errors';
-
-import { encryptNikInDetailArray } from '@/lib/nik-encryption';
 
 import type { ReconcileResult, User } from '@/types';
 
@@ -58,12 +56,15 @@ export function useReconcile(user: User) {
     try {
       const supabase = manageClient();
 
+      // Encrypt NIK via backend before saving to Supabase
+      const encryptedDetail = await encryptNikArray(result.detail);
+
       const { error: insertErr } = await supabase.from('reconciliation_archives').insert({
         user_id: user.id,
         user_nama: user.nama,
         nama_arsip: namaArsip.trim(),
         summary: result.summary,
-        detail: encryptNikInDetailArray(result.detail),
+        detail: encryptedDetail,
         kecamatan: kecamatan.trim() || null,
       });
 

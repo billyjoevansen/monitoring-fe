@@ -2,8 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth-client';
 import { formatDate } from '@/lib/format';
-
-import { decryptNikInDetailArray } from '@/lib/nik-encryption';
+import { decryptNikArray } from '@/lib/api';
 
 import type { BaseArchive, BaseSummary, UseArchiveOptions } from '@/types';
 
@@ -69,14 +68,15 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
       const { data, error, count } = await query.range(from, to);
       if (error) throw error;
 
-      // DECRYPT NIK AFTER LOADING
+      // DECRYPT NIK VIA BACKEND AFTER LOADING
       const decryptedData =
-        data?.map((archive) => ({
+        data?.map(async (archive) => ({
           ...archive,
-          detail: decryptNikInDetailArray(archive.detail),
+          detail: await decryptNikArray(archive.detail),
         })) ?? [];
 
-      setArchives((decryptedData as T[]) ?? []);
+      const resolvedData = await Promise.all(decryptedData);
+      setArchives((resolvedData as T[]) ?? []);
       setTotal(count ?? 0);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Fetch error');

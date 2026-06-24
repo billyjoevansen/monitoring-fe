@@ -17,18 +17,10 @@ export interface StatusPenebusan {
   tidak_ada_pengajuan?: number;
 }
 
-// Ringkasan kios penebusan
-export interface KiosSummary {
-  sesuai: number;
-  tidak_sesuai: number;
-  persentase_sesuai: number;
-}
-
 // Ringkasan hasil rekonsiliasi
 export interface ReconcileSummary {
   total_petani: number;
   status_penebusan: StatusPenebusan;
-  kios: KiosSummary;
   pupuk: Record<string, PupukSummary>;
   total_pupuk_diajukan_kg: number;
   total_pupuk_ditebus_kg: number;
@@ -43,8 +35,6 @@ export interface ReconcileDetailItem {
   alamat?: string;
   penyuluh?: string;
   kios_rdkk?: string;
-  kios_penebusan?: string;
-  kios_sesuai?: boolean;
   total_luas_lahan_ha?: number;
   jumlah_mt_aktif?: number;
   pupuk?: Record<string, PupukDetail>;
@@ -54,7 +44,6 @@ export interface ReconcileDetailItem {
   total_pupuk_ditebus_kg?: number;
   selisih_total_kg?: number;
   status_tebus?: string;
-  catatan?: string[];
   [key: string]: unknown;
 }
 

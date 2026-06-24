@@ -22,7 +22,6 @@ export interface ClassifyDetailItem {
   poktan?: string;
   status?: string;
   confidence?: number;
-  kios_sesuai?: boolean;
   total_pupuk_diajukan_kg?: number;
   total_pupuk_ditebus_kg?: number;
   selisih_total_kg?: number;

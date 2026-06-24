@@ -10,7 +10,6 @@ const chartTitles: Record<string, string> = {
   classification_report: 'Classification Report',
   label_distribution: 'Distribusi Label',
   reconciliation_summary: 'Ringkasan Rekonsiliasi',
-  kios_compliance: 'Kesesuaian Kios',
 };
 
 export default function ChartViewer({ charts }: ChartViewerProps) {

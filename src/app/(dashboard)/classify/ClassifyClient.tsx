@@ -245,7 +245,6 @@ function ArchiveItem({
               label="Tebus Sebagian"
               value={archive.summary.status_penebusan.tebus_sebagian}
             />
-            <MiniCard label="Kios Sesuai" value={`${archive.summary.kios.persentase_sesuai}%`} />
           </div>
         </div>
       )}

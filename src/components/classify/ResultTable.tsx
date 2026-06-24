@@ -113,12 +113,6 @@ export default function ResultTable({
   const formatCellValue = (item: ClassifyDetailItem, key: string): React.ReactNode => {
     const value = item[key];
     switch (key) {
-      case 'kios_sesuai':
-        return value ? (
-          <span className="text-green-600 dark:text-green-400">Ya</span>
-        ) : (
-          <span className="text-red-600 dark:text-red-400">Tidak</span>
-        );
       case 'status':
         return (
           <span

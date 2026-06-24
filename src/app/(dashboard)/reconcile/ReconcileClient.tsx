@@ -99,11 +99,6 @@ export default function ReconcileClient({ user }: { user: User }) {
               value={result.summary.status_penebusan.belum_menebus}
               color="orange"
             />
-            <SummaryCard
-              label="Kios Tidak Sesuai"
-              value={result.summary.kios.tidak_sesuai}
-              color="purple"
-            />
           </div>
 
           <ReconcileArchiveSection

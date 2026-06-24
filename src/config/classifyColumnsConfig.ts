@@ -6,7 +6,6 @@ export const CLASSIFY_COLUMNS: ClassifyColumn[] = [
   { key: 'poktan', label: 'Poktan' },
   { key: 'status', label: 'Status' },
   { key: 'confidence', label: 'Confidence' },
-  { key: 'kios_sesuai', label: 'Kios Sesuai' },
   { key: 'total_pupuk_diajukan_kg', label: 'Diajukan (kg)' },
   { key: 'total_pupuk_ditebus_kg', label: 'Ditebus (kg)' },
   { key: 'selisih_total_kg', label: 'Selisih (kg)' },

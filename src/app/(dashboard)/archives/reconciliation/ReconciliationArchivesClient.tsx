@@ -123,7 +123,6 @@ export default function ReconciliationArchivesClient({
             value={summary.status_penebusan.belum_menebus}
             color="orange"
           />
-          <SummaryCard label="Kios Tidak Sesuai" value={summary.kios.tidak_sesuai} color="purple" />
         </div>
 
         <div className="flex items-center justify-between bg-background rounded-xl border border-foreground px-4 py-3 shadow-sm mb-6">
@@ -191,7 +190,6 @@ export default function ReconciliationArchivesClient({
             <MiniCard label="Total Petani" value={summary.total_petani} />
             <MiniCard label="Tebus Lengkap" value={summary.status_penebusan.tebus_lengkap} />
             <MiniCard label="Tebus Sebagian" value={summary.status_penebusan.tebus_sebagian} />
-            <MiniCard label="Kios Sesuai" value={`${summary.kios.persentase_sesuai}%`} />
           </div>
         )}
         selectedIds={selectedIds}

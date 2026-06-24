@@ -77,21 +77,12 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
         />
 
         <StatCard
-          icon={<AlertTriangle className="w-5 h-5 text-orange-600" />}
+          icon={<Activity className="w-5 h-5 text-orange-600" />}
           label="Belum Menebus"
           value={rec.status_penebusan.belum_menebus}
           sub={`${pct(rec.status_penebusan.belum_menebus)}%`}
           gradient="bg-orange-50 border-orange-200 text-orange-900"
           iconBg="bg-orange-100"
-        />
-
-        <StatCard
-          icon={<Activity className="w-5 h-5 text-purple-600" />}
-          label="Kios Sesuai"
-          value={`${rec.kios.persentase_sesuai}%`}
-          sub={`${rec.kios.sesuai} dari ${rec.kios.sesuai + rec.kios.tidak_sesuai}`}
-          gradient="bg-purple-50 border-purple-200 text-purple-900"
-          iconBg="bg-purple-100"
         />
       </div>
 

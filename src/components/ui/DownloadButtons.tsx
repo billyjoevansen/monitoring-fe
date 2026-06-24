@@ -30,8 +30,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       'Alamat',
       'Penyuluh',
       'Kios RDKK',
-      'Kios Penebusan',
-      'Kios Sesuai',
       'Luas Lahan (ha)',
       'Jml MT',
       'Urea',
@@ -60,11 +58,10 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       'Total Ditebus',
       'Selisih Total',
       'Status Tebus',
-      'Catatan',
     ]);
 
     // Merge pupuk group headers
-    const pupukStartCol = 13;
+    const pupukStartCol = 11;
     for (let i = 0; i < 5; i++) {
       const startCol = pupukStartCol + i * 4;
       ws.mergeCells(1, startCol, 1, startCol + 3);
@@ -80,8 +77,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       'Alamat',
       'Penyuluh',
       'Kios RDKK',
-      'Kios Penebusan',
-      'Kios Sesuai',
       'Luas Lahan (ha)',
       'Jml MT',
     ];
@@ -92,10 +87,10 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
     ws.addRow(subHeaders);
 
     // Merge non-pupuk headers vertically (row 1-2)
-    for (let col = 1; col <= 12; col++) {
+    for (let col = 1; col <= 10; col++) {
       ws.mergeCells(1, col, 2, col);
     }
-    for (let col = 33; col <= 38; col++) {
+    for (let col = 31; col <= 36; col++) {
       if (col <= ws.columnCount) ws.mergeCells(1, col, 2, col);
     }
 
@@ -141,8 +136,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
         String(d.alamat ?? ''),
         String(d.penyuluh ?? ''),
         String(d.kios_rdkk ?? ''),
-        String(d.kios_penebusan ?? ''),
-        d.kios_sesuai ? 'Ya' : 'Tidak',
         Number(d.total_luas_lahan_ha ?? 0),
         Number(d.jumlah_mt_aktif ?? 0),
       ];
@@ -164,7 +157,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
         Number(d.total_pupuk_ditebus_kg ?? 0),
         Number(d.selisih_total_kg ?? 0),
         String(d.status_tebus ?? ''),
-        Array.isArray(d.catatan) ? (d.catatan as string[]).join('; ') : '',
       );
 
       const row = ws.addRow(values);
@@ -181,12 +173,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
         cell.font = { size: 9 };
         cell.alignment = { vertical: 'middle' };
       });
-
-      // Kios Sesuai coloring
-      const kiosCell = row.getCell(10);
-      if (kiosCell.value === 'Tidak') {
-        kiosCell.font = { size: 9, bold: true, color: { argb: 'FFDC2626' } };
-      }
 
       // Status coloring
       const statusCell = row.getCell(values.length - 1);
@@ -210,8 +196,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       20,
       16,
       16,
-      16,
-      10,
       12,
       8,
       ...Array(20).fill(12),
@@ -221,7 +205,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       14,
       12,
       18,
-      35,
     ];
     colWidths.forEach((w, i) => {
       const col = ws.getColumn(i + 1);
@@ -242,9 +225,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       ['Tebus Sebagian', summary.status_penebusan.tebus_sebagian],
       ['Tebus Melebihi', summary.status_penebusan.tebus_melebihi],
       ['Belum Menebus', summary.status_penebusan.belum_menebus],
-      ['Kios Sesuai', summary.kios.sesuai],
-      ['Kios Tidak Sesuai', summary.kios.tidak_sesuai],
-      ['% Kios Sesuai', `${summary.kios.persentase_sesuai}%`],
       ['Total Diajukan (kg)', summary.total_pupuk_diajukan_kg],
       ['Total Ditebus (kg)', summary.total_pupuk_ditebus_kg],
     ];
@@ -295,8 +275,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       'NIK',
       'Poktan',
       'Kios RDKK',
-      'Kios Tebus',
-      'Kios ✓',
       'Urea Aj.',
       'Urea Tb.',
       'NPK Aj.',
@@ -321,8 +299,6 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
         String(d.nik ?? ''),
         String(d.poktan ?? ''),
         String(d.kios_rdkk ?? ''),
-        String(d.kios_penebusan ?? ''),
-        d.kios_sesuai ? 'Ya' : 'Tidak',
         pupuk.urea?.diajukan_kg ?? 0,
         pupuk.urea?.ditebus_kg ?? 0,
         pupuk.npk?.diajukan_kg ?? 0,
@@ -351,7 +327,9 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
         1: { cellWidth: 28 },
         2: { cellWidth: 22 },
         3: { cellWidth: 18 },
-        6: { halign: 'center', cellWidth: 10 },
+        4: { halign: 'center', cellWidth: 10 },
+        5: { halign: 'right' },
+        6: { halign: 'right' },
         7: { halign: 'right' },
         8: { halign: 'right' },
         9: { halign: 'right' },
@@ -360,12 +338,10 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
         12: { halign: 'right' },
         13: { halign: 'right' },
         14: { halign: 'right' },
-        15: { halign: 'right' },
-        16: { halign: 'right' },
+        15: { halign: 'right', fontStyle: 'bold' },
+        16: { halign: 'right', fontStyle: 'bold' },
         17: { halign: 'right', fontStyle: 'bold' },
-        18: { halign: 'right', fontStyle: 'bold' },
-        19: { halign: 'right', fontStyle: 'bold' },
-        20: { halign: 'center', cellWidth: 20 },
+        18: { halign: 'center', cellWidth: 20 },
       },
       alternateRowStyles: { fillColor: [245, 247, 250] },
       margin: { left: 7, right: 7 },

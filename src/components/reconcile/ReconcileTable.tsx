@@ -53,8 +53,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
       row.nik?.toLowerCase().includes(q) ||
       row.poktan?.toLowerCase().includes(q) ||
       row.gapoktan?.toLowerCase().includes(q) ||
-      row.status_tebus?.toLowerCase().includes(q) ||
-      row.catatan?.some((c) => c.toLowerCase().includes(q))
+      row.status_tebus?.toLowerCase().includes(q)
     );
   });
 
@@ -162,18 +161,6 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
               >
                 Kios RDKK
               </th>
-              <th
-                rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
-              >
-                Kios Tebus
-              </th>
-              <th
-                rowSpan={2}
-                className="px-3 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border min-w-12.5 bg-gray-50 dark:bg-slate-800"
-              >
-                Kios ✓
-              </th>
               {PUPUK_TYPES.map((p) => (
                 <th
                   key={`group-${p.key}`}
@@ -206,12 +193,6 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                 className="px-3 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border min-w-27.5 bg-gray-50 dark:bg-slate-800"
               >
                 Status
-              </th>
-              <th
-                rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border min-w-50 bg-gray-50 dark:bg-slate-800"
-              >
-                Catatan
               </th>
             </tr>
             <tr>
@@ -264,22 +245,6 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                     <div className="truncate max-w-25" title={row.kios_rdkk}>
                       {row.kios_rdkk}
                     </div>
-                  </td>
-                  <td className="px-3 py-2.5 text-muted-foreground border-b border-r border-border">
-                    <div className="truncate max-w-25" title={row.kios_penebusan}>
-                      {row.kios_penebusan}
-                    </div>
-                  </td>
-                  <td className="px-3 py-2.5 text-center border-b border-r border-border">
-                    {row.kios_sesuai ? (
-                      <span className="inline-block w-5 h-5 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 rounded-full text-[10px] leading-5 font-bold">
-                        ✓
-                      </span>
-                    ) : (
-                      <span className="inline-block w-5 h-5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400 rounded-full text-[10px] leading-5 font-bold">
-                        ✗
-                      </span>
-                    )}
                   </td>
                   {PUPUK_TYPES.map((p) => {
                     const pd = row.pupuk?.[p.key];
@@ -335,19 +300,6 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
                   </td>
                   <td className="px-3 py-2.5 text-center border-b border-r border-border">
                     <StatusBadge status={row.status_tebus} />
-                  </td>
-                  <td className="px-3 py-2.5 text-muted-foreground border-b border-border">
-                    {row.catatan && row.catatan.length > 0 ? (
-                      <ul className="list-disc list-inside space-y-0.5">
-                        {row.catatan.map((c, i) => (
-                          <li key={`catatan-${globalIdx}-${i}`} className="text-[11px]">
-                            {c}
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <span className="text-muted-foreground/30">-</span>
-                    )}
                   </td>
                 </tr>
               );
