@@ -6,7 +6,7 @@ import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
 import { ArchiveDeleteDialog } from '@/components/archive/ArchiveDeleteDialog';
 import MiniCard from '@/components/ui/MiniCard';
-import SummaryCard from '@/components/ui/SummaryCard';
+import ClassifyStatStrip from '@/components/ui/ClassifyStatStrip';
 import ResultTable from '@/components/classify/ResultTable';
 import { CLASSIFY_COLUMNS } from '@/config/classifyColumnsConfig';
 import type { ClassificationArchive } from '@/types';
@@ -59,21 +59,13 @@ export default function ClassificationArchivesClient({ canEdit }: { canEdit: boo
           backButtonColor="bg-indigo-100"
           formatDate={formatDate}
         />
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          <SummaryCard label="Total Petani" value={summary.total_petani} color="blue" />
-          <SummaryCard
-            label="Normal"
-            value={summary.normal}
-            sub={`${summary.persentase_normal}%`}
-            color="green"
-          />
-          <SummaryCard
-            label="Tidak Normal"
-            value={summary.tidak_normal}
-            sub={`${summary.persentase_tidak_normal}%`}
-            color="red"
-          />
-        </div>
+        <ClassifyStatStrip
+          total={summary.total_petani}
+          normal={summary.normal}
+          tidakNormal={summary.tidak_normal}
+          persentaseNormal={summary.persentase_normal}
+          persentaseTidakNormal={summary.persentase_tidak_normal}
+        />
         <ResultTable columns={CLASSIFY_COLUMNS} data={viewingArchive.detail} />
       </div>
     );

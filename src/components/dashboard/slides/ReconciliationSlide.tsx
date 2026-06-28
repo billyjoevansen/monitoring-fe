@@ -87,8 +87,8 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
       </div>
 
       {/* Detail */}
-      <div className="bg-background rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center">
               <FileStack className="w-4.5 h-4.5 text-amber-600" />

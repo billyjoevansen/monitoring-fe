@@ -10,6 +10,9 @@ import {
   BrainCircuit,
   Users,
   ScrollText,
+  FileUp,
+  FileSpreadsheet,
+  Table2,
 } from 'lucide-react';
 import type { NavItem } from '@/types';
 
@@ -39,6 +42,16 @@ export const NAV_ITEMS: NavItem[] = [
     children: [
       { href: '/archives/reconciliation', label: 'Arsip Rekonsiliasi', icon: FileStack },
       { href: '/archives/classification', label: 'Arsip Klasifikasi', icon: BrainCircuit },
+    ],
+  },
+  {
+    href: '#arsip-dokumen',
+    label: 'Dokumen',
+    icon: FileUp,
+    permission: 'view_documents',
+    children: [
+      { href: '/archives/rdkk', label: 'Dokumen RDKK', icon: FileSpreadsheet },
+      { href: '/archives/siverval', label: 'Dokumen Si-Verval', icon: Table2 },
     ],
   },
   { href: '/users', label: 'Users', icon: Users, permission: 'manage_users' },

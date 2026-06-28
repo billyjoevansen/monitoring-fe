@@ -30,7 +30,7 @@ export function LogTable({
 }: LogTableProps) {
   if (logs.length === 0) {
     return (
-      <div className="bg-background rounded-xl border border-gray-200 p-12 text-center">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-12 text-center">
         <ScrollText className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
         <p className="text-muted-foreground font-medium">Belum ada log aktivitas.</p>
         <p className="text-muted-foreground text-sm mt-1">
@@ -41,10 +41,10 @@ export function LogTable({
   }
 
   return (
-    <div className="bg-background rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-background border-b border-gray-200">
+          <thead className="bg-gray-50 dark:bg-slate-800 border-b border-gray-300">
             <tr>
               {canDelete && (
                 <th className="px-4 py-3 text-left">
@@ -171,7 +171,7 @@ export function LogTable({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex gap-5 items-center justify-center px-4 py-3 border-t border-gray-100">
+        <div className="flex gap-5 items-center justify-center px-4 py-3 border-t border-gray-200">
           <Button
             onClick={() => onPageChange((p) => Math.max(1, p - 1))}
             disabled={page === 1}

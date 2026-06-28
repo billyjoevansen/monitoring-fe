@@ -40,10 +40,10 @@
 :root {
   color-scheme: light;
 
-  --background: #ffffff;
-  --foreground: #020617;
+  --background: #e5e7eb;
+  --foreground: #1f2937;
   --muted-foreground: #6b7280;
-  --accent: #ffffff;
+  --accent: #d1d5db;
 }
 
 .dark {

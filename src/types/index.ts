@@ -21,7 +21,8 @@ export type Permission =
   | 'view_logs'
   | 'view_archives'
   | 'manage_archives'
-  | 'view_api';
+  | 'view_api'
+  | 'view_documents';
 
 // Navbar
 export interface NavItem {
@@ -41,6 +42,7 @@ export interface NavDropdownProps {
   /** Renders children inline (mobile) vs as floating panel (desktop) */
   variant: 'desktop' | 'mobile';
   dropdownRef?: (el: HTMLDivElement | null) => void;
+  onNavigate?: () => void;
 }
 
 // USER

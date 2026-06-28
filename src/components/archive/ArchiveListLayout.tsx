@@ -66,20 +66,20 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
             onKeyDown={(e) => {
               if (e.key === 'Enter') onSearchSubmit?.();
             }}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
 
         <div className="relative w-full sm:w-auto">
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
           {isBpp ? (
-            <div className="w-full sm:w-auto pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-foreground select-none cursor-not-allowed min-w-0 sm:min-w-45">
+            <div className="w-full sm:w-auto pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-100 dark:bg-gray-800 text-foreground select-none cursor-not-allowed min-w-0 sm:min-w-45">
               {userKecamatan}
             </div>
           ) : (
             <select
               value={filterWilayah}
-              className="w-full sm:w-auto pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full sm:w-auto pl-9 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500"
               onChange={(e) => onFilterWilayahChange(e.target.value)}
             >
               <option value="">Semua Wilayah</option>
@@ -114,16 +114,16 @@ export default function ArchiveListLayout<T extends BaseArchive<BaseSummary>>({
 
       {/* Empty state */}
       {filtered.length === 0 ? (
-        <div className="bg-background rounded-xl border border-gray-200 p-8 sm:p-12 text-center">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-8 sm:p-12 text-center">
           <div className="w-12 h-12 text-foreground mx-auto mb-3">{emptyIcon}</div>
           <p className="text-foreground font-medium">{emptyTitle}</p>
           <p className="text-muted-foreground text-sm mt-1">{emptySubtitle}</p>
         </div>
       ) : (
-        <div className="bg-background rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 shadow-sm overflow-hidden">
           {/* Select all bar */}
           {canEdit && (
-            <div className="flex items-center gap-3 px-4 sm:px-5 py-2.5 bg-background border-b border-gray-100">
+            <div className="flex items-center gap-3 px-4 sm:px-5 py-2.5 bg-gray-50 dark:bg-slate-800 border-b border-gray-200">
               <input
                 type="checkbox"
                 checked={allSelected}

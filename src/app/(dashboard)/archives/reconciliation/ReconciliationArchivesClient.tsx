@@ -101,7 +101,7 @@ export default function ReconciliationArchivesClient({
           </div>
         )}
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
           <SummaryCard label="Total Petani" value={summary.total_petani} color="blue" />
           <SummaryCard
             label="Tebus Lengkap"
@@ -125,7 +125,7 @@ export default function ReconciliationArchivesClient({
           />
         </div>
 
-        <div className="flex items-center justify-between bg-background rounded-xl border border-foreground px-4 py-3 shadow-sm mb-6">
+        <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-xl border border-foreground px-4 py-3 shadow-sm mb-6">
           <div className="flex items-center gap-2">
             <Download className="w-4 h-4 text-muted-foreground" />
             {isFiltered ? (

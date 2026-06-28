@@ -20,7 +20,7 @@ interface ReconcileTableProps {
 }
 
 const STRIPE_EVEN = 'bg-white dark:bg-slate-900';
-const STRIPE_ODD = 'bg-gray-50 dark:bg-slate-800';
+const STRIPE_ODD = 'bg-gray-100 dark:bg-slate-800';
 const STICKY_BORDER = 'border-r border-border dark:border-white';
 
 export default function ReconcileTable({ data, onFilteredDataChange }: ReconcileTableProps) {
@@ -79,7 +79,73 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
   };
 
   return (
-    <div className="bg-background rounded-xl border border-border shadow-sm flex flex-col min-w-0">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-border shadow-sm flex flex-col min-w-0">
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30 shrink-0">
+          <p className="text-xs text-muted-foreground">
+            Menampilkan <span className="font-semibold text-foreground">{start + 1}</span>–
+            <span className="font-semibold text-foreground">
+              {Math.min(start + pageSize, filtered.length)}
+            </span>{' '}
+            dari <span className="font-semibold text-foreground">{filtered.length}</span>
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Halaman pertama"
+            >
+              <ChevronsLeft className="w-4 h-4 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Sebelumnya"
+            >
+              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+            </button>
+            {getPageNumbers().map((p, i) =>
+              p === '...' ? (
+                <span key={`dots-${i}`} className="px-2 py-1 text-xs text-muted-foreground">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={`page-${p}`}
+                  onClick={() => setPage(p)}
+                  className={`min-w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                    page === p
+                      ? 'bg-green-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:bg-gray-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {p}
+                </button>
+              ),
+            )}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Selanjutnya"
+            >
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Halaman terakhir"
+            >
+              <ChevronsRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="p-4 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
         <div className="relative w-full sm:w-72 border-2 border-black dark:border-white/20 rounded-lg">
@@ -127,37 +193,37 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
             <tr>
               <th
                 rowSpan={2}
-                className={`px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border sticky left-0 z-20 min-w-10 bg-gray-50 dark:bg-slate-800 ${STICKY_BORDER}`}
+                className={`px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border sticky left-0 z-20 min-w-10 bg-gray-100 dark:bg-slate-800 ${STICKY_BORDER}`}
               >
                 No.
               </th>
               <th
                 rowSpan={2}
-                className={`px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border sticky left-10 z-20 min-w-35 bg-gray-50 dark:bg-slate-800 ${STICKY_BORDER}`}
+                className={`px-3 py-2 text-left font-semibold text-muted-foreground border-b border-border sticky left-10 z-20 min-w-35 bg-gray-100 dark:bg-slate-800 ${STICKY_BORDER}`}
               >
                 Nama Petani
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-30 bg-gray-50 dark:bg-slate-800"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-30 bg-gray-100 dark:bg-slate-800"
               >
                 NIK
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-100 dark:bg-slate-800"
               >
                 Poktan
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-100 dark:bg-slate-800"
               >
                 Gapoktan
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-50 dark:bg-slate-800"
+                className="px-3 py-2 text-left font-semibold text-muted-foreground border-b border-r border-border min-w-25 bg-gray-100 dark:bg-slate-800"
               >
                 Kios RDKK
               </th>
@@ -190,7 +256,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
               </th>
               <th
                 rowSpan={2}
-                className="px-3 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border min-w-27.5 bg-gray-50 dark:bg-slate-800"
+                className="px-3 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border min-w-27.5 bg-gray-100 dark:bg-slate-800"
               >
                 Status
               </th>
@@ -314,72 +380,6 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
           </tbody>
         </table>
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/30 shrink-0">
-          <p className="text-xs text-muted-foreground">
-            Menampilkan <span className="font-semibold text-foreground">{start + 1}</span>–
-            <span className="font-semibold text-foreground">
-              {Math.min(start + pageSize, filtered.length)}
-            </span>{' '}
-            dari <span className="font-semibold text-foreground">{filtered.length}</span>
-          </p>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage(1)}
-              disabled={page === 1}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Halaman pertama"
-            >
-              <ChevronsLeft className="w-4 h-4 text-muted-foreground" />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Sebelumnya"
-            >
-              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-            </button>
-            {getPageNumbers().map((p, i) =>
-              p === '...' ? (
-                <span key={`dots-${i}`} className="px-2 py-1 text-xs text-muted-foreground">
-                  …
-                </span>
-              ) : (
-                <button
-                  key={`page-${p}`}
-                  onClick={() => setPage(p)}
-                  className={`min-w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
-                    page === p
-                      ? 'bg-green-600 text-white shadow-sm'
-                      : 'text-muted-foreground hover:bg-gray-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {p}
-                </button>
-              ),
-            )}
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Selanjutnya"
-            >
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </button>
-            <button
-              onClick={() => setPage(totalPages)}
-              disabled={page === totalPages}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Halaman terakhir"
-            >
-              <ChevronsRight className="w-4 h-4 text-muted-foreground" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

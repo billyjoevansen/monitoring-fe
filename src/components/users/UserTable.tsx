@@ -26,7 +26,7 @@ export function UserTable({
   onToggleSelectAll,
 }: UserTableProps) {
   return (
-    <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-border shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-muted/50 border-b border-border">

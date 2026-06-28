@@ -88,3 +88,17 @@ export async function decryptNikArray(
   const res = await api.post('/api/decrypt-nik', { detail });
   return res.data.detail;
 }
+
+/** Identifikasi kecamatan dari file Excel RDKK/SIVERVAL */
+export async function identifyKecamatan(
+  file: File,
+  documentType: 'rdkk' | 'siverval',
+): Promise<{ kecamatan: string[] }> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('document_type', documentType);
+  const res = await api.post('/api/identify-kecamatan', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
+}

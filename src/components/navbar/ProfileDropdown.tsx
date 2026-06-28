@@ -58,8 +58,8 @@ export function ProfileDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1.5 w-60 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-lg shadow-gray-200/50 dark:shadow-black/30 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
-          <div className="px-4 py-3 border-b border-gray-100 dark:border-slate-700">
+        <div className="absolute top-full right-0 mt-1.5 w-60 bg-white dark:bg-slate-900 rounded-xl border border-gray-300 dark:border-slate-700 shadow-lg shadow-gray-200/50 dark:shadow-black/30 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-slate-700">
             <p className="text-sm font-semibold text-gray-800 dark:text-white truncate">
               {user.nama}
             </p>

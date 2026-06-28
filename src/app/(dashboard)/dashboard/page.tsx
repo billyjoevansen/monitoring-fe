@@ -22,40 +22,45 @@ export default async function DashboardPage() {
 
   if (!authUser) redirect('/login');
 
-  const { data: user, error } = await supabase
+  const { data: users } = await supabase
     .from('users')
     .select('*')
-    .eq('id', authUser.id)
-    .single();
+    .eq('id', authUser.id);
 
-  if (error || !user || !user.is_active) {
-    if (error) {
-      console.error('Dashboard Error:', error.message);
-    }
-    redirect('/deactivated');
-  }
+  const user = users?.[0];
+
+  if (!user || !user.is_active) redirect('/deactivated');
 
   const [
-    { data: latestClassification },
-    { data: latestReconciliation },
-    { count: totalClassifications },
-    { count: totalReconciliations },
-  ] = await Promise.all([
+    classificationResult,
+    reconciliationResult,
+    classificationCountResult,
+    reconciliationCountResult,
+  ] = await Promise.allSettled([
     supabase
       .from('classification_archives')
       .select('id, user_nama, nama_arsip, summary, model_info, reconciliation_id, created_at')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single(),
+      .maybeSingle(),
     supabase
       .from('reconciliation_archives')
       .select('id, user_id, user_nama, nama_arsip, summary, detail, created_at')
       .order('created_at', { ascending: false })
       .limit(1)
-      .single(),
+      .maybeSingle(),
     supabase.from('classification_archives').select('*', { count: 'exact', head: true }),
     supabase.from('reconciliation_archives').select('*', { count: 'exact', head: true }),
   ]);
+
+  const latestClassification =
+    classificationResult.status === 'fulfilled' ? classificationResult.value.data : null;
+  const latestReconciliation =
+    reconciliationResult.status === 'fulfilled' ? reconciliationResult.value.data : null;
+  const totalClassifications =
+    classificationCountResult.status === 'fulfilled' ? classificationCountResult.value.count ?? 0 : 0;
+  const totalReconciliations =
+    reconciliationCountResult.status === 'fulfilled' ? reconciliationCountResult.value.count ?? 0 : 0;
 
   return (
     <DashboardClient

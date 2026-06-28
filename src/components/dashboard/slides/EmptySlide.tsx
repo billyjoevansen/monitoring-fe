@@ -10,7 +10,7 @@ interface EmptySlideProps {
 
 export default function EmptySlide({ icon, title, description, link, bg }: EmptySlideProps) {
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 shadow-sm p-10 text-center">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-10 text-center">
       <div className={`w-16 h-16 ${bg} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
         {icon}
       </div>

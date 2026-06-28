@@ -23,7 +23,7 @@ export default function ReconcileArchiveSection({
   const isBpp = userKecamatan !== null;
 
   return (
-    <div className="bg-background rounded-xl border border-foreground p-4 shadow-sm mb-6">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-foreground p-4 shadow-sm mb-6">
       {saved ? (
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
@@ -70,7 +70,7 @@ export default function ReconcileArchiveSection({
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               {isBpp ? (
                 /* BPP: tampilkan kecamatannya, tidak bisa diubah */
-                <div className="w-full pl-9 pr-4 py-2.5 border border-foreground rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-foreground select-none cursor-not-allowed">
+                <div className="w-full pl-9 pr-4 py-2.5 border border-foreground rounded-lg text-sm bg-gray-100 dark:bg-gray-800 text-foreground select-none cursor-not-allowed">
                   {kecamatan || (
                     <span className="text-muted-foreground">Kecamatan tidak diatur</span>
                   )}

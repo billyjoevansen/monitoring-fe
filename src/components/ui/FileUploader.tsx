@@ -56,7 +56,7 @@ export default function FileUploader({
           onDragLeave={() => setIsDragging(false)}
           onDrop={handleDrop}
           onClick={() => document.getElementById(inputId)?.click()}
-          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
+          className={`border-2 border-dashed rounded-xl p-8 min-h-[140px] flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 ${
             isDragging
               ? 'border-green-500 bg-green-50'
               : 'border-gray-300 hover:border-green-400 hover:bg-green-50/50'
@@ -78,7 +78,7 @@ export default function FileUploader({
           />
         </div>
       ) : (
-        <div className="border-2 border-foreground bg-background rounded-xl p-4 flex items-center justify-between">
+        <div className="border-2 border-foreground bg-white dark:bg-slate-900 rounded-xl p-8 min-h-[140px] flex items-center justify-between">
           <div className="flex items-center gap-3">
             <FileSpreadsheet className="w-8 h-8 text-green-600" />
             <div>

@@ -16,7 +16,7 @@ const buttonVariants = cva(
 
         // The reference — kept exactly as-is.
         outline:
-          'border border-black bg-background shadow-xs transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:scale-[1.02] dark:bg-input/30 dark:border-gray-200 dark:hover:bg-input/50 dark:border-white data-[state=open]:bg-accent dark:data-[state=open]:bg-accent',
+          'border border-black bg-background shadow-xs transition-all duration-200 hover:bg-accent hover:text-accent-foreground hover:scale-[1.02] dark:bg-input/30 dark:border-gray-300 dark:hover:bg-input/50 dark:border-white data-[state=open]:bg-accent dark:data-[state=open]:bg-accent',
 
         // Filled-muted — BUKAN border button. Pakai bg-muted sebagai identitasnya
         // sehingga jelas berbeda dari outline yang berbasis border.
@@ -41,6 +41,11 @@ const buttonVariants = cva(
         // Pagination — kept as-is.
         pagination:
           'text-accent hover:text-foreground bg-gray-200 border border-gray-300 transition-all duration-200 hover:bg-gray-400 dark:bg-slate-700 dark:hover:bg-slate-500 dark:hover:border-foreground/10 aria-current:bg-foreground aria-current:text-background aria-current:border-transparent aria-current:shadow-xs',
+
+        // High contrast — visible on both light and dark surfaces.
+        // Light mode: blue-600 on white. Dark mode: blue-500 on dark.
+        contrast:
+          'bg-blue-600 text-white shadow-xs transition-all duration-200 hover:bg-blue-700 hover:shadow-md hover:scale-[1.02] active:scale-[0.98] active:shadow-xs dark:bg-blue-500 dark:hover:bg-blue-400 dark:hover:shadow-md data-[state=open]:bg-blue-700 dark:data-[state=open]:bg-blue-400',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

@@ -6,9 +6,16 @@ import { getApiErrorMessage } from '@/lib/errors';
 
 import type { ReconcileResult, User } from '@/types';
 
-export function useReconcile(user: User) {
-  const [rdkkFile, setRdkkFile] = useState<File | null>(null);
-  const [sivervalFile, setSivervalFile] = useState<File | null>(null);
+interface UseReconcileOptions {
+  rdkkFile: File | null;
+  sivervalFile: File | null;
+  onRdkkChange: (file: File | null) => void;
+  onSivervalChange: (file: File | null) => void;
+}
+
+export function useReconcile(user: User, options: UseReconcileOptions) {
+  const { rdkkFile, sivervalFile, onRdkkChange, onSivervalChange } = options;
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ReconcileResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -85,14 +92,13 @@ export function useReconcile(user: User) {
 
   const handleReset = useCallback(() => {
     setResult(null);
-    setRdkkFile(null);
-    setSivervalFile(null);
+    onRdkkChange(null);
+    onSivervalChange(null);
     setError(null);
     setSaved(false);
     setNamaArsip('');
-    // Reset kecamatan: BPP tetap pada wilayahnya, role lain dikosongkan
     setKecamatan(user.role === 'bpp' ? (user.kecamatan ?? '') : '');
-  }, [user]);
+  }, [user, onRdkkChange, onSivervalChange]);
 
   const [filteredDetail, setFilteredDetail] = useState<Record<string, unknown>[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,10 +112,6 @@ export function useReconcile(user: User) {
   );
 
   return {
-    rdkkFile,
-    sivervalFile,
-    setRdkkFile,
-    setSivervalFile,
     loading,
     result,
     error,

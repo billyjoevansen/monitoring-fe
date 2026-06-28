@@ -54,8 +54,8 @@ export default function TrainingClient({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="bg-background rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
-        <div className="flex gap-6">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-6 shadow-sm mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
           <FileUploader
             label="Data RDKK"
             description="File Excel berisi data pengajuan pupuk petani"
@@ -101,7 +101,7 @@ export default function TrainingClient({ user }: { user: User }) {
       <ErrorBanner message={error} />
 
       {trainResult && (
-        <div className="bg-background rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-6 shadow-sm mb-6">
           <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-purple-500" />
             Hasil Evaluasi Model
@@ -147,7 +147,7 @@ export default function TrainingClient({ user }: { user: User }) {
           {trainResult.model_performance.classification_report && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-foreground mb-2">Classification Report</h3>
-              <div className="bg-background border border-gray-200 rounded-lg p-4 overflow-x-auto">
+              <div className="bg-white dark:bg-slate-900 border border-gray-300 rounded-lg p-4 overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr>
@@ -197,7 +197,7 @@ export default function TrainingClient({ user }: { user: User }) {
           {trainResult.model_performance.confusion_matrix && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-foreground mb-2">Confusion Matrix</h3>
-              <div className="bg-background border border-gray-200 rounded-lg p-4 inline-block">
+              <div className="bg-white dark:bg-slate-900 border border-gray-300 rounded-lg p-4 inline-block">
                 <table className="text-sm">
                   <thead>
                     <tr>
@@ -289,7 +289,7 @@ export default function TrainingClient({ user }: { user: User }) {
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4 text-center">
+    <div className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
       <p className="text-xs text-foreground font-medium">{label}</p>
       <p className="text-xl font-bold text-muted-foreground mt-1">{value}</p>
     </div>

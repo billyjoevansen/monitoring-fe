@@ -20,7 +20,7 @@ export function InputField({ label, desc, type, value, step, onChange }: InputFi
         value={value}
         onChange={(e) => onChange(e.target.value)}
         autoComplete="off"
-        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
       />
     </div>
   );
@@ -44,7 +44,7 @@ export function SelectField({ label, desc, value, options, onChange }: SelectFie
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
       >
         {options.map((opt) => (
           <option key={opt} value={opt}>

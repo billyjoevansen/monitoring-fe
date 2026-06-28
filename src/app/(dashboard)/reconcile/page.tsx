@@ -7,7 +7,12 @@ export const metadata: Metadata = {
   title: 'Rekonsiliasi',
   description: 'rekonsiliasikan data petani untuk memastikan keakuratan informasi.',
 };
-export default async function ReconcilePage() {
+
+interface ReconcilePageProps {
+  searchParams: Promise<{ doc_id?: string; type?: string }>;
+}
+
+export default async function ReconcilePage({ searchParams }: ReconcilePageProps) {
   let user;
   try {
     user = await getUser();
@@ -17,5 +22,9 @@ export default async function ReconcilePage() {
 
   if (!user) redirect('/login');
 
-  return <ReconcileClient user={user} />;
+  const params = await searchParams;
+  const docId = params.doc_id ?? null;
+  const docType = params.type ?? null;
+
+  return <ReconcileClient user={user} initialDocId={docId} initialDocType={docType} />;
 }

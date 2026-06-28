@@ -12,6 +12,12 @@ export const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   activate_user: { label: 'Aktifkan User', color: 'bg-emerald-100 text-emerald-700' },
   deactivate_user: { label: 'Menonaktifkan User', color: 'bg-gray-100 text-gray-700' },
   save_classification: { label: 'Simpan Klasifikasi', color: 'bg-amber-100 text-amber-700' },
+  save_archive: { label: 'Simpan Arsip Rekonsiliasi', color: 'bg-teal-100 text-teal-700' },
+  delete_archive: { label: 'Hapus Arsip Rekonsiliasi', color: 'bg-red-100 text-red-700' },
+  delete_classification: { label: 'Hapus Arsip Klasifikasi', color: 'bg-red-100 text-red-700' },
+  upload_document: { label: 'Upload Dokumen', color: 'bg-sky-100 text-sky-700' },
+  delete_document: { label: 'Hapus Dokumen', color: 'bg-red-100 text-red-700' },
+  edit_document: { label: 'Edit Dokumen', color: 'bg-cyan-100 text-cyan-700' },
 };
 
 export const PAGE_SIZE = 15;

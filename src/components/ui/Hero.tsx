@@ -116,7 +116,7 @@ export default function Hero({ title, subtitle, icon, actions, className = '' }:
 
       <section
         id={sectionId}
-        className={`relative mb-3 overflow-hidden border-b border-gray-200 dark:border-slate-800 transition-colors ${className}`}
+        className={`relative mb-3 overflow-hidden border-b border-gray-300 dark:border-slate-800 transition-colors ${className}`}
       >
         {/* Subtle gradient fade at bottom to blend into page */}
         <div className="absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-white/60 dark:from-slate-950/60 to-transparent pointer-events-none" />

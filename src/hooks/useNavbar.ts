@@ -5,7 +5,7 @@ import { hasPermission } from '@/config/rbac';
 import { NAV_ITEMS } from '@/config/navConfig';
 import type { User } from '@/types';
 
-type DropdownKey = 'arsip' | 'train' | 'profile';
+type DropdownKey = 'arsip' | 'arsip-dokumen' | 'train' | 'profile';
 
 export function useNavbar({ user }: { user: User }) {
   const pathname = usePathname();

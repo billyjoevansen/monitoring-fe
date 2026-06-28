@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChevronDown } from 'lucide-react';
 import type { NavDropdownProps } from '@/types';
 
@@ -12,8 +13,10 @@ export function NavDropdown({
   isActive,
   variant,
   dropdownRef,
+  onNavigate,
 }: NavDropdownProps) {
   const Icon = item.icon;
+  const router = useRouter();
   const activeButtonCls = isGroupActive
     ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30'
     : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-slate-800/80';
@@ -36,7 +39,7 @@ export function NavDropdown({
         </button>
 
         {isOpen && (
-          <div className="absolute top-full left-0 mt-1.5 w-56 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700 shadow-lg shadow-gray-200/50 dark:shadow-black/30 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
+          <div className="absolute top-full left-0 mt-1.5 w-56 bg-white dark:bg-slate-900 rounded-xl border border-gray-300 dark:border-slate-700 shadow-lg shadow-gray-200/50 dark:shadow-black/30 py-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
             {item.children?.map((child) => {
               const ChildIcon = child.icon;
               return (
@@ -46,7 +49,7 @@ export function NavDropdown({
                   className={`flex items-center gap-2.5 px-4 py-2.5 text-sm transition-colors ${
                     isActive(child.href)
                       ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30 font-medium'
-                      : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800'
+                      : 'text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800'
                   }`}
                 >
                   <ChildIcon className="w-4 h-4" />
@@ -83,15 +86,19 @@ export function NavDropdown({
           isOpen ? 'max-h-96 opacity-100 mt-1' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="pl-4 border-l border-gray-200 dark:border-slate-700 space-y-1">
+        <div className="pl-4 border-l border-gray-300 dark:border-slate-700 space-y-1">
           {item.children?.map((child) => {
             const ChildIcon = child.icon;
             return (
-              <Link
-                onClick={() => onToggle()}
+              <button
                 key={child.href}
-                href={child.href}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  router.push(child.href);
+                  onToggle();
+                  onNavigate?.();
+                }}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-left transition-colors ${
                   isActive(child.href)
                     ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30 font-medium'
                     : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800'
@@ -99,7 +106,7 @@ export function NavDropdown({
               >
                 <ChildIcon className="w-4 h-4" />
                 {child.label}
-              </Link>
+              </button>
             );
           })}
         </div>

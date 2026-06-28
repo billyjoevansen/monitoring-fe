@@ -51,6 +51,7 @@ export interface ReconcileDetailItem {
 export interface ReconcileResult {
   summary: ReconcileSummary;
   detail: ReconcileDetailItem[];
+  warnings?: string[];
 }
 
 export interface ReconcileArchiveSectionProps {

@@ -138,7 +138,11 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     const ids = Array.from(selectedIds);
     const supabase = manageClient();
 
-    await supabase.from(table).delete().in('id', ids);
+    const { error } = await supabase.from(table).delete().in('id', ids);
+
+    if (!error) {
+      await logActivity('bulk_delete_archive', `Menghapus ${ids.length} arsip secara massal`);
+    }
 
     setArchives((prev) => prev.filter((a) => !selectedIds.has(a.id)));
     setSelectedIds(new Set());

@@ -77,7 +77,7 @@ export default function SettingsClient() {
       {/* ── Form Grid ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Hyperparameter Panel */}
-        <div className="bg-background rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-6 shadow-sm">
           <h2 className="text-lg font-bold text-foreground mb-6">Hyperparameter Random Forest</h2>
           <div className="space-y-5">
             <InputField
@@ -150,7 +150,7 @@ export default function SettingsClient() {
         </div>
 
         {/* Training Config Panel */}
-        <div className="bg-background rounded-xl border border-gray-200 p-6 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-6 shadow-sm">
           <h2 className="text-lg font-bold text-foreground mb-6">Konfigurasi Training</h2>
           <div className="space-y-5">
             <InputField

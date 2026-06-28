@@ -41,7 +41,7 @@ export default function DeactivatedPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 text-center">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-300 p-8 text-center">
           {/* Icon */}
           <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
             <UserX className="w-8 h-8 text-red-500" />
@@ -69,7 +69,7 @@ export default function DeactivatedPage() {
             <button
               onClick={handleLogout}
               disabled={loading}
-              className="w-full py-2.5 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-2.5 border border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <LogOut className="w-4 h-4" />
               {loading ? 'Sedang Logout...' : 'Log Out'}

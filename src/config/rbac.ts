@@ -15,6 +15,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_archives',
     'view_api',
     'view_dashboard',
+    'view_documents',
   ],
   kabid: [
     'view_classification',
@@ -27,6 +28,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'manage_archives',
     'view_archives',
     'view_dashboard',
+    'view_documents',
   ],
   kasie: [
     'view_reconciliation',
@@ -35,8 +37,9 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_logs',
     'view_archives',
     'view_dashboard',
+    'view_documents',
   ],
-  bpp: ['view_dashboard', 'view_reconciliation', 'upload_files', 'view_archives'],
+  bpp: ['view_dashboard', 'view_reconciliation', 'upload_files', 'view_archives', 'view_documents'],
 };
 
 export function hasPermission(role: Role, permission: Permission): boolean {
@@ -79,4 +82,6 @@ export const ROUTE_PERMISSIONS: Record<string, Permission> = {
   '/logs': 'view_logs',
   '/archives/reconciliation': 'view_archives',
   '/archives/classification': 'view_archives',
+  '/archives/rdkk': 'view_documents',
+  '/archives/siverval': 'view_documents',
 };

@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { getUser } from '@/lib/getUser';
 import Navbar from '@/components/navbar/Navbar';
 import RbacGuard from '@/components/RbacGuard';
+import FloatingDocButtonWrapper from '@/components/FloatingDocButtonWrapper';
+import { ReconcileProvider } from '@/contexts/ReconcileContext';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   let user;
@@ -19,9 +21,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Navbar user={user} />
       <main className="pt-14">
         <div className="max-w-400 mx-auto px-4 sm:px-6 py-8">
-          <RbacGuard user={user}>{children}</RbacGuard>
+          <ReconcileProvider>
+            <RbacGuard user={user}>{children}</RbacGuard>
+          </ReconcileProvider>
         </div>
       </main>
+      <FloatingDocButtonWrapper />
     </div>
   );
 }

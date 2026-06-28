@@ -135,7 +135,73 @@ export default function ResultTable({
   };
 
   return (
-    <div className="bg-background rounded-xl border border-border shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-border shadow-sm overflow-hidden">
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
+          <p className="text-xs text-muted-foreground">
+            Menampilkan <span className="font-semibold text-foreground">{start + 1}</span>–
+            <span className="font-semibold text-foreground">
+              {Math.min(start + pageSize, sortedData.length)}
+            </span>{' '}
+            dari <span className="font-semibold text-foreground">{sortedData.length}</span>
+          </p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setPage(1)}
+              disabled={page === 1}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Halaman pertama"
+            >
+              <ChevronsLeft className="w-4 h-4 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Sebelumnya"
+            >
+              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+            </button>
+            {getPageNumbers().map((p, i) =>
+              p === '...' ? (
+                <span key={`dots-${i}`} className="px-2 py-1 text-xs text-muted-foreground">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={`page-${p}`}
+                  onClick={() => setPage(p)}
+                  className={`min-w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
+                    page === p
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'text-muted-foreground hover:bg-gray-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {p}
+                </button>
+              ),
+            )}
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Selanjutnya"
+            >
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+            <button
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages}
+              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              title="Halaman terakhir"
+            >
+              <ChevronsRight className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="p-4 border-b border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="relative w-full sm:w-72 border-2 border-black dark:border-white/20 rounded-lg">
@@ -222,72 +288,6 @@ export default function ResultTable({
           </tbody>
         </table>
       </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/30">
-          <p className="text-xs text-muted-foreground">
-            Menampilkan <span className="font-semibold text-foreground">{start + 1}</span>–
-            <span className="font-semibold text-foreground">
-              {Math.min(start + pageSize, sortedData.length)}
-            </span>{' '}
-            dari <span className="font-semibold text-foreground">{sortedData.length}</span>
-          </p>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage(1)}
-              disabled={page === 1}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Halaman pertama"
-            >
-              <ChevronsLeft className="w-4 h-4 text-muted-foreground" />
-            </button>
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Sebelumnya"
-            >
-              <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-            </button>
-            {getPageNumbers().map((p, i) =>
-              p === '...' ? (
-                <span key={`dots-${i}`} className="px-2 py-1 text-xs text-muted-foreground">
-                  …
-                </span>
-              ) : (
-                <button
-                  key={`page-${p}`}
-                  onClick={() => setPage(p)}
-                  className={`min-w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
-                    page === p
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-muted-foreground hover:bg-gray-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {p}
-                </button>
-              ),
-            )}
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Selanjutnya"
-            >
-              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-            </button>
-            <button
-              onClick={() => setPage(totalPages)}
-              disabled={page === totalPages}
-              className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-              title="Halaman terakhir"
-            >
-              <ChevronsRight className="w-4 h-4 text-muted-foreground" />
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

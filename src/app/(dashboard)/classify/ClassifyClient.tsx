@@ -11,7 +11,7 @@ import {
   Info,
 } from 'lucide-react';
 import ResultTable from '@/components/classify/ResultTable';
-import SummaryCard from '@/components/ui/SummaryCard';
+import ClassifyStatStrip from '@/components/ui/ClassifyStatStrip';
 import MiniCard from '@/components/ui/MiniCard';
 import ErrorBanner from '@/components/ui/ErrorBanner';
 import { useClassify } from '@/hooks/useClassify';
@@ -68,8 +68,8 @@ export default function ClassifyClient({ user }: { user: User }) {
       <ErrorBanner message={error} />
 
       {!result && (
-        <div className="bg-background rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
-          <div className="p-4 border-b border-gray-100">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 shadow-sm overflow-hidden mb-6">
+          <div className="p-4 border-b border-gray-200">
             <h2 className="text-sm font-semibold text-foreground">Pilih Arsip Rekonsiliasi</h2>
             <p className="text-xs text-muted-foreground mt-1">
               Data yang dipilih akan diproses menggunakan model Random Forest
@@ -115,23 +115,15 @@ export default function ClassifyClient({ user }: { user: User }) {
             </button>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            <SummaryCard label="Total Petani" value={result.summary.total_petani} color="blue" />
-            <SummaryCard
-              label="Normal"
-              value={result.summary.normal}
-              sub={`${result.summary.persentase_normal}%`}
-              color="green"
-            />
-            <SummaryCard
-              label="Tidak Normal"
-              value={result.summary.tidak_normal}
-              sub={`${result.summary.persentase_tidak_normal}%`}
-              color="red"
-            />
-          </div>
+          <ClassifyStatStrip
+            total={result.summary.total_petani}
+            normal={result.summary.normal}
+            tidakNormal={result.summary.tidak_normal}
+            persentaseNormal={result.summary.persentase_normal}
+            persentaseTidakNormal={result.summary.persentase_tidak_normal}
+          />
 
-          <div className="bg-background rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
+          <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-4 shadow-sm mb-6">
             {saved ? (
               <div className="flex items-center gap-2 text-green-700">
                 <CheckCircle className="w-5 h-5" />
@@ -145,7 +137,7 @@ export default function ClassifyClient({ user }: { user: User }) {
                   onChange={(e) => setNamaArsip(e.target.value)}
                   placeholder="Nama arsip klasifikasi"
                   autoComplete="off"
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <button
                   onClick={handleSaveToArchive}

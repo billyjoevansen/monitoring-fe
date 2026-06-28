@@ -33,7 +33,7 @@ export function LogsFilter({
   const hasActiveFilter = searchQuery || filterAction || filterRole;
 
   return (
-    <div className="bg-background rounded-xl border border-gray-200 p-4 shadow-sm mb-6">
+    <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-4 shadow-sm mb-6">
       <div className="flex items-center gap-2 mb-3">
         <Filter className="w-4 h-4 text-foreground" />
         <span className="text-sm font-semibold text-foreground">Filter</span>
@@ -50,7 +50,7 @@ export function LogsFilter({
               autoComplete="off"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
         </div>
@@ -59,7 +59,7 @@ export function LogsFilter({
         <select
           value={filterAction}
           onChange={(e) => onFilterActionChange(e.target.value)}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option value="">Semua Aksi</option>
           {Object.entries(ACTION_LABELS).map(([key, val]) => (
@@ -73,7 +73,7 @@ export function LogsFilter({
         <select
           value={filterRole}
           onChange={(e) => onFilterRoleChange(e.target.value)}
-          className="px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           <option value="">Semua Role</option>
           {Object.entries(ROLE_LABELS).map(([key, label]) => (

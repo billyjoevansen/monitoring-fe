@@ -11,7 +11,8 @@ export const getUser = cache(async (): Promise<User> => {
 
   if (!authUser) throw new Error('Unauthenticated');
 
-  const { data: profile } = await supabase.from('users').select('*').eq('id', authUser.id).single();
+  const { data: profiles } = await supabase.from('users').select('*').eq('id', authUser.id);
+  const profile = profiles?.[0];
 
   if (!profile) throw new Error('User not found');
 

@@ -57,7 +57,7 @@ export default function ArchiveSlide({ totalClassifications, totalReconciliation
           <Link
             key={href}
             href={href}
-            className={`group bg-background rounded-2xl border border-gray-200 shadow-sm p-6 ${hoverBorder} hover:shadow-md transition-all duration-200`}
+            className={`group bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-6 ${hoverBorder} hover:shadow-md transition-all duration-200`}
           >
             <div className="flex items-start justify-between mb-4">
               <div

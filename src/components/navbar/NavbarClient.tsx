@@ -125,10 +125,10 @@ export default function NavbarClient({ user, visibleItems }: NavbarClientProps) 
             className="absolute inset-0 bg-black/20 dark:bg-black/50 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <div className="absolute top-16 left-1 right-1 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto animate-in slide-in-from-top-2 duration-800 rounded-sm">
+          <div className="absolute top-16 left-1 right-1 bg-white dark:bg-slate-900 border-b border-gray-300 dark:border-slate-700 shadow-xl max-h-[calc(100vh-4rem)] overflow-y-auto animate-in slide-in-from-top-2 duration-800 rounded-sm">
             <div className="p-4 space-y-1">
               {/* User info */}
-              <div className="px-3 py-3 mb-3 bg-gray-50 dark:bg-slate-800 rounded-lg">
+              <div className="px-3 py-3 mb-3 bg-gray-100 dark:bg-slate-800 rounded-lg">
                 <p className="text-sm font-semibold text-gray-800 dark:text-white">{user.nama}</p>
                 <p className="text-xs text-gray-500 dark:text-slate-400">{user.email}</p>
                 <span
@@ -163,7 +163,7 @@ export default function NavbarClient({ user, visibleItems }: NavbarClientProps) 
                     className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium ${
                       isActive(item.href)
                         ? 'text-green-700 bg-green-50 dark:text-green-400 dark:bg-green-900/30'
-                        : 'text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800'
+                        : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -173,7 +173,7 @@ export default function NavbarClient({ user, visibleItems }: NavbarClientProps) 
               })}
 
               {/* Mobile profile actions */}
-              <div className="border-t border-gray-100 dark:border-slate-700 pt-2 mt-2 space-y-1">
+              <div className="border-t border-gray-200 dark:border-slate-700 pt-2 mt-2 space-y-1">
                 <ProfileActions onLogout={handleLogoutClick} />
               </div>
             </div>
