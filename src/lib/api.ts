@@ -102,3 +102,27 @@ export async function identifyKecamatan(
   });
   return res.data;
 }
+
+/** Statistik global — ringkasan seluruh arsip */
+export interface GlobalStatsData {
+  reconciliation: {
+    total_archives: number;
+    total_petani: number;
+    total_lengkap: number;
+    total_sebagian: number;
+    total_melebihi: number;
+    total_belum: number;
+    persentase_lengkap: number;
+  };
+  classification: {
+    total_archives: number;
+    total_petani: number;
+    rata_rata_akurasi: number;
+    rata_rata_persentase_normal: number;
+  };
+}
+
+export async function getGlobalStats(): Promise<GlobalStatsData> {
+  const res = await api.get('/api/stats/summary');
+  return res.data;
+}

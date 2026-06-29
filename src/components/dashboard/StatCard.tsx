@@ -54,7 +54,7 @@ export default function StatCard({ icon, label, value, sub, gradient, iconBg }: 
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border p-3 ${gradient} transition-all duration-300`}
+      className={`relative overflow-hidden rounded-2xl border p-3 ${gradient} transition-shadow duration-300 hover:shadow-md`}
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1">
@@ -73,7 +73,7 @@ export default function StatCard({ icon, label, value, sub, gradient, iconBg }: 
         </div>
       </div>
 
-      <div className="absolute -right-4 -bottom-4 w-24 h-24 rounded-full opacity-10 bg-current" />
+      <div className="absolute -right-4 -bottom-4 w-16 h-16 rounded-full opacity-5 bg-current" />
     </div>
   );
 }

@@ -129,6 +129,7 @@ export interface DashboardClientProps {
   latestReconciliation: ReconciliationArchive | null;
   totalClassifications: number;
   totalReconciliations: number;
+  activities: Array<{ id: number; action: string; created_at: string }>;
 }
 
 // Label distribution returned by BE /api/train

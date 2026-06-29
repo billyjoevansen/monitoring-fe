@@ -31,11 +31,17 @@ export default async function DashboardPage() {
 
   if (!user || !user.is_active) redirect('/deactivated');
 
+  // Hitung 3 bulan yang lalu
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  const threeMonthsAgoISO = threeMonthsAgo.toISOString();
+
   const [
     classificationResult,
     reconciliationResult,
     classificationCountResult,
     reconciliationCountResult,
+    activityResult,
   ] = await Promise.allSettled([
     supabase
       .from('classification_archives')
@@ -51,6 +57,11 @@ export default async function DashboardPage() {
       .maybeSingle(),
     supabase.from('classification_archives').select('*', { count: 'exact', head: true }),
     supabase.from('reconciliation_archives').select('*', { count: 'exact', head: true }),
+    supabase
+      .from('activity_logs')
+      .select('id, action, created_at')
+      .gte('created_at', threeMonthsAgoISO)
+      .order('created_at', { ascending: false }),
   ]);
 
   const latestClassification =
@@ -61,6 +72,8 @@ export default async function DashboardPage() {
     classificationCountResult.status === 'fulfilled' ? classificationCountResult.value.count ?? 0 : 0;
   const totalReconciliations =
     reconciliationCountResult.status === 'fulfilled' ? reconciliationCountResult.value.count ?? 0 : 0;
+  const activities =
+    activityResult.status === 'fulfilled' ? activityResult.value.data ?? [] : [];
 
   return (
     <DashboardClient
@@ -69,6 +82,7 @@ export default async function DashboardPage() {
       latestReconciliation={(latestReconciliation as ReconciliationArchive) || null}
       totalClassifications={totalClassifications ?? 0}
       totalReconciliations={totalReconciliations ?? 0}
+      activities={activities}
     />
   );
 }

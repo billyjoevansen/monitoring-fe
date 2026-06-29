@@ -1,27 +1,68 @@
 import {
   FileStack,
   Users as UsersIcon,
-  ShieldCheck,
-  AlertTriangle,
-  Activity,
   ArrowRight,
   Clock,
   MapPin,
+  BarChart3,
 } from 'lucide-react';
 import Link from 'next/link';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 import { formatDate } from '@/lib/format';
 import type { ReconciliationArchive } from '@/types';
 
-import StatCard from '@/components/dashboard/StatCard';
 import MetaInfoGrid from '@/components/dashboard/MetaInfoGrid';
 import EmptySlide from './EmptySlide';
 
-const STATUS_ROWS = [
-  { key: 'tebus_lengkap', label: 'Transaksi Lengkap', color: 'bg-green-500' },
-  { key: 'tebus_sebagian', label: 'Transaksi Sebagian', color: 'bg-yellow-500' },
-  { key: 'tebus_melebihi', label: 'Transaksi Melebihi', color: 'bg-red-500' },
-  { key: 'belum_menebus', label: 'Belum Transaksi', color: 'bg-orange-500' },
+const STATUS_CONFIG = [
+  { key: 'tebus_lengkap', label: 'Lengkap', color: '#22c55e', gradientTo: '#4ade80' },
+  { key: 'tebus_sebagian', label: 'Sebagian', color: '#eab308', gradientTo: '#facc15' },
+  { key: 'tebus_melebihi', label: 'Melebihi', color: '#ef4444', gradientTo: '#f87171' },
+  { key: 'belum_menebus', label: 'Belum', color: '#f97316', gradientTo: '#fb923c' },
 ] as const;
+
+interface TooltipPayloadItem {
+  value: number;
+  name: string;
+  color: string;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: TooltipPayloadItem[];
+  label?: string;
+}
+
+function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
+  if (!active || !payload || !payload.length) return null;
+  return (
+    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl px-4 py-3 min-w-[140px]">
+      <p className="text-xs font-bold text-foreground mb-2 pb-2 border-b border-gray-100 dark:border-gray-700">
+        {label}
+      </p>
+      {payload.map((entry) => (
+        <div key={entry.name} className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span
+              className="w-2.5 h-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span className="text-xs text-muted-foreground">{entry.name}</span>
+          </div>
+          <span className="text-xs font-semibold text-foreground">{entry.value} petani</span>
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function ReconciliationSlide({ data }: { data: ReconciliationArchive | null }) {
   if (!data) {
@@ -41,51 +82,14 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
   }
 
   const rec = data.summary;
-  const total = rec.total_petani;
 
-  const pct = (value: number) => (total > 0 ? ((value / total) * 100).toFixed(1) : '—');
+  const chartData = STATUS_CONFIG.map(({ key, label }) => ({
+    name: label,
+    value: rec.status_penebusan[key],
+  }));
 
   return (
     <div className="space-y-6">
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-        <StatCard
-          icon={<UsersIcon className="w-5 h-5 text-blue-600" />}
-          label="Total Petani"
-          value={total}
-          sub="Rekonsiliasi terakhir"
-          gradient="bg-blue-50 border-blue-200 text-blue-900"
-          iconBg="bg-blue-100"
-        />
-
-        <StatCard
-          icon={<ShieldCheck className="w-5 h-5 text-green-600" />}
-          label="Transaksi Lengkap"
-          value={rec.status_penebusan.tebus_lengkap}
-          sub={`${pct(rec.status_penebusan.tebus_lengkap)}%`}
-          gradient="bg-green-50 border-green-200 text-green-900"
-          iconBg="bg-green-100"
-        />
-
-        <StatCard
-          icon={<AlertTriangle className="w-5 h-5 text-yellow-600" />}
-          label="Transaksi Sebagian"
-          value={rec.status_penebusan.tebus_sebagian}
-          sub={`${pct(rec.status_penebusan.tebus_sebagian)}%`}
-          gradient="bg-yellow-50 border-yellow-200 text-yellow-900"
-          iconBg="bg-yellow-100"
-        />
-
-        <StatCard
-          icon={<Activity className="w-5 h-5 text-orange-600" />}
-          label="Belum Menebus"
-          value={rec.status_penebusan.belum_menebus}
-          sub={`${pct(rec.status_penebusan.belum_menebus)}%`}
-          gradient="bg-orange-50 border-orange-200 text-orange-900"
-          iconBg="bg-orange-100"
-        />
-      </div>
-
       {/* Detail */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
@@ -149,37 +153,37 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
             </div>
           </div>
 
-          {/* Bars */}
+          {/* Chart */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-foreground uppercase tracking-wide">
-              Distribusi Status Penebusan
-            </p>
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-4 h-4 text-muted-foreground" />
+              <p className="text-xs font-semibold text-foreground uppercase tracking-wide">
+                Distribusi Status Penebusan
+              </p>
+            </div>
 
-            {STATUS_ROWS.map(({ key, label, color }) => {
-              const value = rec.status_penebusan[key];
-              const barPct = total > 0 ? (value / total) * 100 : 0;
-
-              return (
-                <div key={key}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-muted-foreground">{label}</span>
-                    <span className="font-semibold text-foreground">
-                      {value}{' '}
-                      <span className="text-muted-foreground font-normal">
-                        ({barPct.toFixed(1)}%)
-                      </span>
-                    </span>
-                  </div>
-
-                  <div className="h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                    <div
-                      className={`${color} h-full rounded-full transition-all duration-500`}
-                      style={{ width: `${barPct}%` }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 16, left: 10, bottom: 5 }} barCategoryGap="25%">
+                  <defs>
+                    {STATUS_CONFIG.map((s) => (
+                      <linearGradient key={`grad-${s.key}`} id={`grad-${s.key}`} x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stopColor={s.color} />
+                        <stop offset="100%" stopColor={s.gradientTo} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <XAxis type="number" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af', fontWeight: 500 }} axisLine={false} tickLine={false} width={80} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59, 130, 246, 0.06)', radius: 6 }} />
+                  <Bar dataKey="value" name="Petani" radius={[0, 6, 6, 0]} barSize={24} cursor="pointer" isAnimationActive={true} animationDuration={1000} animationEasing="ease-out">
+                    {chartData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={`url(#grad-${STATUS_CONFIG[index].key})`} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       </div>

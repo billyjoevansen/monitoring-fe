@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { SLIDE_DURATION } from '@/hooks/useDashboard';
 
 const SLIDE_LABELS = ['Klasifikasi', 'Rekonsiliasi', 'Arsip'] as const;
+const SLIDE_DURATION = 7000;
 
 interface CarouselControlsProps {
   slide: number;
