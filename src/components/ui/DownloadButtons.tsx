@@ -221,10 +221,10 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
 
     const summaryData = [
       ['Total Petani', summary.total_petani],
-      ['Tebus Lengkap', summary.status_penebusan.tebus_lengkap],
-      ['Tebus Sebagian', summary.status_penebusan.tebus_sebagian],
-      ['Tebus Melebihi', summary.status_penebusan.tebus_melebihi],
-      ['Belum Menebus', summary.status_penebusan.belum_menebus],
+      ['Transaksi Lengkap', summary.status_penebusan.tebus_lengkap],
+      ['Transaksi Sebagian', summary.status_penebusan.tebus_sebagian],
+      ['Transaksi Melebihi', summary.status_penebusan.tebus_melebihi],
+      ['Belum Transaksi', summary.status_penebusan.belum_menebus],
       ['Total Diajukan (kg)', summary.total_pupuk_diajukan_kg],
       ['Total Ditebus (kg)', summary.total_pupuk_ditebus_kg],
     ];
@@ -264,7 +264,7 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       21,
     );
     doc.text(
-      `Total Petani: ${summary.total_petani}  |  Tebus Lengkap: ${summary.status_penebusan.tebus_lengkap}  |  Tebus Sebagian: ${summary.status_penebusan.tebus_sebagian}  |  Belum Menebus: ${summary.status_penebusan.belum_menebus}`,
+      `Total Petani: ${summary.total_petani}  |  Transaksi Lengkap: ${summary.status_penebusan.tebus_lengkap}  |  Transaksi Sebagian: ${summary.status_penebusan.tebus_sebagian}  |  Belum Transaksi: ${summary.status_penebusan.belum_menebus}`,
       14,
       26,
     );

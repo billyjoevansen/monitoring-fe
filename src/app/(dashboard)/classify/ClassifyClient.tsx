@@ -230,11 +230,11 @@ function ArchiveItem({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             <MiniCard label="Total Petani" value={archive.summary.total_petani} />
             <MiniCard
-              label="Tebus Lengkap"
+              label="Transaksi Lengkap"
               value={archive.summary.status_penebusan.tebus_lengkap}
             />
             <MiniCard
-              label="Tebus Sebagian"
+              label="Transaksi Sebagian"
               value={archive.summary.status_penebusan.tebus_sebagian}
             />
           </div>

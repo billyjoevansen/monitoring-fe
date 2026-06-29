@@ -17,10 +17,10 @@ import MetaInfoGrid from '@/components/dashboard/MetaInfoGrid';
 import EmptySlide from './EmptySlide';
 
 const STATUS_ROWS = [
-  { key: 'tebus_lengkap', label: 'Tebus Lengkap', color: 'bg-green-500' },
-  { key: 'tebus_sebagian', label: 'Tebus Sebagian', color: 'bg-yellow-500' },
-  { key: 'tebus_melebihi', label: 'Tebus Melebihi', color: 'bg-red-500' },
-  { key: 'belum_menebus', label: 'Belum Menebus', color: 'bg-orange-500' },
+  { key: 'tebus_lengkap', label: 'Transaksi Lengkap', color: 'bg-green-500' },
+  { key: 'tebus_sebagian', label: 'Transaksi Sebagian', color: 'bg-yellow-500' },
+  { key: 'tebus_melebihi', label: 'Transaksi Melebihi', color: 'bg-red-500' },
+  { key: 'belum_menebus', label: 'Belum Transaksi', color: 'bg-orange-500' },
 ] as const;
 
 export default function ReconciliationSlide({ data }: { data: ReconciliationArchive | null }) {
@@ -60,7 +60,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
 
         <StatCard
           icon={<ShieldCheck className="w-5 h-5 text-green-600" />}
-          label="Tebus Lengkap"
+          label="Transaksi Lengkap"
           value={rec.status_penebusan.tebus_lengkap}
           sub={`${pct(rec.status_penebusan.tebus_lengkap)}%`}
           gradient="bg-green-50 border-green-200 text-green-900"
@@ -69,7 +69,7 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
 
         <StatCard
           icon={<AlertTriangle className="w-5 h-5 text-yellow-600" />}
-          label="Tebus Sebagian"
+          label="Transaksi Sebagian"
           value={rec.status_penebusan.tebus_sebagian}
           sub={`${pct(rec.status_penebusan.tebus_sebagian)}%`}
           gradient="bg-yellow-50 border-yellow-200 text-yellow-900"

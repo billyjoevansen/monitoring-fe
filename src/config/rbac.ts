@@ -18,9 +18,9 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view_documents',
   ],
   kabid: [
+    'view_reconciliation',
+    'upload_files',
     'view_classification',
-    'view_training',
-    'train_model',
     'edit_model_config',
     'manage_users',
     'view_logs',

@@ -104,22 +104,22 @@ export default function ReconciliationArchivesClient({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
           <SummaryCard label="Total Petani" value={summary.total_petani} color="blue" />
           <SummaryCard
-            label="Tebus Lengkap"
+            label="Transaksi Lengkap"
             value={summary.status_penebusan.tebus_lengkap}
             color="green"
           />
           <SummaryCard
-            label="Tebus Sebagian"
+            label="Transaksi Sebagian"
             value={summary.status_penebusan.tebus_sebagian}
             color="yellow"
           />
           <SummaryCard
-            label="Tebus Melebihi"
+            label="Transaksi Melebihi"
             value={summary.status_penebusan.tebus_melebihi}
             color="red"
           />
           <SummaryCard
-            label="Belum Menebus"
+            label="Belum Transaksi"
             value={summary.status_penebusan.belum_menebus}
             color="orange"
           />
@@ -188,8 +188,8 @@ export default function ReconciliationArchivesClient({
         renderExpandedSummary={({ summary }) => (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
             <MiniCard label="Total Petani" value={summary.total_petani} />
-            <MiniCard label="Tebus Lengkap" value={summary.status_penebusan.tebus_lengkap} />
-            <MiniCard label="Tebus Sebagian" value={summary.status_penebusan.tebus_sebagian} />
+            <MiniCard label="Transaksi Lengkap" value={summary.status_penebusan.tebus_lengkap} />
+            <MiniCard label="Transaksi Sebagian" value={summary.status_penebusan.tebus_sebagian} />
           </div>
         )}
         selectedIds={selectedIds}

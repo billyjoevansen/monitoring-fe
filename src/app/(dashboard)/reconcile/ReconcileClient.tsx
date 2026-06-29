@@ -34,7 +34,8 @@ interface ReconcileClientProps {
 
 export default function ReconcileClient({ user, initialDocId, initialDocType }: ReconcileClientProps) {
   const canUpload = hasPermission(user.role, 'upload_files');
-  const { downloadDocument, rdkkDocs, sivervalDocs } = useDocuments(user.id);
+  const bppKecamatan = user.role === 'bpp' ? (user.kecamatan ?? undefined) : undefined;
+  const { downloadDocument, rdkkDocs, sivervalDocs } = useDocuments(user.id, user.role, bppKecamatan);
   const ctx = useReconcileFiles();
 
   const [loadingDoc, setLoadingDoc] = useState(false);
@@ -110,9 +111,10 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
           } else {
             setSivervalFileRef.current(file);
           }
-          // Clear URL params so files don't reload on browser refresh
           window.history.replaceState(null, '', '/reconcile');
         }
+      } else {
+        window.history.replaceState(null, '', '/reconcile');
       }
       setLoadingDoc(false);
     };
@@ -179,22 +181,22 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
             <SummaryCard label="Total Petani" value={result.summary.total_petani} color="blue" />
             <SummaryCard
-              label="Tebus Lengkap"
+              label="Transaksi Lengkap"
               value={result.summary.status_penebusan.tebus_lengkap}
               color="green"
             />
             <SummaryCard
-              label="Tebus Sebagian"
+              label="Transaksi Sebagian"
               value={result.summary.status_penebusan.tebus_sebagian}
               color="yellow"
             />
             <SummaryCard
-              label="Tebus Melebihi"
+              label="Transaksi Melebihi"
               value={result.summary.status_penebusan.tebus_melebihi}
               color="red"
             />
             <SummaryCard
-              label="Belum Menebus"
+              label="Belum Transaksi"
               value={result.summary.status_penebusan.belum_menebus}
               color="orange"
             />
