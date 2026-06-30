@@ -55,7 +55,8 @@ export default function DocumentUploadModal({ userId, onClose }: DocumentUploadM
   const [sivervalDragging, setSivervalDragging] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [detectedKecamatan, setDetectedKecamatan] = useState<string[] | null>(null);
+  const [detectedKecamatanRdkk, setDetectedKecamatanRdkk] = useState<string[] | null>(null);
+  const [detectedKecamatanSiverval, setDetectedKecamatanSiverval] = useState<string[] | null>(null);
   const [detectingKecamatan, setDetectingKecamatan] = useState(false);
   const rdkkInputRef = useRef<HTMLInputElement>(null);
   const sivervalInputRef = useRef<HTMLInputElement>(null);
@@ -90,9 +91,12 @@ export default function DocumentUploadModal({ userId, onClose }: DocumentUploadM
       setDetectingKecamatan(true);
       try {
         const result = await identifyKecamatan(file, type);
-        setDetectedKecamatan(result.kecamatan && result.kecamatan.length > 0 ? result.kecamatan : null);
+        const kecamatan = result.kecamatan && result.kecamatan.length > 0 ? result.kecamatan : null;
+        if (type === 'rdkk') setDetectedKecamatanRdkk(kecamatan);
+        else setDetectedKecamatanSiverval(kecamatan);
       } catch {
-        setDetectedKecamatan(null);
+        if (type === 'rdkk') setDetectedKecamatanRdkk(null);
+        else setDetectedKecamatanSiverval(null);
       } finally {
         setDetectingKecamatan(false);
       }
@@ -128,13 +132,19 @@ export default function DocumentUploadModal({ userId, onClose }: DocumentUploadM
   const handleUpload = useCallback(async () => {
     if (!stagedRdkk && !stagedSiverval) return;
 
+    const allKecamatan = [
+      ...(detectedKecamatanRdkk || []),
+      ...(detectedKecamatanSiverval || []),
+    ];
+    const mergedKecamatan = allKecamatan.length > 0 ? [...new Set(allKecamatan)] : null;
+
     let success = true;
     if (stagedRdkk) {
-      const result = await uploadDocument(stagedRdkk, 'rdkk', detectedKecamatan);
+      const result = await uploadDocument(stagedRdkk, 'rdkk', mergedKecamatan);
       if (!result) success = false;
     }
     if (stagedSiverval) {
-      const result = await uploadDocument(stagedSiverval, 'siverval', detectedKecamatan);
+      const result = await uploadDocument(stagedSiverval, 'siverval', mergedKecamatan);
       if (!result) success = false;
     }
 
@@ -142,7 +152,7 @@ export default function DocumentUploadModal({ userId, onClose }: DocumentUploadM
       setUploadSuccess(true);
       setTimeout(() => onClose(), 1200);
     }
-  }, [stagedRdkk, stagedSiverval, detectedKecamatan, uploadDocument, onClose]);
+  }, [stagedRdkk, stagedSiverval, detectedKecamatanRdkk, detectedKecamatanSiverval, uploadDocument, onClose]);
 
   const renderDropzone = (
     type: 'rdkk' | 'siverval',
@@ -265,21 +275,28 @@ export default function DocumentUploadModal({ userId, onClose }: DocumentUploadM
               </div>
               {detectingKecamatan ? (
                 <span className="text-sm text-blue-700 dark:text-blue-400 ml-6">Mendeteksi kecamatan...</span>
-              ) : detectedKecamatan && detectedKecamatan.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5 ml-6">
-                  {detectedKecamatan.map((k) => (
-                    <span
-                      key={k}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 dark:bg-blue-800/50 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full"
-                    >
-                      <MapPin className="w-3 h-3" />
-                      {k}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <span className="text-sm text-blue-700 dark:text-blue-400 ml-6">Kecamatan tidak terdeteksi dari file</span>
-              )}
+              ) : (() => {
+                const allKecamatan = [
+                  ...(detectedKecamatanRdkk || []),
+                  ...(detectedKecamatanSiverval || []),
+                ];
+                const merged = [...new Set(allKecamatan)];
+                return merged.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 ml-6">
+                    {merged.map((k) => (
+                      <span
+                        key={k}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 dark:bg-blue-800/50 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full"
+                      >
+                        <MapPin className="w-3 h-3" />
+                        {k}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-sm text-blue-700 dark:text-blue-400 ml-6">Kecamatan tidak terdeteksi dari file</span>
+                );
+              })()}
             </div>
           )}
         </div>

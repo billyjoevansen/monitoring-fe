@@ -57,11 +57,13 @@ export default function Hero({ title, subtitle, icon, actions, className = '' }:
   const uid = useId().replace(/:/g, '');
   const sectionId = `hero-${uid}`;
 
-  const [pattern, setPattern] = useState<[string, string, string] | null>(null);
+  // Use useId hash to pick a deterministic pattern (avoids Math.random() hydration mismatch)
+  const patternIndex = uid.charCodeAt(1) % PATTERNS.length;
+  const pattern = PATTERNS[patternIndex];
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setPattern(PATTERNS[Math.floor(Math.random() * PATTERNS.length)]);
     // Trigger entrance animation after mount
     const raf = requestAnimationFrame(() => setMounted(true));
     return () => cancelAnimationFrame(raf);

@@ -93,7 +93,7 @@ export async function decryptNikArray(
 export async function identifyKecamatan(
   file: File,
   documentType: 'rdkk' | 'siverval',
-): Promise<{ kecamatan: string[] }> {
+): Promise<{ kecamatan: string[]; total_petani: number }> {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('document_type', documentType);
@@ -106,7 +106,7 @@ export async function identifyKecamatan(
 /** Statistik global — ringkasan seluruh arsip */
 export interface GlobalStatsData {
   reconciliation: {
-    total_archives: number;
+    total_rdkk_docs: number;
     total_petani: number;
     total_lengkap: number;
     total_sebagian: number;
@@ -115,7 +115,7 @@ export interface GlobalStatsData {
     persentase_lengkap: number;
   };
   classification: {
-    total_archives: number;
+    total_siverval_docs: number;
     total_petani: number;
     rata_rata_akurasi: number;
     rata_rata_persentase_normal: number;

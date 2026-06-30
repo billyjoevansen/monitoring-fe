@@ -29,7 +29,6 @@ export default function ModelPerformancePanel({ modelInfo }: ModelPerformancePan
         Performa Model
       </p>
       <div className="flex flex-wrap gap-4">
-        <ProgressBar label="Akurasi" value={modelInfo.accuracy} color="#8b5cf6" />
         <ProgressBar label="F1-Score" value={modelInfo.f1_score_weighted} color="#6366f1" />
         {modelInfo.oob_score != null && (
           <ProgressBar label="OOB Score" value={modelInfo.oob_score} color="#a78bfa" />

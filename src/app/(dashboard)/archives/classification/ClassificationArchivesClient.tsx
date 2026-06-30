@@ -1,17 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { BrainCircuit } from 'lucide-react';
 import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
 import { ArchiveDeleteDialog } from '@/components/archive/ArchiveDeleteDialog';
 import MiniCard from '@/components/ui/MiniCard';
-import ClassifyStatStrip from '@/components/ui/ClassifyStatStrip';
+import SummarySortStrip from '@/components/ui/SummarySortStrip';
 import ResultTable from '@/components/classify/ResultTable';
 import { CLASSIFY_COLUMNS } from '@/config/classifyColumnsConfig';
 import type { ClassificationArchive } from '@/types';
 
 export default function ClassificationArchivesClient({ canEdit }: { canEdit: boolean }) {
+  const [sortKey, setSortKey] = useState<string | null>(null);
+
   const {
     filtered,
     loading,
@@ -55,18 +58,23 @@ export default function ClassificationArchivesClient({ canEdit }: { canEdit: boo
           userName={viewingArchive.user_nama}
           createdAt={viewingArchive.created_at}
           totalPetani={summary.total_petani}
-          onBack={() => setViewingArchive(null)}
+          onBack={() => {
+            setViewingArchive(null);
+            setSortKey(null);
+          }}
           backButtonColor="bg-indigo-100"
           formatDate={formatDate}
         />
-        <ClassifyStatStrip
+        <SummarySortStrip
           total={summary.total_petani}
           normal={summary.normal}
           tidakNormal={summary.tidak_normal}
           persentaseNormal={summary.persentase_normal}
           persentaseTidakNormal={summary.persentase_tidak_normal}
+          activeKey={sortKey}
+          onSort={setSortKey}
         />
-        <ResultTable columns={CLASSIFY_COLUMNS} data={viewingArchive.detail} />
+        <ResultTable columns={CLASSIFY_COLUMNS} data={viewingArchive.detail} externalSortKey={sortKey} />
       </div>
     );
   }

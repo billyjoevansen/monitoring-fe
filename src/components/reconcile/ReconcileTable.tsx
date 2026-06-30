@@ -14,34 +14,28 @@ const PUPUK_TYPES = [
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
+const STATUS_SORT_MAP: Record<string, string> = {
+  tebus_lengkap: 'TEBUS LENGKAP',
+  tebus_sebagian: 'TEBUS SEBAGIAN',
+  tebus_melebihi: 'TEBUS MELEBIHI',
+  belum_menebus: 'BELUM MENEBUS',
+};
+
 interface ReconcileTableProps {
   data: Record<string, unknown>[];
   onFilteredDataChange?: (filtered: Record<string, unknown>[], searchQuery: string) => void;
+  sortKey?: string | null;
 }
 
 const STRIPE_EVEN = 'bg-white dark:bg-slate-900';
 const STRIPE_ODD = 'bg-gray-100 dark:bg-slate-800';
 const STICKY_BORDER = 'border-r border-border dark:border-white';
 
-export default function ReconcileTable({ data, onFilteredDataChange }: ReconcileTableProps) {
+export default function ReconcileTable({ data, onFilteredDataChange, sortKey }: ReconcileTableProps) {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState('');
   const tableWrapperRef = useRef<HTMLDivElement>(null);
-  const [tableMaxHeight, setTableMaxHeight] = useState(500);
-
-  useEffect(() => {
-    const calculateHeight = () => {
-      if (tableWrapperRef.current) {
-        const rect = tableWrapperRef.current.getBoundingClientRect();
-        const available = window.innerHeight - rect.top - 88;
-        setTableMaxHeight(Math.max(300, available));
-      }
-    };
-    calculateHeight();
-    window.addEventListener('resize', calculateHeight);
-    return () => window.removeEventListener('resize', calculateHeight);
-  }, []);
 
   const rows = data as unknown as PetaniRow[];
 
@@ -57,13 +51,22 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
     );
   });
 
-  useEffect(() => {
-    onFilteredDataChange?.(filtered as unknown as Record<string, unknown>[], search);
-  }, [search, data]);
+  const sorted = sortKey
+    ? [...filtered].sort((a, b) => {
+        const target = STATUS_SORT_MAP[sortKey];
+        const aMatch = a.status_tebus === target ? 0 : 1;
+        const bMatch = b.status_tebus === target ? 0 : 1;
+        return aMatch - bMatch;
+      })
+    : filtered;
 
-  const totalPages = Math.ceil(filtered.length / pageSize);
+  useEffect(() => {
+    onFilteredDataChange?.(sorted as unknown as Record<string, unknown>[], search);
+  }, [sorted, search, onFilteredDataChange]);
+
+  const totalPages = Math.ceil(sorted.length / pageSize);
   const start = (page - 1) * pageSize;
-  const pageData = filtered.slice(start, start + pageSize);
+  const pageData = sorted.slice(start, start + pageSize);
 
   const getPageNumbers = (): (number | '...')[] => {
     if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -86,9 +89,9 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
           <p className="text-xs text-muted-foreground">
             Menampilkan <span className="font-semibold text-foreground">{start + 1}</span>–
             <span className="font-semibold text-foreground">
-              {Math.min(start + pageSize, filtered.length)}
+              {Math.min(start + pageSize, sorted.length)}
             </span>{' '}
-            dari <span className="font-semibold text-foreground">{filtered.length}</span>
+            dari <span className="font-semibold text-foreground">{sorted.length}</span>
           </p>
           <div className="flex items-center gap-1">
             <button
@@ -181,7 +184,7 @@ export default function ReconcileTable({ data, onFilteredDataChange }: Reconcile
             </select>
           </div>
           <p className="text-xs text-muted-foreground">
-            dari <span className="font-semibold text-foreground">{filtered.length}</span> data
+            dari <span className="font-semibold text-foreground">{sorted.length}</span> data
           </p>
         </div>
       </div>

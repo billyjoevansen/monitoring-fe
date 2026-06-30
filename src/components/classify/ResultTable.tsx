@@ -21,12 +21,14 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
 interface ExtendedResultTableProps extends ResultTableProps {
   onFilteredDataChange?: (filtered: ClassifyDetailItem[], searchQuery: string) => void;
+  externalSortKey?: string | null;
 }
 
 export default function ResultTable({
   columns,
   data,
   onFilteredDataChange,
+  externalSortKey,
 }: ExtendedResultTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({
@@ -35,6 +37,13 @@ export default function ResultTable({
   });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  // Derived sort: externalSortKey dari parent override column sort
+  const effectiveSortConfig = useMemo<SortConfig>(() => {
+    if (externalSortKey === 'normal') return { key: 'status', direction: 'asc' };
+    if (externalSortKey === 'tidak_normal') return { key: 'status', direction: 'desc' };
+    return sortConfig;
+  }, [externalSortKey, sortConfig]);
 
   const filteredData = useMemo(() => {
     if (!searchTerm) return data;
@@ -49,26 +58,27 @@ export default function ResultTable({
   }, [data, searchTerm]);
 
   const sortedData = useMemo(() => {
-    if (!sortConfig.direction) return filteredData;
+    if (!effectiveSortConfig.direction) return filteredData;
     return [...filteredData].sort((a, b) => {
-      const aVal = a[sortConfig.key] ?? '';
-      const bVal = b[sortConfig.key] ?? '';
+      const aVal = a[effectiveSortConfig.key] ?? '';
+      const bVal = b[effectiveSortConfig.key] ?? '';
       if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
+        return effectiveSortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
       }
       const comparison = String(aVal).localeCompare(String(bVal));
-      return sortConfig.direction === 'asc' ? comparison : -comparison;
+      return effectiveSortConfig.direction === 'asc' ? comparison : -comparison;
     });
-  }, [filteredData, sortConfig]);
+  }, [filteredData, effectiveSortConfig]);
 
   // Reset to page 1 when search or data changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [searchTerm, data]);
 
   useEffect(() => {
     onFilteredDataChange?.(filteredData, searchTerm);
-  }, [searchTerm, data]);
+  }, [filteredData, searchTerm, onFilteredDataChange]);
 
   const totalPages = Math.ceil(sortedData.length / pageSize);
   const start = (page - 1) * pageSize;
@@ -100,10 +110,10 @@ export default function ResultTable({
   };
 
   const renderSortIcon = (key: string) => {
-    if (sortConfig.key !== key) {
+    if (effectiveSortConfig.key !== key) {
       return <ChevronUp className="w-3 h-3 text-muted-foreground/40" />;
     }
-    return sortConfig.direction === 'asc' ? (
+    return effectiveSortConfig.direction === 'asc' ? (
       <ChevronUp className="w-3 h-3 text-indigo-500" />
     ) : (
       <ChevronDown className="w-3 h-3 text-indigo-500" />

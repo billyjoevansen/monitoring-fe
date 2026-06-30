@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useCallback } from 'react';
 import {
   Loader2,
   Tags,
@@ -11,7 +12,7 @@ import {
   Info,
 } from 'lucide-react';
 import ResultTable from '@/components/classify/ResultTable';
-import ClassifyStatStrip from '@/components/ui/ClassifyStatStrip';
+import SummarySortStrip from '@/components/ui/SummarySortStrip';
 import MiniCard from '@/components/ui/MiniCard';
 import ErrorBanner from '@/components/ui/ErrorBanner';
 import { useClassify } from '@/hooks/useClassify';
@@ -39,6 +40,13 @@ export default function ClassifyClient({ user }: { user: User }) {
     toggleExpand,
     formatDate,
   } = useClassify(user);
+
+  const [sortKey, setSortKey] = useState<string | null>(null);
+
+  const handleResetWithSort = useCallback(() => {
+    handleReset();
+    setSortKey(null);
+  }, [handleReset]);
 
   if (!canClassify) {
     return (
@@ -108,19 +116,21 @@ export default function ClassifyClient({ user }: { user: User }) {
               Hasil klasifikasi dari arsip: <strong>{selectedArchive.nama_arsip}</strong>
             </span>
             <button
-              onClick={handleReset}
+              onClick={handleResetWithSort}
               className="ml-auto text-indigo-600 hover:text-indigo-800 font-medium underline text-xs"
             >
               Pilih arsip lain
             </button>
           </div>
 
-          <ClassifyStatStrip
+          <SummarySortStrip
             total={result.summary.total_petani}
             normal={result.summary.normal}
             tidakNormal={result.summary.tidak_normal}
             persentaseNormal={result.summary.persentase_normal}
             persentaseTidakNormal={result.summary.persentase_tidak_normal}
+            activeKey={sortKey}
+            onSort={setSortKey}
           />
 
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-4 shadow-sm mb-6">
@@ -155,7 +165,7 @@ export default function ClassifyClient({ user }: { user: User }) {
             )}
           </div>
 
-          <ResultTable columns={CLASSIFY_COLUMNS} data={result.detail} />
+          <ResultTable columns={CLASSIFY_COLUMNS} data={result.detail} externalSortKey={sortKey} />
         </>
       )}
     </div>

@@ -49,17 +49,15 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false });
 
-      if (filterByKecamatan) {
-        query = query.eq('kecamatan', filterByKecamatan);
+      // Gunakan filterWilayah dari dropdown jika ada, jika tidak pakai filterByKecamatan dari prop
+      const effectiveKecamatan = filterWilayah || filterByKecamatan;
+      if (effectiveKecamatan) {
+        query = query.eq('kecamatan', effectiveKecamatan);
       }
 
       // hanya pakai keyword yang sudah di-submit (Enter)
       if (appliedSearch.length >= 2) {
         query = query.or(`nama_arsip.ilike.%${appliedSearch}%,user_nama.ilike.%${appliedSearch}%`);
-      }
-
-      if (filterWilayah) {
-        query = query.eq('kecamatan', filterWilayah);
       }
 
       const from = (page - 1) * pageSize;
@@ -70,10 +68,14 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 
       // DECRYPT NIK VIA BACKEND AFTER LOADING
       const decryptedData =
-        data?.map(async (archive) => ({
-          ...archive,
-          detail: await decryptNikArray(archive.detail),
-        })) ?? [];
+        data?.map(async (archive) => {
+          try {
+            const decrypted = await decryptNikArray(archive.detail);
+            return { ...archive, detail: decrypted };
+          } catch {
+            return archive;
+          }
+        }) ?? [];
 
       const resolvedData = await Promise.all(decryptedData);
       setArchives((resolvedData as T[]) ?? []);
@@ -109,10 +111,16 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     const supabase = manageClient();
     const { error } = await supabase.from(table).delete().eq('id', archiveToDelete.id);
 
-    if (!error) {
-      await logActivity(deleteActivityKey, deleteActivityLabel(archiveToDelete));
-      setArchives((prev) => prev.filter((a) => a.id !== archiveToDelete.id));
+    if (error) {
+      setError('Gagal menghapus arsip. Silakan coba lagi.');
+      setDeleting(null);
+      setDeleteDialogOpen(false);
+      setArchiveToDelete(null);
+      return;
     }
+
+    await logActivity(deleteActivityKey, deleteActivityLabel(archiveToDelete));
+    setArchives((prev) => prev.filter((a) => a.id !== archiveToDelete.id));
 
     setDeleting(null);
     setDeleteDialogOpen(false);
@@ -140,10 +148,14 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
 
     const { error } = await supabase.from(table).delete().in('id', ids);
 
-    if (!error) {
-      await logActivity('bulk_delete_archive', `Menghapus ${ids.length} arsip secara massal`);
+    if (error) {
+      setError('Gagal menghapus arsip secara massal. Silakan coba lagi.');
+      setBulkDeleting(false);
+      setBulkDeleteDialogOpen(false);
+      return;
     }
 
+    await logActivity('bulk_delete_archive', `Menghapus ${ids.length} arsip secara massal`);
     setArchives((prev) => prev.filter((a) => !selectedIds.has(a.id)));
     setSelectedIds(new Set());
 
@@ -200,7 +212,7 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
     toggleSelectArchive: (id: string) => {
       setSelectedIds((prev) => {
         const next = new Set(prev);
-        next.has(id) ? next.delete(id) : next.add(id);
+        if (next.has(id)) next.delete(id); else next.add(id);
         return next;
       });
     },

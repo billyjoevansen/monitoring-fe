@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { FileStack, Download, Filter, MapPin } from 'lucide-react';
 import { useArchive } from '@/hooks/useArchive';
 import ArchiveListLayout from '@/components/archive/ArchiveListLayout';
 import { ArchiveDetailHeader } from '@/components/archive/ArchiveDetailHeader';
 import { ArchiveDeleteDialog } from '@/components/archive/ArchiveDeleteDialog';
 import MiniCard from '@/components/ui/MiniCard';
-import SummaryCard from '@/components/ui/SummaryCard';
+import SummarySortCard from '@/components/ui/SummarySortCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
 import DownloadButtons from '@/components/ui/DownloadButtons';
 import type { ReconciliationArchive, ReconcileDetailItem, ReconcileSummary, Role } from '@/types';
@@ -60,15 +60,18 @@ export default function ReconciliationArchivesClient({
     filterByKecamatan,
   });
 
-  const [filteredDetail, setFilteredDetail] = useState<ReconcileDetailItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortKey, setSortKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (viewingArchive) {
-      setFilteredDetail(viewingArchive.detail as ReconcileDetailItem[]);
-      setSearchQuery('');
-    }
-  }, [viewingArchive?.id]);
+  const fullDetail = viewingArchive ? (viewingArchive.detail as ReconcileDetailItem[]) : [];
+  const [filteredDetail, setFilteredDetail] = useState<ReconcileDetailItem[]>(fullDetail);
+  const [currentArchiveId, setCurrentArchiveId] = useState(viewingArchive?.id ?? '');
+
+  if (viewingArchive && viewingArchive.id !== currentArchiveId) {
+    setCurrentArchiveId(viewingArchive.id);
+    setFilteredDetail(fullDetail);
+    setSearchQuery('');
+  }
 
   const handleFilteredDataChange = useCallback((rows: Record<string, unknown>[], query: string) => {
     setFilteredDetail(rows as ReconcileDetailItem[]);
@@ -90,7 +93,10 @@ export default function ReconciliationArchivesClient({
           userName={viewingArchive.user_nama}
           createdAt={viewingArchive.created_at}
           totalPetani={summary.total_petani}
-          onBack={() => setViewingArchive(null)}
+          onBack={() => {
+            setViewingArchive(null);
+            setSortKey(null);
+          }}
           formatDate={formatDate}
         />
 
@@ -102,26 +108,40 @@ export default function ReconciliationArchivesClient({
         )}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
-          <SummaryCard label="Total Petani" value={summary.total_petani} color="blue" />
-          <SummaryCard
+          <SummarySortCard
+            label="Total Petani"
+            value={summary.total_petani}
+            color="blue"
+            active={sortKey === null}
+            onClick={() => setSortKey(null)}
+          />
+          <SummarySortCard
             label="Transaksi Lengkap"
             value={summary.status_penebusan.tebus_lengkap}
             color="green"
+            active={sortKey === 'tebus_lengkap'}
+            onClick={() => setSortKey(sortKey === 'tebus_lengkap' ? null : 'tebus_lengkap')}
           />
-          <SummaryCard
+          <SummarySortCard
             label="Transaksi Sebagian"
             value={summary.status_penebusan.tebus_sebagian}
             color="yellow"
+            active={sortKey === 'tebus_sebagian'}
+            onClick={() => setSortKey(sortKey === 'tebus_sebagian' ? null : 'tebus_sebagian')}
           />
-          <SummaryCard
+          <SummarySortCard
             label="Transaksi Melebihi"
             value={summary.status_penebusan.tebus_melebihi}
             color="red"
+            active={sortKey === 'tebus_melebihi'}
+            onClick={() => setSortKey(sortKey === 'tebus_melebihi' ? null : 'tebus_melebihi')}
           />
-          <SummaryCard
+          <SummarySortCard
             label="Belum Transaksi"
             value={summary.status_penebusan.belum_menebus}
             color="orange"
+            active={sortKey === 'belum_menebus'}
+            onClick={() => setSortKey(sortKey === 'belum_menebus' ? null : 'belum_menebus')}
           />
         </div>
 
@@ -146,8 +166,10 @@ export default function ReconciliationArchivesClient({
         </div>
 
         <ReconcileTable
+          key={sortKey ?? 'default'}
           data={viewingArchive.detail}
           onFilteredDataChange={handleFilteredDataChange}
+          sortKey={sortKey}
         />
       </div>
     );

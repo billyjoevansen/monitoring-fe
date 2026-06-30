@@ -7,7 +7,7 @@ import { useDocuments } from '@/hooks/useDocuments';
 import { useReconcileFiles } from '@/contexts/ReconcileContext';
 import ReconcileUploadSection from '@/components/reconcile/ReconcileUploadSection';
 import ReconcileArchiveSection from '@/components/reconcile/ReconcileArchiveSection';
-import SummaryCard from '@/components/ui/SummaryCard';
+import SummarySortCard from '@/components/ui/SummarySortCard';
 import ReconcileTable from '@/components/reconcile/ReconcileTable';
 import {
   AlertDialog,
@@ -32,10 +32,18 @@ interface ReconcileClientProps {
   initialDocType?: string | null;
 }
 
-export default function ReconcileClient({ user, initialDocId, initialDocType }: ReconcileClientProps) {
+export default function ReconcileClient({
+  user,
+  initialDocId,
+  initialDocType,
+}: ReconcileClientProps) {
   const canUpload = hasPermission(user.role, 'upload_files');
   const bppKecamatan = user.role === 'bpp' ? (user.kecamatan ?? undefined) : undefined;
-  const { downloadDocument, rdkkDocs, sivervalDocs } = useDocuments(user.id, user.role, bppKecamatan);
+  const { downloadDocument, rdkkDocs, sivervalDocs } = useDocuments(
+    user.id,
+    user.role,
+    bppKecamatan,
+  );
   const ctx = useReconcileFiles();
 
   const [loadingDoc, setLoadingDoc] = useState(false);
@@ -95,7 +103,6 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
     onSivervalChange: ctx.setSivervalFile,
   });
 
-  // Download file from archive if doc_id is provided, then clear URL params
   useEffect(() => {
     if (!initialDocId || !initialDocType) return;
 
@@ -125,6 +132,7 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
   }, [initialDocId, initialDocType, rdkkDocs, sivervalDocs, downloadDocument]);
 
   const [noMatchDismissed, setNoMatchDismissed] = useState(false);
+  const [sortKey, setSortKey] = useState<string | null>(null);
 
   if (!canUpload) {
     return (
@@ -171,7 +179,10 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
         onRdkkArchiveSelect={handleRdkkArchiveSelect}
         onSivervalArchiveSelect={handleSivervalArchiveSelect}
         onProcess={handleProcess}
-        onReset={handleReset}
+        onReset={() => {
+          handleReset();
+          setSortKey(null);
+        }}
       />
 
       <ErrorBanner message={error} />
@@ -179,26 +190,40 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
       {result && (
         <>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
-            <SummaryCard label="Total Petani" value={result.summary.total_petani} color="blue" />
-            <SummaryCard
+            <SummarySortCard
+              label="Total Petani"
+              value={result.summary.total_petani}
+              color="blue"
+              active={sortKey === null}
+              onClick={() => setSortKey(null)}
+            />
+            <SummarySortCard
               label="Transaksi Lengkap"
               value={result.summary.status_penebusan.tebus_lengkap}
               color="green"
+              active={sortKey === 'tebus_lengkap'}
+              onClick={() => setSortKey(sortKey === 'tebus_lengkap' ? null : 'tebus_lengkap')}
             />
-            <SummaryCard
+            <SummarySortCard
               label="Transaksi Sebagian"
               value={result.summary.status_penebusan.tebus_sebagian}
               color="yellow"
+              active={sortKey === 'tebus_sebagian'}
+              onClick={() => setSortKey(sortKey === 'tebus_sebagian' ? null : 'tebus_sebagian')}
             />
-            <SummaryCard
-              label="Transaksi Melebihi"
+            <SummarySortCard
+              label="Transaksi Berlebih"
               value={result.summary.status_penebusan.tebus_melebihi}
               color="red"
+              active={sortKey === 'tebus_melebihi'}
+              onClick={() => setSortKey(sortKey === 'tebus_melebihi' ? null : 'tebus_melebihi')}
             />
-            <SummaryCard
+            <SummarySortCard
               label="Belum Transaksi"
               value={result.summary.status_penebusan.belum_menebus}
               color="orange"
+              active={sortKey === 'belum_menebus'}
+              onClick={() => setSortKey(sortKey === 'belum_menebus' ? null : 'belum_menebus')}
             />
           </div>
 
@@ -216,13 +241,20 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
             userKecamatan={user.role === 'bpp' ? (user.kecamatan ?? null) : null}
           />
 
-          <ReconcileTable data={result.detail} onFilteredDataChange={handleFilteredDataChange} />
+          <ReconcileTable
+            key={sortKey ?? 'default'}
+            data={result.detail}
+            onFilteredDataChange={handleFilteredDataChange}
+            sortKey={sortKey}
+          />
         </>
       )}
 
       <AlertDialog
         open={!noMatchDismissed && (result?.warnings?.length ?? 0) > 0}
-        onOpenChange={(open) => { if (!open) setNoMatchDismissed(true); }}
+        onOpenChange={(open) => {
+          if (!open) setNoMatchDismissed(true);
+        }}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -231,7 +263,8 @@ export default function ReconcileClient({ user, initialDocId, initialDocType }: 
             </AlertDialogMedia>
             <AlertDialogTitle>Tidak Ada Kecocokan NIK</AlertDialogTitle>
             <AlertDialogDescription>
-              {result?.warnings?.[0] ?? 'Tidak ditemukan kecocokan NIK antara data RDKK dan Si-Verval.'}
+              {result?.warnings?.[0] ??
+                'Tidak ditemukan kecocokan NIK antara data RDKK dan Si-Verval.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

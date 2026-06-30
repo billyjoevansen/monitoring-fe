@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth-client';
+import { identifyKecamatan } from '@/lib/api';
 
 export interface SupportingDocument {
   id: string;
@@ -12,6 +13,7 @@ export interface SupportingDocument {
   file_path: string;
   file_size: number | null;
   kecamatan: string[] | null;
+  total_petani: number;
   created_at: string;
 }
 
@@ -91,6 +93,14 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
 
         if (uploadErr) throw uploadErr;
 
+        let totalPetani = 0;
+        try {
+          const kecResult = await identifyKecamatan(file, documentType);
+          totalPetani = kecResult.total_petani || 0;
+        } catch {
+          totalPetani = 0;
+        }
+
         const { error: insertErr } = await supabase.from('supporting_documents').insert({
           user_id: userId,
           document_type: documentType,
@@ -98,6 +108,7 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
           file_path: filePath,
           file_size: file.size,
           kecamatan: kecamatan && kecamatan.length > 0 ? kecamatan : null,
+          total_petani: totalPetani,
         });
 
         if (insertErr) throw insertErr;

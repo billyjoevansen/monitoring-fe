@@ -35,11 +35,11 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
   const { summary: cls, model_info } = data;
 
   return (
-    <div className="space-y-5">
+    <div className="h-full flex flex-col">
       {/* Main content */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch flex-1">
         {/* Donut */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-2 transition-shadow duration-300 hover:shadow-md">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-2 transition-shadow duration-300 hover:shadow-md h-full flex flex-col justify-center">
           <div className="flex bg-gray-100 dark:bg-slate-800 items-center rounded-lg gap-2 mb-6 p-1">
             <BarChart3 className="w-4.5 h-4.5 text-foreground" />
             <h3 className="text-sm font-bold text-foreground">Distribusi Klasifikasi</h3>
@@ -48,7 +48,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
         </div>
 
         {/* Detail */}
-        <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm overflow-hidden transition-shadow duration-300 hover:shadow-md">
+        <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm overflow-hidden transition-shadow duration-300 hover:shadow-md h-full flex flex-col">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -68,7 +68,7 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
             </Link>
           </div>
 
-          <div className="p-3 space-y-5">
+          <div className="p-3 space-y-5 flex-1">
             <MetaInfoGrid
               items={[
                 {
