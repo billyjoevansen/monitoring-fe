@@ -125,10 +125,149 @@ export default function TrainingClient({ user }: { user: User }) {
               }
             />
             <MetricCard
-              label="Model Size"
-              value={trainResult.model_file?.size_kb ? `${trainResult.model_file.size_kb} KB` : '-'}
+              label="CV F1 Score"
+              value={
+                trainResult.tuning?.best_cv_f1 != null
+                  ? `${(trainResult.tuning.best_cv_f1 * 100).toFixed(1)}%`
+                  : '-'
+              }
             />
           </div>
+
+          {trainResult.tuning && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-foreground mb-3">
+                Hyperparameter Tuning (10-Fold Stratified CV)
+              </h3>
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm mb-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div>
+                    <span className="text-xs text-purple-600">Method</span>
+                    <p className="font-medium text-purple-700">{trainResult.tuning.method}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-purple-600">Total Combinations</span>
+                    <p className="font-medium text-purple-700">{trainResult.tuning.total_combinations}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-purple-600">Best CV F1</span>
+                    <p className="font-medium text-purple-700">
+                      {(trainResult.tuning.best_cv_f1 * 100).toFixed(2)}%
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-purple-600">Best Params</span>
+                    <p className="font-medium text-purple-700 text-xs">
+                      {Object.entries(trainResult.tuning.best_params)
+                        .map(([k, v]) => `${k}=${v}`)
+                        .join(', ')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {trainResult.tuning.cv_results && trainResult.tuning.cv_results.length > 0 && (
+                <div className="bg-white dark:bg-slate-900 border border-gray-300 rounded-lg p-4 overflow-x-auto mb-4">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">
+                    Top {Math.min(10, trainResult.tuning.cv_results.length)} dari{' '}
+                    {trainResult.tuning.total_combinations} Kombinasi
+                  </h4>
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">#</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">n_estimators</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">max_depth</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">min_samples_split</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">min_samples_leaf</th>
+                        <th className="px-2 py-1 text-right font-semibold text-foreground">Mean F1</th>
+                        <th className="px-2 py-1 text-right font-semibold text-foreground">Std</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {trainResult.tuning.cv_results.slice(0, 10).map((cv) => (
+                        <tr
+                          key={cv.rank}
+                          className={cv.rank === 1 ? 'bg-purple-50' : ''}
+                        >
+                          <td className="px-2 py-1 text-muted-foreground">{cv.rank}</td>
+                          <td className="px-2 py-1 text-muted-foreground">
+                            {cv.params.n_estimators as number}
+                          </td>
+                          <td className="px-2 py-1 text-muted-foreground">
+                            {cv.params.max_depth === null ? 'None' : (cv.params.max_depth as number)}
+                          </td>
+                          <td className="px-2 py-1 text-muted-foreground">
+                            {cv.params.min_samples_split as number}
+                          </td>
+                          <td className="px-2 py-1 text-muted-foreground">
+                            {cv.params.min_samples_leaf as number}
+                          </td>
+                          <td className="px-2 py-1 text-right font-medium text-foreground">
+                            {(cv.mean_f1 * 100).toFixed(2)}%
+                          </td>
+                          <td className="px-2 py-1 text-right text-muted-foreground">
+                            ±{(cv.std_f1 * 100).toFixed(2)}%
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {trainResult.tuning.cv_results && trainResult.tuning.cv_results.length > 0 && trainResult.tuning.cv_results[0].fold_scores && (
+                <div className="bg-white dark:bg-slate-900 border border-gray-300 rounded-lg p-4 overflow-x-auto">
+                  <h4 className="text-xs font-semibold text-foreground mb-2">
+                    Per-Fold Performance (Kombinasi Terbaik)
+                  </h4>
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">Fold</th>
+                        <th className="px-2 py-1 text-right font-semibold text-foreground">F1 Score</th>
+                        <th className="px-2 py-1 text-right font-semibold text-foreground">vs Mean</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {trainResult.tuning.cv_results[0].fold_scores.map((score, idx) => {
+                        const mean = trainResult.tuning!.best_cv_f1;
+                        const diff = score - mean;
+                        const isAbove = diff >= 0;
+                        return (
+                          <tr key={idx} className={isAbove ? 'bg-green-50' : 'bg-orange-50'}>
+                            <td className="px-2 py-1 font-medium text-foreground">Fold {idx + 1}</td>
+                            <td className="px-2 py-1 text-right text-muted-foreground">
+                              {(score * 100).toFixed(2)}%
+                            </td>
+                            <td className="px-2 py-1 text-right text-muted-foreground">
+                              {isAbove ? '+' : ''}{(diff * 100).toFixed(2)}%
+                            </td>
+                            <td className="px-2 py-1">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ${isAbove ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
+                                {isAbove ? 'Di atas rata-rata' : 'Di bawah rata-rata'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      <tr className="bg-gray-100 font-bold">
+                        <td className="px-2 py-1 text-foreground">Mean</td>
+                        <td className="px-2 py-1 text-right text-foreground">
+                          {(trainResult.tuning.best_cv_f1 * 100).toFixed(2)}%
+                        </td>
+                        <td className="px-2 py-1 text-right text-muted-foreground">-</td>
+                        <td className="px-2 py-1 text-muted-foreground">
+                          Std: ±{(trainResult.tuning.cv_results[0].std_f1 * 100).toFixed(2)}%
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
 
           {trainResult.feature_selection && (
             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm mb-6">

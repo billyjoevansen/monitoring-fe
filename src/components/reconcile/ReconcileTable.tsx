@@ -230,10 +230,22 @@ export default function ReconcileTable({ data, onFilteredDataChange, sortKey }: 
               >
                 Kios RDKK
               </th>
+              <th
+                rowSpan={2}
+                className="px-3 py-2 text-right font-semibold text-muted-foreground border-b border-r border-border min-w-15 bg-gray-100 dark:bg-slate-800"
+              >
+                Luas Lahan
+              </th>
+              <th
+                rowSpan={2}
+                className="px-3 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border min-w-10 bg-gray-100 dark:bg-slate-800"
+              >
+                MT
+              </th>
               {PUPUK_TYPES.map((p) => (
                 <th
                   key={`group-${p.key}`}
-                  colSpan={3}
+                  colSpan={4}
                   className="px-2 py-2 text-center font-semibold text-muted-foreground border-b border-r border-border bg-blue-50 dark:bg-blue-900/20"
                 >
                   {p.label}
@@ -276,6 +288,9 @@ export default function ReconcileTable({ data, onFilteredDataChange, sortKey }: 
                   <th className="px-2 py-1.5 text-right font-medium text-muted-foreground border-b border-r border-border bg-blue-50/60 dark:bg-blue-900/10 min-w-15">
                     Selisih
                   </th>
+                  <th className="px-2 py-1.5 text-center font-medium text-muted-foreground border-b border-r border-border bg-blue-50/60 dark:bg-blue-900/10 min-w-15">
+                    Status
+                  </th>
                 </Fragment>
               ))}
             </tr>
@@ -315,11 +330,24 @@ export default function ReconcileTable({ data, onFilteredDataChange, sortKey }: 
                       {row.kios_rdkk}
                     </div>
                   </td>
+                  <td className="px-3 py-2.5 text-right text-muted-foreground border-b border-r border-border">
+                    {row.total_luas_lahan_ha > 0 ? (
+                      <span title={`${row.total_luas_lahan_ha} ha`}>
+                        {row.total_luas_lahan_ha.toLocaleString('id-ID', { minimumFractionDigits: 2 })}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground/30">-</span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2.5 text-center text-muted-foreground border-b border-r border-border">
+                    {row.jumlah_mt_aktif > 0 ? row.jumlah_mt_aktif : <span className="text-muted-foreground/30">-</span>}
+                  </td>
                   {PUPUK_TYPES.map((p) => {
                     const pd = row.pupuk?.[p.key];
                     const aj = pd?.diajukan_kg ?? 0;
                     const tb = pd?.ditebus_kg ?? 0;
                     const sl = pd?.selisih_kg ?? 0;
+                    const status = pd?.status ?? '';
                     return (
                       <Fragment key={`pupuk-${row.nik}-${p.key}-${globalIdx}`}>
                         <td className="px-2 py-2.5 text-right text-muted-foreground border-b border-r border-border">
@@ -346,6 +374,9 @@ export default function ReconcileTable({ data, onFilteredDataChange, sortKey }: 
                           }`}
                         >
                           {sl !== 0 ? sl.toLocaleString('id-ID') : '-'}
+                        </td>
+                        <td className="px-2 py-2.5 text-center border-b border-r border-border">
+                          <PupukStatusBadge status={status} />
                         </td>
                       </Fragment>
                     );
@@ -402,6 +433,28 @@ function StatusBadge({ status }: { status: string }) {
       }`}
     >
       {status}
+    </span>
+  );
+}
+
+function PupukStatusBadge({ status }: { status: string }) {
+  const colorMap: Record<string, string> = {
+    'SESUAI': 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+    'KURANG': 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300',
+    'LEBIH': 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
+    'BELUM DITEBUS': 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+    'TANPA PENGAJUAN': 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+    'TIDAK DIAJUKAN': 'bg-muted text-muted-foreground',
+  };
+  if (!status || status === 'SESUAI') return null;
+  return (
+    <span
+      className={`px-1.5 py-0.5 rounded text-[9px] font-semibold whitespace-nowrap ${
+        colorMap[status] ?? 'bg-muted text-muted-foreground'
+      }`}
+      title={status}
+    >
+      {status === 'BELUM DITEBUS' ? 'Belum' : status === 'TANPA PENGAJUAN' ? 'Tanpa' : status}
     </span>
   );
 }

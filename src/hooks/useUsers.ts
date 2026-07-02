@@ -45,7 +45,7 @@ export function useUsers(currentUser: User) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
     const supabase = manageClient();
@@ -213,7 +213,7 @@ export function useUsers(currentUser: User) {
   const toggleSelectUser = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   };

@@ -28,8 +28,10 @@ const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({ onVerify, onExpire
   const onVerifyRef = useRef(onVerify);
   const onExpireRef = useRef(onExpire);
 
-  onVerifyRef.current = onVerify;
-  onExpireRef.current = onExpire;
+  useEffect(() => {
+    onVerifyRef.current = onVerify;
+    onExpireRef.current = onExpire;
+  });
 
   useImperativeHandle(ref, () => ({
     reset() {

@@ -9,7 +9,7 @@ const DarkModeToggle: React.FC = () => {
 
   // 1. Jalankan hanya sekali saat client-side sudah siap
   useEffect(() => {
-    setMounted(true);
+    setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
 
     // Cek localStorage atau preferensi sistem
     const savedTheme = localStorage.getItem('theme');

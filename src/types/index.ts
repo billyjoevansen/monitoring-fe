@@ -137,10 +137,28 @@ export interface LabelDistribution {
   [label: string]: number;
 }
 
+export interface CvResult {
+  rank: number;
+  params: Record<string, unknown>;
+  mean_f1: number;
+  std_f1: number;
+  fold_scores: number[];
+}
+
+export interface TuningResult {
+  method: string;
+  n_folds: number;
+  total_combinations: number;
+  best_params: Record<string, unknown>;
+  best_cv_f1: number;
+  cv_results: CvResult[];
+}
+
 export interface TrainResult {
   model_performance: ModelPerformance;
   feature_selection?: FeatureSelection;
   model_file?: ModelFile;
   label_distribution?: LabelDistribution;
-  massage?: string;
+  tuning?: TuningResult;
+  message?: string;
 }

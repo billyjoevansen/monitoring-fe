@@ -15,9 +15,9 @@ export function RouteChangeOverlay({ visible, message = 'Memuat...' }: RouteChan
       // Slight delay so the overlay doesn't flash on fast transitions
       const t = setTimeout(() => setShow(true), 60);
       return () => clearTimeout(t);
-    } else {
-      setShow(false);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShow(false);
   }, [visible]);
 
   if (!visible && !show) return null;

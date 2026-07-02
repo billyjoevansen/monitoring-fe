@@ -21,7 +21,7 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
     });
 
     // Header groups (row 1 — merged)
-    const headerRow1 = ws.addRow([
+    ws.addRow([
       'No',
       'Nama Petani',
       'NIK',

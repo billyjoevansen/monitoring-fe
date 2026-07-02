@@ -28,7 +28,7 @@ export function useTrain(user: User) {
     setCharts({});
 
     try {
-      setStep('Melatih model Random Forest...');
+      setStep('Hyperparameter tuning dengan 10-Fold CV...');
       const data = await trainModel(rdkkFile, sivervalFile);
       setTrainResult(data as TrainResult);
       await logActivity('train_model', 'Training model selesai');

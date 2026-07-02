@@ -44,6 +44,7 @@ export function useNavbar({ user }: { user: User }) {
   }, [closeDropdown]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
     closeDropdown();
   }, [pathname, closeDropdown]);
