@@ -59,4 +59,5 @@ export interface TrainingConfig {
   test_size: number;
   random_state: number;
   stratify: boolean;
+  use_tuning: boolean;
 }

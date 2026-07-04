@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   FileSpreadsheet,
@@ -11,9 +11,7 @@ import {
   FileUp,
   Eye,
   ArrowLeft,
-  Edit3,
   Save,
-  X,
   Loader2,
   Search,
   MapPin,
@@ -21,10 +19,12 @@ import {
   Square,
   CheckCircle2,
   XCircle,
+  RefreshCw,
 } from 'lucide-react';
 import Hero from '@/components/ui/Hero';
 import DocumentDataTable from '@/components/ui/DocumentDataTable';
 import type { ColumnGroup } from '@/components/ui/DocumentDataTable';
+import DocumentRowEditorModal from '@/components/ui/DocumentRowEditorModal';
 import { useDocuments, formatFileSize } from '@/hooks/useDocuments';
 import type { SupportingDocument } from '@/hooks/useDocuments';
 import type { Role } from '@/types';
@@ -103,6 +103,8 @@ interface RdkkArchivesClientProps {
   canAccess: boolean;
   userRole: Role;
   userKecamatan: string | null;
+  userEmail: string;
+  userName: string;
 }
 
 export default function RdkkArchivesClient({
@@ -110,12 +112,14 @@ export default function RdkkArchivesClient({
   canAccess,
   userRole,
   userKecamatan,
+  userEmail,
+  userName,
 }: RdkkArchivesClientProps) {
   const router = useRouter();
   const isBpp = userRole === 'bpp';
   const bppKecamatan = isBpp && userKecamatan ? userKecamatan : undefined;
-  const { rdkkDocs, loading, error, deleteDocument, deleteDocuments, downloadDocument, updateDocument } =
-    useDocuments(userId, userRole, bppKecamatan);
+  const { rdkkDocs, loading, error, deleteDocument, deleteDocuments, downloadDocument, updateDocument, refresh } =
+    useDocuments(userId, userRole, bppKecamatan, userEmail, userName);
 
   const [deleteTarget, setDeleteTarget] = useState<SupportingDocument | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -166,25 +170,39 @@ export default function RdkkArchivesClient({
     });
   }, []);
 
-  // View/Edit state
+  // View state
   const [viewingDoc, setViewingDoc] = useState<SupportingDocument | null>(null);
   const [tableData, setTableData] = useState<Record<string, string | number>[]>([]);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState<Record<string, string | number>[]>([]);
   const [saving, setSaving] = useState(false);
   const [loadingDoc, setLoadingDoc] = useState(false);
+
+  // Row editor modal state
+  const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
+  const [editingRowData, setEditingRowData] = useState<Record<string, string | number> | null>(null);
+
+  // Refs for handleSave — assigned during render (no useEffect needed)
+  const viewingDocRef = useRef(viewingDoc);
+  viewingDocRef.current = viewingDoc;
+  const tableDataRef = useRef(tableData);
+  tableDataRef.current = tableData;
+
+  const initialTableDataRef = useRef<Record<string, string | number>[]>([]);
+
+  const hasChanges = useMemo(
+    () => JSON.stringify(tableData) !== JSON.stringify(initialTableDataRef.current),
+    [tableData],
+  );
 
   const handleDownload = useCallback(
     async (doc: (typeof rdkkDocs)[0]) => {
       const file = await downloadDocument(doc);
-      if (file) {
-        const url = URL.createObjectURL(file);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = doc.file_name;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = doc.file_name;
+      a.click();
+      URL.revokeObjectURL(url);
     },
     [downloadDocument],
   );
@@ -200,7 +218,6 @@ export default function RdkkArchivesClient({
     async (doc: (typeof rdkkDocs)[0]) => {
       setLoadingDoc(true);
       setViewingDoc(doc);
-      setIsEditing(false);
       try {
         const file = await downloadDocument(doc);
         if (!file) return;
@@ -220,6 +237,7 @@ export default function RdkkArchivesClient({
             return obj;
           });
         setTableData(rows);
+        initialTableDataRef.current = rows;
       } catch {
         setTableData([]);
       } finally {
@@ -229,32 +247,53 @@ export default function RdkkArchivesClient({
     [downloadDocument],
   );
 
-  const handleSave = useCallback(async () => {
-    if (!viewingDoc) return;
+  const handleSave = async () => {
+    if (!viewingDocRef.current) return;
     setSaving(true);
+    try {
+      const allCols = RDKK_GROUPS.flatMap((g) => g.columns.map((c) => c.key));
+      const excelData = tableDataRef.current.map((row) => allCols.map((key) => row[key] ?? ''));
 
-    const allCols = RDKK_GROUPS.flatMap((g) => g.columns.map((c) => c.key));
-    const excelData = editData.map((row) => allCols.map((key) => row[key] ?? ''));
-
-    const success = await updateDocument(viewingDoc, allCols, excelData);
-    if (success) {
-      setTableData(editData);
-      setIsEditing(false);
-      showToast('success', 'Berhasil menyimpan perubahan dokumen.');
-    } else {
-      showToast('error', 'Gagal menyimpan dokumen.');
+      const success = await updateDocument(viewingDocRef.current, allCols, excelData);
+      if (success) {
+        showToast('success', 'Berhasil menyimpan perubahan dokumen.');
+        refresh();
+        handleBack();
+      } else {
+        showToast('error', 'Gagal menyimpan dokumen.');
+      }
+    } catch {
+      showToast('error', 'Terjadi kesalahan saat menyimpan.');
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-  }, [viewingDoc, editData, updateDocument, showToast]);
-
-  const handleCancelEdit = useCallback(() => {
-    setIsEditing(false);
-  }, []);
+  };
 
   const handleBack = useCallback(() => {
     setViewingDoc(null);
-    setIsEditing(false);
     setTableData([]);
+    initialTableDataRef.current = [];
+    setEditingRowIndex(null);
+    setEditingRowData(null);
+  }, []);
+
+  const handleEditRow = useCallback((rowIndex: number) => {
+    setEditingRowIndex(rowIndex);
+    setEditingRowData({ ...tableData[rowIndex] });
+  }, [tableData]);
+
+  const handleRowEditSave = useCallback((updatedRow: Record<string, string | number>) => {
+    if (editingRowIndex === null) return;
+    setTableData((prev) =>
+      prev.map((row, ri) => (ri === editingRowIndex ? updatedRow : row)),
+    );
+    setEditingRowIndex(null);
+    setEditingRowData(null);
+  }, [editingRowIndex]);
+
+  const handleRowEditCancel = useCallback(() => {
+    setEditingRowIndex(null);
+    setEditingRowData(null);
   }, []);
 
   if (!canAccess) {
@@ -273,14 +312,14 @@ export default function RdkkArchivesClient({
     );
   }
 
-  // View/Edit mode
+  // View mode
   if (viewingDoc) {
     return (
       <div>
         <Hero
           icon={<FileSpreadsheet className="w-8 h-8 text-foreground" />}
           title={viewingDoc.file_name}
-          subtitle={isEditing ? 'Mode Edit — ubah data lalu klik Simpan' : 'Pratinjau isi dokumen'}
+          subtitle="Pratinjau isi dokumen — klik Edit pada baris untuk mengubah data"
         />
 
         {error && (
@@ -306,59 +345,39 @@ export default function RdkkArchivesClient({
             <Download className="w-4 h-4" />
             Download
           </button>
-          {isEditing ? (
-            <>
-              <button
-                type="button"
-                onClick={handleCancelEdit}
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4" />
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
-              >
-                {saving ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Save className="w-4 h-4" />
-                )}
-                Simpan
-              </button>
-            </>
-          ) : (
+          {hasChanges && (
             <button
               type="button"
-              onClick={() => {
-                setEditData(tableData.map((row) => ({ ...row })));
-                setIsEditing(true);
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
             >
-              <Edit3 className="w-4 h-4" />
-              Edit
+              {saving ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              Simpan
             </button>
           )}
         </div>
 
         <DocumentDataTable
           groups={RDKK_GROUPS}
-          data={isEditing ? editData : tableData}
-          editable={isEditing}
-          onRowChange={
-            isEditing
-              ? (rowIndex, key, value) => {
-                  setEditData((prev) =>
-                    prev.map((row, ri) => (ri === rowIndex ? { ...row, [key]: value } : row)),
-                  );
-                }
-              : undefined
-          }
+          data={tableData}
+          editable={false}
+          onEditRow={handleEditRow}
           loading={loadingDoc}
+        />
+
+        <DocumentRowEditorModal
+          key={editingRowData ? `row-${editingRowIndex}` : 'closed'}
+          open={editingRowIndex !== null}
+          groups={RDKK_GROUPS}
+          rowData={editingRowData}
+          onSave={handleRowEditSave}
+          onCancel={handleRowEditCancel}
+          saving={saving}
         />
       </div>
     );
@@ -371,6 +390,17 @@ export default function RdkkArchivesClient({
         icon={<FileSpreadsheet className="w-8 h-8 text-foreground" />}
         title="Dokumen RDKK"
         subtitle="Dokumen pengajuan RDKK yang sudah di-upload"
+        actions={
+          <button
+            type="button"
+            onClick={() => refresh()}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        }
       />
 
       {error && (

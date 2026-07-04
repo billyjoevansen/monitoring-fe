@@ -29,6 +29,8 @@ export default async function SivervalArchivesPage() {
       canAccess={canAccess}
       userRole={user.role}
       userKecamatan={user.kecamatan}
+      userEmail={user.email}
+      userName={user.nama}
     />
   );
 }

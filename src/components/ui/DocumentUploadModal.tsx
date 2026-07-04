@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { X, FileSpreadsheet, Upload, ExternalLink, Loader2, MapPin } from 'lucide-react';
+import { X, FileSpreadsheet, Upload, ExternalLink, Loader2, MapPin, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { useDocuments } from '@/hooks/useDocuments';
 import { identifyKecamatan } from '@/lib/api';
@@ -252,7 +252,17 @@ export default function DocumentUploadModal({ userId, onClose }: DocumentUploadM
             {stagedRdkk ? (
               renderStagedFile(stagedRdkk, () => setStagedRdkk(null))
             ) : (
-              renderDropzone('rdkk', rdkkDragging, setRdkkDragging)
+              <>
+                {renderDropzone('rdkk', rdkkDragging, setRdkkDragging)}
+                <a
+                  href="/templates/RDKK_Template.xlsx"
+                  download
+                  className="inline-flex items-center gap-1.5 mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download Template
+                </a>
+              </>
             )}
           </div>
 
@@ -262,7 +272,17 @@ export default function DocumentUploadModal({ userId, onClose }: DocumentUploadM
             {stagedSiverval ? (
               renderStagedFile(stagedSiverval, () => setStagedSiverval(null))
             ) : (
-              renderDropzone('siverval', sivervalDragging, setSivervalDragging)
+              <>
+                {renderDropzone('siverval', sivervalDragging, setSivervalDragging)}
+                <a
+                  href="/templates/SIVERVAL_Template.xlsx"
+                  download
+                  className="inline-flex items-center gap-1.5 mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download Template
+                </a>
+              </>
             )}
           </div>
 

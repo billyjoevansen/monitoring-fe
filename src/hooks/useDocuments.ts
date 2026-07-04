@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { manageClient } from '@/lib/supabase/client';
-import { logActivity } from '@/lib/auth-client';
+import { logActivityWithUser } from '@/lib/auth-client';
 import { identifyKecamatan } from '@/lib/api';
+import type { User } from '@/types';
 
 export interface SupportingDocument {
   id: string;
@@ -28,7 +29,13 @@ function formatFileSize(bytes: number | null): string {
 
 export { formatFileSize };
 
-export function useDocuments(userId: string | undefined, userRole?: string, kecamatanFilter?: string) {
+export function useDocuments(
+  userId: string | undefined,
+  userRole?: string,
+  kecamatanFilter?: string,
+  userEmail?: string,
+  userName?: string,
+) {
   const [rdkkDocs, setRdkkDocs] = useState<SupportingDocument[]>([]);
   const [sivervalDocs, setSivervalDocs] = useState<SupportingDocument[]>([]);
   const [loading, setLoading] = useState(false);
@@ -89,7 +96,7 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
 
         const { error: uploadErr } = await supabase.storage
           .from(BUCKET)
-          .upload(filePath, file, { contentType: file.type });
+          .upload(filePath, file, { contentType: file.type, cacheControl: '0' });
 
         if (uploadErr) throw uploadErr;
 
@@ -114,7 +121,9 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
         if (insertErr) throw insertErr;
 
         const typeLabel = documentType === 'rdkk' ? 'RDKK' : 'Si-Verval';
-        await logActivity('upload_document', `Upload dokumen ${typeLabel}: ${file.name}`);
+        if (userId && userEmail && userName) {
+          logActivityWithUser({ id: userId, email: userEmail, nama: userName, role: (userRole || 'admin') as User['role'] }, 'upload_document', `Upload dokumen ${typeLabel}: ${file.name}`);
+        }
 
         await listDocuments();
         return true;
@@ -126,7 +135,7 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
         setUploading(false);
       }
     },
-    [userId, supabase, listDocuments],
+    [userId, supabase, listDocuments, userEmail, userName, userRole],
   );
 
   const deleteDocument = useCallback(
@@ -144,7 +153,9 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
         if (dbErr) throw dbErr;
 
         const typeLabel = doc.document_type === 'rdkk' ? 'RDKK' : 'Si-Verval';
-        await logActivity('delete_document', `Hapus dokumen ${typeLabel}: ${doc.file_name}`);
+        if (userId && userEmail && userName) {
+          logActivityWithUser({ id: userId, email: userEmail, nama: userName, role: (userRole || 'admin') as User['role'] }, 'delete_document', `Hapus dokumen ${typeLabel}: ${doc.file_name}`);
+        }
 
         await listDocuments();
         return true;
@@ -154,7 +165,7 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
         return null;
       }
     },
-    [supabase, listDocuments],
+    [supabase, listDocuments, userId, userEmail, userName, userRole],
   );
 
   const deleteDocuments = useCallback(
@@ -177,7 +188,9 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
           ? (docs[0].document_type === 'rdkk' ? 'RDKK' : 'Si-Verval')
           : 'dokumen';
         const countLabel = docs.length > 1 ? `${docs.length} ` : '';
-        await logActivity('delete_document', `Hapus ${countLabel}${typeLabel}: ${docs.map((d) => d.file_name).join(', ')}`);
+        if (userId && userEmail && userName) {
+          logActivityWithUser({ id: userId, email: userEmail, nama: userName, role: (userRole || 'admin') as User['role'] }, 'delete_document', `Hapus ${countLabel}${typeLabel}: ${docs.map((d) => d.file_name).join(', ')}`);
+        }
 
         await listDocuments();
         return true;
@@ -187,7 +200,7 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
         return null;
       }
     },
-    [supabase, listDocuments],
+    [supabase, listDocuments, userId, userEmail, userName, userRole],
   );
 
   const downloadDocument = useCallback(
@@ -195,13 +208,18 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
       setError(null);
 
       try {
-        const { data, error: downloadErr } = await supabase.storage
+        // Pakai signed URL supaya bypass CDN cache (URL unik tiap request)
+        const { data: signedData, error: signErr } = await supabase.storage
           .from(BUCKET)
-          .download(doc.file_path);
+          .createSignedUrl(doc.file_path, 3600);
 
-        if (downloadErr) throw downloadErr;
+        if (signErr) throw signErr;
 
-        return new File([data], doc.file_name, {
+        const response = await fetch(signedData.signedUrl);
+        if (!response.ok) throw new Error('Gagal mengunduh file dari storage.');
+
+        const blob = await response.blob();
+        return new File([blob], doc.file_name, {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
       } catch (err: unknown) {
@@ -226,39 +244,81 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
       doc: SupportingDocument,
       headers: string[],
       rows: (string | number)[][],
+      titleRow?: (string | number)[],
     ): Promise<boolean> => {
       setError(null);
 
       try {
-        const XLSX = await import('xlsx');
-        const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-        const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const blob = new Blob([excelBuffer], {
+        // 1. Generate XLSX baru dengan exceljs (font 11)
+        const ExcelJS = await import('exceljs');
+        const wb = new ExcelJS.Workbook();
+        const ws = wb.addWorksheet('Sheet1');
+
+        // SIVERVAL: tambah title row (konsisten dengan file original)
+        if (doc.document_type === 'siverval') {
+          const titleData = titleRow && titleRow.length > 0 ? titleRow : [];
+          ws.addRow(titleData);
+          // Merge & center title row across semua kolom (seperti file asli)
+          if (titleData.length > 0 || headers.length > 0) {
+            const lastCol = String.fromCharCode(64 + headers.length); // A=65 → 'A'
+            ws.mergeCells(`A1:${lastCol}1`);
+            ws.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+            ws.getCell('A1').font = { size: 11, bold: true };
+          }
+        }
+
+        // Header row — font 11 bold
+        const headerRow = ws.addRow(headers);
+        headerRow.eachCell((cell) => {
+          cell.font = { size: 11, bold: true };
+        });
+
+        // Data rows — font 11
+        rows.forEach((row) => {
+          const dataRow = ws.addRow(row);
+          dataRow.eachCell((cell) => {
+            cell.font = { size: 11 };
+          });
+        });
+
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
 
+        // 2. Upload ke storage (harus selesai dulu)
         const { error: uploadErr } = await supabase.storage
           .from(BUCKET)
           .upload(doc.file_path, blob, {
             contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             upsert: true,
+            cacheControl: '0',
           });
 
         if (uploadErr) throw uploadErr;
 
-        const { error: updateErr } = await supabase
-          .from('supporting_documents')
-          .update({ file_size: blob.size })
-          .eq('id', doc.id);
-
-        if (updateErr) throw updateErr;
-
+        // 3. Parallel: update file_size + log (fire-and-forget) + update local state
         const typeLabel = doc.document_type === 'rdkk' ? 'RDKK' : 'Si-Verval';
-        await logActivity('edit_document', `Edit dokumen ${typeLabel}: ${doc.file_name}`);
+        await Promise.all([
+          supabase
+            .from('supporting_documents')
+            .update({ file_size: blob.size })
+            .eq('id', doc.id),
+          userId && userEmail && userName
+            ? logActivityWithUser(
+                { id: userId, email: userEmail, nama: userName, role: (userRole || 'admin') as User['role'] },
+                'edit_document',
+                `Edit dokumen ${typeLabel}: ${doc.file_name}`,
+              )
+            : Promise.resolve(),
+        ]);
 
-        await listDocuments();
+        // 4. Update local state langsung tanpa re-fetch
+        const updater = (prev: SupportingDocument[]) =>
+          prev.map((d) => (d.id === doc.id ? { ...d, file_size: blob.size } : d));
+        setRdkkDocs(updater);
+        setSivervalDocs(updater);
+
         return true;
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : 'Gagal menyimpan dokumen.';
@@ -266,7 +326,7 @@ export function useDocuments(userId: string | undefined, userRole?: string, keca
         return false;
       }
     },
-    [supabase, listDocuments],
+    [supabase, userId, userEmail, userName, userRole],
   );
 
   return {

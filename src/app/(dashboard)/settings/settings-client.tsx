@@ -174,6 +174,12 @@ export default function SettingsClient() {
               checked={tc.stratify}
               onChange={(v) => setTc({ ...tc, stratify: v })}
             />
+            <CheckboxField
+              label="Aktifkan Hyperparameter Tuning"
+              desc="Gunakan 10-Fold CV + Grid Search saat training (lebih lama tapi lebih optimal)"
+              checked={tc.use_tuning ?? true}
+              onChange={(v) => setTc({ ...tc, use_tuning: v })}
+            />
           </div>
           <div className="mt-8 bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 text-yellow-600 shrink-0" />

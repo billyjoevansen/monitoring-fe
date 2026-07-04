@@ -124,17 +124,19 @@ export default function TrainingClient({ user }: { user: User }) {
                   : '-'
               }
             />
-            <MetricCard
-              label="CV F1 Score"
-              value={
-                trainResult.tuning?.best_cv_f1 != null
-                  ? `${(trainResult.tuning.best_cv_f1 * 100).toFixed(1)}%`
-                  : '-'
-              }
-            />
+            {trainResult.method === 'tuning' && (
+              <MetricCard
+                label="CV F1 Score"
+                value={
+                  trainResult.tuning?.best_cv_f1 != null
+                    ? `${(trainResult.tuning.best_cv_f1 * 100).toFixed(1)}%`
+                    : '-'
+                }
+              />
+            )}
           </div>
 
-          {trainResult.tuning && (
+          {trainResult.method === 'tuning' && trainResult.tuning && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-foreground mb-3">
                 Hyperparameter Tuning (10-Fold Stratified CV)
@@ -280,6 +282,66 @@ export default function TrainingClient({ user }: { user: User }) {
                   Fitur: {trainResult.feature_selection.fitur_terpilih.join(', ')}
                 </p>
               )}
+              {trainResult.feature_selection.fitur_dibuang && trainResult.feature_selection.fitur_dibuang.length > 0 && (
+                <p className="text-gray-500 mt-1 text-xs">
+                  Dibuang: {trainResult.feature_selection.fitur_dibuang.join(', ')}
+                </p>
+              )}
+            </div>
+          )}
+
+          {trainResult.method === 'tuning' && trainResult.feature_selection?.feature_frequency && (
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold text-foreground mb-2">Feature Frequency (per Fold)</h3>
+              <div className="bg-white dark:bg-slate-900 border border-gray-300 rounded-lg p-4 overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-semibold text-foreground uppercase">
+                        Fitur
+                      </th>
+                      <th className="px-4 py-2 text-center text-xs font-semibold text-foreground uppercase">
+                        Frekuensi
+                      </th>
+                      <th className="px-4 py-2 text-center text-xs font-semibold text-foreground uppercase">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {Object.entries(trainResult.feature_selection.feature_frequency)
+                      .sort(([, a], [, b]) => b - a)
+                      .map(([feature, count]) => {
+                        const threshold = trainResult.feature_selection!.frequency_threshold ?? 0.7;
+                        const minCount = Math.ceil(threshold * (trainResult.tuning?.n_folds ?? 10));
+                        const passed = count >= minCount;
+                        return (
+                          <tr key={feature}>
+                            <td className="px-4 py-2 font-medium text-foreground font-mono text-xs">
+                              {feature}
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              <span className={`font-semibold ${passed ? 'text-green-600' : 'text-gray-400'}`}>
+                                {count}/{trainResult.tuning?.n_folds ?? 10}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2 text-center">
+                              {passed ? (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                  Terpilih
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500">
+                                  Dibuang
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 

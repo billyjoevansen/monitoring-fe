@@ -112,7 +112,7 @@ export async function logActivity(action: string, detail?: string) {
   }
 }
 
-async function logActivityWithUser(
+export async function logActivityWithUser(
   user: Pick<User, 'id' | 'email' | 'nama' | 'role'>,
   action: string,
   detail?: string,

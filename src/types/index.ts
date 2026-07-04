@@ -115,6 +115,8 @@ export interface FeatureSelection {
   total_fitur_terpilih: number;
   fitur_terpilih?: string[];
   fitur_dibuang?: string[];
+  feature_frequency?: Record<string, number>;
+  frequency_threshold?: number;
 }
 
 export interface ModelFile {
@@ -143,6 +145,7 @@ export interface CvResult {
   mean_f1: number;
   std_f1: number;
   fold_scores: number[];
+  fold_features?: string[][];
 }
 
 export interface TuningResult {
@@ -160,5 +163,6 @@ export interface TrainResult {
   model_file?: ModelFile;
   label_distribution?: LabelDistribution;
   tuning?: TuningResult;
+  method?: 'tuning' | 'direct';
   message?: string;
 }

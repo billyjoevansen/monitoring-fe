@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { hasPermission } from '@/config/rbac';
 import { TrainResult, User } from '@/types';
-import { trainModel, visualizeTraining } from '@/lib/api';
+import { trainModel, visualizeTraining, getConfig } from '@/lib/api';
 import { logActivity } from '@/lib/auth-client';
 import { getApiErrorMessage } from '@/lib/errors';
 
@@ -28,7 +28,20 @@ export function useTrain(user: User) {
     setCharts({});
 
     try {
-      setStep('Hyperparameter tuning dengan 10-Fold CV...');
+      // Fetch config untuk menentukan step message
+      let useTuning = true;
+      try {
+        const configData = await getConfig();
+        useTuning = configData?.config?.training_config?.use_tuning !== false;
+      } catch {
+        // fallback ke tuning jika gagal fetch config
+      }
+
+      setStep(useTuning
+        ? 'Hyperparameter tuning dengan 10-Fold CV...'
+        : 'Training model (tanpa tuning)...'
+      );
+
       const data = await trainModel(rdkkFile, sivervalFile);
       setTrainResult(data as TrainResult);
       await logActivity('train_model', 'Training model selesai');

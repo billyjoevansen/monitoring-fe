@@ -8,6 +8,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Edit3,
 } from 'lucide-react';
 
 export interface ColumnGroup {
@@ -22,6 +23,7 @@ interface DocumentDataTableProps {
   data: Record<string, string | number>[];
   editable: boolean;
   onRowChange?: (rowIndex: number, key: string, value: string) => void;
+  onEditRow?: (rowIndex: number) => void;
   loading?: boolean;
   showRowNumber?: boolean;
 }
@@ -31,6 +33,7 @@ export default function DocumentDataTable({
   data,
   editable,
   onRowChange,
+  onEditRow,
   loading,
   showRowNumber = true,
 }: DocumentDataTableProps) {
@@ -47,6 +50,17 @@ export default function DocumentDataTable({
         String(row[col.key] ?? '').toLowerCase().includes(q),
       ),
     );
+  }, [data, allColumns, searchQuery]);
+
+  const filteredIndices = useMemo(() => {
+    if (!searchQuery.trim()) return data.map((_, i) => i);
+    const q = searchQuery.toLowerCase();
+    return data.reduce<number[]>((acc, row, i) => {
+      if (allColumns.some((col) => String(row[col.key] ?? '').toLowerCase().includes(q))) {
+        acc.push(i);
+      }
+      return acc;
+    }, []);
   }, [data, allColumns, searchQuery]);
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
@@ -72,6 +86,9 @@ export default function DocumentDataTable({
     },
     [onRowChange],
   );
+
+  const showActions = !editable && !!onEditRow;
+  const totalColSpan = allColumns.length + (showRowNumber ? 1 : 0) + (showActions ? 1 : 0);
 
   if (loading) {
     return (
@@ -203,6 +220,14 @@ export default function DocumentDataTable({
                   No.
                 </th>
               )}
+              {showActions && (
+                <th
+                  rowSpan={2}
+                  className="px-3 py-2.5 text-center font-bold text-foreground border-r border-b border-gray-200 dark:border-gray-600 whitespace-nowrap bg-gray-100 dark:bg-slate-700 min-w-16"
+                >
+                  Aksi
+                </th>
+              )}
               {groups.map((group) => (
                 <th
                   key={group.label}
@@ -231,7 +256,7 @@ export default function DocumentDataTable({
             {pageData.length === 0 ? (
               <tr>
                 <td
-                  colSpan={allColumns.length + (showRowNumber ? 1 : 0)}
+                  colSpan={totalColSpan}
                   className="px-4 py-8 text-center text-xs text-muted-foreground"
                 >
                   Tidak ada data yang cocok dengan pencarian.
@@ -248,6 +273,19 @@ export default function DocumentDataTable({
                       {start + ri + 1}
                     </td>
                   )}
+                  {showActions && (
+                    <td className="px-3 py-2 text-center border-r border-gray-100 dark:border-gray-800">
+                      <button
+                        type="button"
+                        onClick={() => onEditRow?.(filteredIndices[start + ri])}
+                        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-md transition-colors"
+                        title="Edit baris ini"
+                      >
+                        <Edit3 className="w-3.5 h-3.5" />
+                        Edit
+                      </button>
+                    </td>
+                  )}
                   {allColumns.map((col) => (
                     <td
                       key={col.key}
@@ -257,7 +295,7 @@ export default function DocumentDataTable({
                         <input
                           type="text"
                           value={row[col.key] ?? ''}
-                          onChange={(e) => handleCellChange(start + ri, col.key, e.target.value)}
+                          onChange={(e) => handleCellChange(filteredIndices[start + ri], col.key, e.target.value)}
                           className="w-full bg-transparent text-foreground outline-none focus:bg-blue-50 dark:focus:bg-blue-950/30 focus:ring-1 focus:ring-blue-400 rounded transition-colors"
                         />
                       ) : (
