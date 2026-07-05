@@ -46,6 +46,8 @@ export default function SettingsClient() {
 
   if (!hp || !tc) return null;
 
+  const tuningEnabled = tc.use_tuning ?? true;
+
   return (
     <div>
       {/* ── Header ── */}
@@ -79,12 +81,20 @@ export default function SettingsClient() {
         {/* Hyperparameter Panel */}
         <div className="bg-white dark:bg-slate-900 rounded-xl border border-gray-300 p-6 shadow-sm">
           <h2 className="text-lg font-bold text-foreground mb-6">Hyperparameter Random Forest</h2>
+          {tuningEnabled && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-5 flex items-center gap-2 text-sm text-blue-700">
+              <AlertTriangle className="w-4 h-4 shrink-0" />
+              Tuning aktif: hyperparameter akan ditentukan otomatis berdasarkan data.
+              Hanya <strong>criterion</strong> yang bisa diubah manual.
+            </div>
+          )}
           <div className="space-y-5">
             <InputField
               label="Jumlah Pohon (n_estimators)"
               desc="10 - 1000"
               type="number"
               value={hp.n_estimators}
+              disabled={tuningEnabled}
               onChange={(v) => setHp({ ...hp, n_estimators: Number(v) })}
             />
             <SelectField
@@ -99,6 +109,7 @@ export default function SettingsClient() {
               desc="1 - 100 (kosongkan untuk unlimited)"
               type="number"
               value={hp.max_depth ?? ''}
+              disabled={tuningEnabled}
               onChange={(v) => setHp({ ...hp, max_depth: v === '' ? null : Number(v) })}
             />
             <SelectField
@@ -106,6 +117,7 @@ export default function SettingsClient() {
               desc="Jumlah fitur per split"
               value={hp.max_features}
               options={['sqrt', 'log2', 'auto']}
+              disabled={tuningEnabled}
               onChange={(v) => setHp({ ...hp, max_features: v })}
             />
             <InputField
@@ -113,6 +125,7 @@ export default function SettingsClient() {
               desc="2 - 50"
               type="number"
               value={hp.min_samples_split}
+              disabled={tuningEnabled}
               onChange={(v) => setHp({ ...hp, min_samples_split: Number(v) })}
             />
             <InputField
@@ -120,6 +133,7 @@ export default function SettingsClient() {
               desc="1 - 50"
               type="number"
               value={hp.min_samples_leaf}
+              disabled={tuningEnabled}
               onChange={(v) => setHp({ ...hp, min_samples_leaf: Number(v) })}
             />
             <SelectField
@@ -127,6 +141,7 @@ export default function SettingsClient() {
               desc="Strategi penanganan ketidakseimbangan kelas"
               value={hp.class_weight === null ? 'none' : hp.class_weight}
               options={['none', 'balanced', 'balanced_subsample']}
+              disabled={tuningEnabled}
               onChange={(v) =>
                 setHp({
                   ...hp,

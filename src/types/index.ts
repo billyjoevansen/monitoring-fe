@@ -101,13 +101,40 @@ export interface ConfusionMatrixData {
   };
 }
 
+export interface OverfittingAnalysis {
+  accuracy_gap: number;
+  f1_gap: number;
+  is_overfitting: boolean;
+  keterangan: string;
+}
+
 export interface ModelPerformance {
   accuracy: number;
   f1_score_weighted: number;
   oob_score?: number | null;
+  roc_auc?: number;
+  roc_curve_data?: {
+    fpr: number[];
+    tpr: number[];
+    roc_auc: number;
+  };
   classification_report?: ClassificationReportData;
   confusion_matrix?: ConfusionMatrixData;
   feature_importance?: Record<string, number>;
+  train?: {
+    accuracy: number;
+    f1_score_weighted: number;
+    oob_score?: number | null;
+    classification_report?: ClassificationReportData;
+    confusion_matrix?: ConfusionMatrixData;
+  };
+  test?: {
+    accuracy: number;
+    f1_score_weighted: number;
+    classification_report?: ClassificationReportData;
+    confusion_matrix?: ConfusionMatrixData;
+  };
+  overfitting_analysis?: OverfittingAnalysis;
 }
 
 export interface FeatureSelection {

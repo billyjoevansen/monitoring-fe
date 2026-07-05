@@ -107,14 +107,22 @@ export default function TrainingClient({ user }: { user: User }) {
             Hasil Evaluasi Model
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
             <MetricCard
-              label="Accuracy"
-              value={`${(trainResult.model_performance.accuracy * 100).toFixed(1)}%`}
+              label="Akurasi (Train)"
+              value={`${((trainResult.model_performance.train?.accuracy ?? trainResult.model_performance.accuracy ?? 0) * 100).toFixed(1)}%`}
+            />
+            <MetricCard
+              label="Akurasi (Test)"
+              value={
+                trainResult.model_performance.test
+                  ? `${(trainResult.model_performance.test.accuracy * 100).toFixed(1)}%`
+                  : '-'
+              }
             />
             <MetricCard
               label="F1 Score"
-              value={`${(trainResult.model_performance.f1_score_weighted * 100).toFixed(1)}%`}
+              value={`${((trainResult.model_performance.train?.f1_score_weighted ?? trainResult.model_performance.f1_score_weighted ?? 0) * 100).toFixed(1)}%`}
             />
             <MetricCard
               label="OOB Score"
@@ -124,22 +132,39 @@ export default function TrainingClient({ user }: { user: User }) {
                   : '-'
               }
             />
-            {trainResult.method === 'tuning' && (
-              <MetricCard
-                label="CV F1 Score"
-                value={
-                  trainResult.tuning?.best_cv_f1 != null
-                    ? `${(trainResult.tuning.best_cv_f1 * 100).toFixed(1)}%`
-                    : '-'
-                }
-              />
-            )}
+            <MetricCard
+              label="ROC-AUC"
+              value={
+                trainResult.model_performance.roc_auc != null
+                  ? `${(trainResult.model_performance.roc_auc * 100).toFixed(1)}%`
+                  : '-'
+              }
+            />
           </div>
+
+          {trainResult.model_performance.overfitting_analysis && (
+            <div className={`p-4 rounded-lg mb-6 text-sm ${
+              trainResult.model_performance.overfitting_analysis.is_overfitting
+                ? 'bg-red-50 border border-red-200 text-red-700'
+                : 'bg-green-50 border border-green-200 text-green-700'
+            }`}>
+              <p className="font-semibold">
+                {trainResult.model_performance.overfitting_analysis.is_overfitting
+                  ? '⚠️ Overfitting Terdeteksi'
+                  : '✅ Model Generalizes Well'}
+              </p>
+              <p>
+                Accuracy Gap: {(trainResult.model_performance.overfitting_analysis.accuracy_gap * 100).toFixed(1)}% |
+                F1 Gap: {(trainResult.model_performance.overfitting_analysis.f1_gap * 100).toFixed(1)}%
+              </p>
+              <p>{trainResult.model_performance.overfitting_analysis.keterangan}</p>
+            </div>
+          )}
 
           {trainResult.method === 'tuning' && trainResult.tuning && (
             <div className="mb-6">
               <h3 className="text-sm font-semibold text-foreground mb-3">
-                Hyperparameter Tuning (10-Fold Stratified CV)
+                Hyperparameter Tuning ({trainResult.tuning.n_folds}-Fold Stratified CV)
               </h3>
               <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-sm mb-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -178,10 +203,12 @@ export default function TrainingClient({ user }: { user: User }) {
                     <thead>
                       <tr>
                         <th className="px-2 py-1 text-left font-semibold text-foreground">#</th>
-                        <th className="px-2 py-1 text-left font-semibold text-foreground">n_estimators</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">n_est.</th>
                         <th className="px-2 py-1 text-left font-semibold text-foreground">max_depth</th>
-                        <th className="px-2 py-1 text-left font-semibold text-foreground">min_samples_split</th>
-                        <th className="px-2 py-1 text-left font-semibold text-foreground">min_samples_leaf</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">min_split</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">min_leaf</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">class_wt</th>
+                        <th className="px-2 py-1 text-left font-semibold text-foreground">max_feat</th>
                         <th className="px-2 py-1 text-right font-semibold text-foreground">Mean F1</th>
                         <th className="px-2 py-1 text-right font-semibold text-foreground">Std</th>
                       </tr>
@@ -204,6 +231,12 @@ export default function TrainingClient({ user }: { user: User }) {
                           </td>
                           <td className="px-2 py-1 text-muted-foreground">
                             {cv.params.min_samples_leaf as number}
+                          </td>
+                          <td className="px-2 py-1 text-muted-foreground">
+                            {(cv.params.class_weight as string) ?? 'None'}
+                          </td>
+                          <td className="px-2 py-1 text-muted-foreground">
+                            {cv.params.max_features as string}
                           </td>
                           <td className="px-2 py-1 text-right font-medium text-foreground">
                             {(cv.mean_f1 * 100).toFixed(2)}%
@@ -370,7 +403,9 @@ export default function TrainingClient({ user }: { user: User }) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {Object.entries(trainResult.model_performance.classification_report).map(
+                    {Object.entries(
+                      trainResult.model_performance.classification_report as unknown as Record<string, { precision: number; recall: number; f1_score: number; support: number }>
+                    ).map(
                       ([kelas, metrics]) => (
                         <tr key={kelas}>
                           <td className="px-4 py-2 font-medium text-foreground">{kelas}</td>

@@ -35,6 +35,7 @@ export async function trainModel(rdkkFile: File, sivervalFile: File) {
   formData.append('siverval', sivervalFile);
   const res = await api.post('/api/train', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 600000, // 10 menit untuk training + tuning
   });
   return res.data;
 }

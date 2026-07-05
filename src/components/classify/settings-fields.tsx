@@ -6,21 +6,23 @@ interface InputFieldProps {
   type: string;
   value: string | number;
   step?: string;
+  disabled?: boolean;
   onChange: (v: string) => void;
 }
 
-export function InputField({ label, desc, type, value, step, onChange }: InputFieldProps) {
+export function InputField({ label, desc, type, value, step, disabled, onChange }: InputFieldProps) {
   return (
-    <div>
+    <div className={disabled ? 'opacity-50 pointer-events-none' : ''}>
       <label className="block text-sm font-semibold text-foreground">{label}</label>
       <p className="text-xs text-muted-foreground mb-1">{desc}</p>
       <input
         type={type}
         step={step}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
         autoComplete="off"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
       />
     </div>
   );
@@ -33,18 +35,20 @@ interface SelectFieldProps {
   desc: string;
   value: string;
   options: string[];
+  disabled?: boolean;
   onChange: (v: string) => void;
 }
 
-export function SelectField({ label, desc, value, options, onChange }: SelectFieldProps) {
+export function SelectField({ label, desc, value, options, disabled, onChange }: SelectFieldProps) {
   return (
-    <div>
+    <div className={disabled ? 'opacity-50 pointer-events-none' : ''}>
       <label className="block text-sm font-semibold text-foreground">{label}</label>
       <p className="text-xs text-muted-foreground mb-1">{desc}</p>
       <select
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
       >
         {options.map((opt) => (
           <option key={opt} value={opt}>

@@ -10,6 +10,7 @@ const chartTitles: Record<string, string> = {
   classification_report: 'Classification Report',
   label_distribution: 'Distribusi Label',
   reconciliation_summary: 'Ringkasan Rekonsiliasi',
+  roc_curve: 'ROC Curve',
 };
 
 export default function ChartViewer({ charts }: ChartViewerProps) {
