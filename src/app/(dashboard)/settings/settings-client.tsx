@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { InputField, SelectField, CheckboxField } from '@/components/classify/settings-fields';
+import DummyGeneratorSection from './dummy-generator';
 
 export default function SettingsClient() {
   const {
@@ -204,6 +205,9 @@ export default function SettingsClient() {
           </div>
         </div>
       </div>
+
+      {/* ── Generate Data Dummy ── */}
+      <DummyGeneratorSection />
 
       {/* ── Actions ── */}
       <div className="flex gap-3 justify-end mt-6">

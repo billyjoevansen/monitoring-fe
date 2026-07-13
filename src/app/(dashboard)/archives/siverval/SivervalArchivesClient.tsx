@@ -289,6 +289,17 @@ export default function SivervalArchivesClient({
     setEditingRowData(null);
   }, []);
 
+  const handleAddRow = useCallback(() => {
+    const allCols = SIVERVAL_GROUPS.flatMap((g) => g.columns.map((c) => c.key));
+    const emptyRow: Record<string, string | number> = {};
+    allCols.forEach((key) => { emptyRow[key] = ''; });
+    setTableData((prev) => [...prev, emptyRow]);
+  }, []);
+
+  const handleDeleteRow = useCallback((rowIndex: number) => {
+    setTableData((prev) => prev.filter((_, i) => i !== rowIndex));
+  }, []);
+
   if (!canAccess) {
     return (
       <div>
@@ -360,6 +371,8 @@ export default function SivervalArchivesClient({
           data={tableData}
           editable={false}
           onEditRow={handleEditRow}
+          onAddRow={handleAddRow}
+          onDeleteRow={handleDeleteRow}
           loading={loadingDoc}
           showRowNumber={false}
         />

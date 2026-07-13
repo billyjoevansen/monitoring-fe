@@ -18,6 +18,7 @@ export const ACTION_LABELS: Record<string, { label: string; color: string }> = {
   upload_document: { label: 'Upload Dokumen', color: 'bg-sky-100 text-sky-700' },
   delete_document: { label: 'Hapus Dokumen', color: 'bg-red-100 text-red-700' },
   edit_document: { label: 'Edit Dokumen', color: 'bg-cyan-100 text-cyan-700' },
+  bulk_delete_archive: { label: 'Hapus Arsip', color: 'bg-red-100 text-red-700' },
 };
 
 export const PAGE_SIZE = 15;

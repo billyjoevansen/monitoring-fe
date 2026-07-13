@@ -9,6 +9,8 @@ import {
   ChevronsLeft,
   ChevronsRight,
   Edit3,
+  Trash2,
+  Plus,
 } from 'lucide-react';
 
 export interface ColumnGroup {
@@ -24,6 +26,8 @@ interface DocumentDataTableProps {
   editable: boolean;
   onRowChange?: (rowIndex: number, key: string, value: string) => void;
   onEditRow?: (rowIndex: number) => void;
+  onAddRow?: () => void;
+  onDeleteRow?: (rowIndex: number) => void;
   loading?: boolean;
   showRowNumber?: boolean;
 }
@@ -34,6 +38,8 @@ export default function DocumentDataTable({
   editable,
   onRowChange,
   onEditRow,
+  onAddRow,
+  onDeleteRow,
   loading,
   showRowNumber = true,
 }: DocumentDataTableProps) {
@@ -87,7 +93,7 @@ export default function DocumentDataTable({
     [onRowChange],
   );
 
-  const showActions = !editable && !!onEditRow;
+  const showActions = (!editable && !!onEditRow) || !!onDeleteRow;
   const totalColSpan = allColumns.length + (showRowNumber ? 1 : 0) + (showActions ? 1 : 0);
 
   if (loading) {
@@ -190,6 +196,16 @@ export default function DocumentDataTable({
           />
         </div>
         <div className="flex items-center gap-2">
+          {onAddRow && (
+            <button
+              type="button"
+              onClick={onAddRow}
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Tambah Baris
+            </button>
+          )}
           <label className="text-xs text-muted-foreground">Tampilkan:</label>
           <select
             value={pageSize}
@@ -275,15 +291,30 @@ export default function DocumentDataTable({
                   )}
                   {showActions && (
                     <td className="px-3 py-2 text-center border-r border-gray-100 dark:border-gray-800">
-                      <button
-                        type="button"
-                        onClick={() => onEditRow?.(filteredIndices[start + ri])}
-                        className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-md transition-colors"
-                        title="Edit baris ini"
-                      >
-                        <Edit3 className="w-3.5 h-3.5" />
-                        Edit
-                      </button>
+                      <div className="flex items-center justify-center gap-1">
+                        {onEditRow && (
+                          <button
+                            type="button"
+                            onClick={() => onEditRow?.(filteredIndices[start + ri])}
+                            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 rounded-md transition-colors"
+                            title="Edit baris ini"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            Edit
+                          </button>
+                        )}
+                        {onDeleteRow && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteRow?.(filteredIndices[start + ri])}
+                            className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md transition-colors"
+                            title="Hapus baris ini"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Hapus
+                          </button>
+                        )}
+                      </div>
                     </td>
                   )}
                   {allColumns.map((col) => (

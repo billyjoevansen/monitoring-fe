@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { supabaseAdmin } from '@/lib/supabase/admin';
 import DashboardClient from './DashboardClient';
 import type { User } from '@/types';
 import type { ClassificationArchive, ReconciliationArchive } from '@/types';
@@ -36,6 +37,16 @@ export default async function DashboardPage() {
   threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
   const threeMonthsAgoISO = threeMonthsAgo.toISOString();
 
+  let activityQuery = supabaseAdmin
+    .from('activity_logs')
+    .select('id, action, created_at')
+    .gte('created_at', threeMonthsAgoISO)
+    .order('created_at', { ascending: false });
+
+  if (user.role === 'bpp') {
+    activityQuery = activityQuery.eq('user_id', user.id);
+  }
+
   const [
     classificationResult,
     reconciliationResult,
@@ -57,11 +68,7 @@ export default async function DashboardPage() {
       .maybeSingle(),
     supabase.from('classification_archives').select('*', { count: 'exact', head: true }),
     supabase.from('reconciliation_archives').select('*', { count: 'exact', head: true }),
-    supabase
-      .from('activity_logs')
-      .select('id, action, created_at')
-      .gte('created_at', threeMonthsAgoISO)
-      .order('created_at', { ascending: false }),
+    activityQuery,
   ]);
 
   const latestClassification =

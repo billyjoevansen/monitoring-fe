@@ -296,6 +296,17 @@ export default function RdkkArchivesClient({
     setEditingRowData(null);
   }, []);
 
+  const handleAddRow = useCallback(() => {
+    const allCols = RDKK_GROUPS.flatMap((g) => g.columns.map((c) => c.key));
+    const emptyRow: Record<string, string | number> = {};
+    allCols.forEach((key) => { emptyRow[key] = ''; });
+    setTableData((prev) => [...prev, emptyRow]);
+  }, []);
+
+  const handleDeleteRow = useCallback((rowIndex: number) => {
+    setTableData((prev) => prev.filter((_, i) => i !== rowIndex));
+  }, []);
+
   if (!canAccess) {
     return (
       <div>
@@ -367,6 +378,8 @@ export default function RdkkArchivesClient({
           data={tableData}
           editable={false}
           onEditRow={handleEditRow}
+          onAddRow={handleAddRow}
+          onDeleteRow={handleDeleteRow}
           loading={loadingDoc}
         />
 

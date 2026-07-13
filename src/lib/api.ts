@@ -104,6 +104,37 @@ export async function identifyKecamatan(
   return res.data;
 }
 
+/** Generate data dummy */
+export interface GenerateDummyParams {
+  n_petani: number;
+  n_transaksi: number;
+  seed?: number | null;
+  pct_normal: number;
+  pct_over: number;
+  pct_luar_rdkk: number;
+  pct_kurang: number;
+  pct_tanpa_pengajuan: number;
+  pct_nonaktif: number;
+  kecamatan?: string | null;
+}
+
+export interface GenerateDummyResult {
+  rdkk: { filename: string; content: string };
+  siverval: { filename: string; content: string };
+  summary: {
+    n_petani: number;
+    n_transaksi: number;
+    seed: number;
+    kecamatan: string;
+    distribusi_skenario: Record<string, number>;
+  };
+}
+
+export async function generateDummy(params: GenerateDummyParams): Promise<GenerateDummyResult> {
+  const res = await api.post('/api/dummy/generate', params);
+  return res.data;
+}
+
 /** Statistik global — ringkasan seluruh arsip */
 export interface GlobalStatsData {
   reconciliation: {

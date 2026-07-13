@@ -56,7 +56,7 @@ export default function DeactivatedPage() {
           <div className="space-y-3">
             {/* Hubungi Atmin */}
             <a
-              href="https://wa.me/XXXXXXXXXXXXXXX"
+              href="https://wa.me/6283829392405"
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-2.5 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
