@@ -12,15 +12,13 @@ export function useDashboard(user: User) {
   const canViewApiStatus = hasPermission(user.role, 'view_api');
 
   useEffect(() => {
-    let mounted = true;
+    const controller = new AbortController();
 
-    healthCheck()
-      .then(() => mounted && setServerStatus('online'))
-      .catch(() => mounted && setServerStatus('offline'));
+    healthCheck(controller.signal)
+      .then(() => setServerStatus('online'))
+      .catch(() => setServerStatus('offline'));
 
-    return () => {
-      mounted = false;
-    };
+    return () => controller.abort();
   }, []);
 
   return {

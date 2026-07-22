@@ -2,68 +2,96 @@
 
 import { useState, useCallback } from 'react';
 import { generateDummy, type GenerateDummyParams, type GenerateDummyResult } from '@/lib/api';
+import { getApiErrorMessage } from '@/lib/errors';
 
 interface SkenarioPct {
   pct_normal: number;
   pct_over: number;
-  pct_luar_rdkk: number;
   pct_kurang: number;
-  pct_tanpa_pengajuan: number;
-  pct_nonaktif: number;
 }
 
-const PRESET_CAMPURAN: SkenarioPct = {
-  pct_normal: 35,
-  pct_over: 20,
-  pct_luar_rdkk: 15,
-  pct_kurang: 15,
-  pct_tanpa_pengajuan: 10,
-  pct_nonaktif: 5,
+const ESTIMASI_PETANI: Record<string, number> = {
+  'Semua Kecamatan':     9900,
+  'Kecamatan Kasemen':   4150,
+  'Kecamatan Walantaka': 2275,
+  'Kecamatan Taktakan':  1175,
+  'Kecamatan Curug':     1075,
+  'Kecamatan Cipocok Jaya': 875,
+  'Kecamatan Serang':    325,
 };
 
-const PRESET_NORMAL: SkenarioPct = {
-  pct_normal: 100,
-  pct_over: 0,
-  pct_luar_rdkk: 0,
-  pct_kurang: 0,
-  pct_tanpa_pengajuan: 0,
-  pct_nonaktif: 0,
-};
+function randomInRange(min: number, max: number): number {
+  return Math.round(Math.random() * (max - min) + min);
+}
 
-const PRESET_ANOMALI: SkenarioPct = {
-  pct_normal: 0,
-  pct_over: 25,
-  pct_luar_rdkk: 25,
-  pct_kurang: 25,
-  pct_tanpa_pengajuan: 15,
-  pct_nonaktif: 10,
-};
+function randomSkenario(normalRange: [number, number], overRange: [number, number]): SkenarioPct {
+  const normal = randomInRange(normalRange[0], normalRange[1]);
+  const over = randomInRange(overRange[0], Math.min(overRange[1], 100 - normal));
+  return {
+    pct_normal: normal,
+    pct_over: over,
+    pct_kurang: 100 - normal - over,
+  };
+}
+
+function randomNormal(): SkenarioPct {
+  return randomSkenario([80, 95], [2, 5]);
+}
+
+function randomCampuran(): SkenarioPct {
+  return randomSkenario([40, 60], [5, 10]);
+}
+
+function randomAnomali(): SkenarioPct {
+  return randomSkenario([0, 5], [25, 50]);
+}
 
 export function useGenerateDummy() {
   const [nPetani, setNPetani] = useState(350);
   const [nTransaksi, setNTransaksi] = useState(260);
   const [seed, setSeed] = useState<number | ''>('');
   const [kecamatan, setKecamatan] = useState('Semua Kecamatan');
-  const [skenario, setSkenario] = useState<SkenarioPct>(PRESET_CAMPURAN);
+  const [skenario, setSkenario] = useState<SkenarioPct>(randomCampuran);
+  const [lastPreset, setLastPreset] = useState<'normal' | 'campuran' | 'anomali' | null>('campuran');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<GenerateDummyResult | null>(null);
 
+  const handleKecamatanChange = useCallback((kec: string) => {
+    setKecamatan(kec);
+    const p = ESTIMASI_PETANI[kec];
+    if (p) {
+      setNPetani(p);
+      setNTransaksi(Math.round(p * (0.5 + Math.random() * 0.49)));
+    }
+    setLastPreset((prev) => {
+      if (prev) {
+        switch (prev) {
+          case 'normal': setSkenario(randomNormal()); break;
+          case 'campuran': setSkenario(randomCampuran()); break;
+          case 'anomali': setSkenario(randomAnomali()); break;
+        }
+      }
+      return prev;
+    });
+  }, []);
+
   const handleDiscardResult = useCallback(() => setResult(null), []);
 
   const totalPct =
-    skenario.pct_normal + skenario.pct_over + skenario.pct_luar_rdkk +
-    skenario.pct_kurang + skenario.pct_tanpa_pengajuan + skenario.pct_nonaktif;
+    skenario.pct_normal + skenario.pct_over + skenario.pct_kurang;
 
   const applyPreset = useCallback((preset: 'normal' | 'campuran' | 'anomali') => {
+    setLastPreset(preset);
     switch (preset) {
-      case 'normal': setSkenario(PRESET_NORMAL); break;
-      case 'campuran': setSkenario(PRESET_CAMPURAN); break;
-      case 'anomali': setSkenario(PRESET_ANOMALI); break;
+      case 'normal': setSkenario(randomNormal()); break;
+      case 'campuran': setSkenario(randomCampuran()); break;
+      case 'anomali': setSkenario(randomAnomali()); break;
     }
   }, []);
 
   const updatePct = useCallback((key: keyof SkenarioPct, value: number) => {
+    setLastPreset(null);
     setSkenario((prev) => ({ ...prev, [key]: Math.max(0, Math.min(100, value)) }));
   }, []);
 
@@ -89,8 +117,7 @@ export function useGenerateDummy() {
       const data = await generateDummy(params);
       setResult(data);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Gagal generate data dummy.';
-      setError(message);
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -104,9 +131,11 @@ export function useGenerateDummy() {
     skenario,
     loading, error, result,
     totalPct,
+    lastPreset,
     applyPreset,
     updatePct,
     handleGenerate,
     handleDiscardResult,
+    handleKecamatanChange,
   };
 }

@@ -6,9 +6,12 @@ import DocumentUploadModal from './DocumentUploadModal';
 
 interface FloatingDocButtonProps {
   userId: string;
+  userEmail: string;
+  userName: string;
+  userRole: string;
 }
 
-export default function FloatingDocButton({ userId }: FloatingDocButtonProps) {
+export default function FloatingDocButton({ userId, userEmail, userName, userRole }: FloatingDocButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -24,7 +27,7 @@ export default function FloatingDocButton({ userId }: FloatingDocButtonProps) {
         </button>
       </div>
 
-      {open && <DocumentUploadModal userId={userId} onClose={() => setOpen(false)} />}
+      {open && <DocumentUploadModal userId={userId} userEmail={userEmail} userName={userName} userRole={userRole} onClose={() => setOpen(false)} />}
     </>
   );
 }

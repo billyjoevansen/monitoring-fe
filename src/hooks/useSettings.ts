@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getConfig, updateConfig, resetConfig } from '@/lib/api';
 import { logActivity } from '@/lib/auth-client';
+import { getApiErrorMessage } from '@/lib/errors';
 import type { HyperParams, TrainingConfig } from '../types';
 
 interface UseSettingsReturn {
@@ -27,13 +28,20 @@ export function useSettings(): UseSettingsReturn {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getConfig()
+    const controller = new AbortController();
+
+    getConfig(controller.signal)
       .then((data) => {
         setHp(data.config.hyperparameters);
         setTc(data.config.training_config);
       })
-      .catch(() => setFetchError('Gagal memuat konfigurasi.'))
+      .catch((err) => {
+        if (controller.signal.aborted) return;
+        setFetchError(getApiErrorMessage(err));
+      })
       .finally(() => setFetchLoading(false));
+
+    return () => controller.abort();
   }, []);
 
   const showSuccess = () => {
@@ -49,16 +57,7 @@ export function useSettings(): UseSettingsReturn {
       await logActivity('update_config', 'Mengubah konfigurasi model');
       showSuccess();
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { data?: { error?: string; details?: string[] } } };
-        setError(
-          axiosErr.response?.data?.details?.join(', ') ||
-            axiosErr.response?.data?.error ||
-            'Gagal menyimpan.',
-        );
-      } else {
-        setError('Gagal menyimpan.');
-      }
+      setError(getApiErrorMessage(err));
     } finally {
       setSaving(false);
     }
@@ -73,8 +72,8 @@ export function useSettings(): UseSettingsReturn {
       setTc(data.config.training_config);
       await logActivity('reset_config', 'Reset konfigurasi ke default');
       showSuccess();
-    } catch {
-      setError('Gagal reset konfigurasi.');
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     }
   };
 

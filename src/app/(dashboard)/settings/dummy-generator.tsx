@@ -14,10 +14,7 @@ import { KECAMATAN_LIST } from '@/config/kecamatan';
 const SKENARIO_LABELS: Record<string, string> = {
   pct_normal: 'Normal',
   pct_over: 'Tebus melebihi kuota',
-  pct_luar_rdkk: 'Tebus di luar RDKK (SP36/Organik Cair)',
   pct_kurang: 'Penebusan < 85%',
-  pct_tanpa_pengajuan: 'Tebus tanpa pengajuan',
-  pct_nonaktif: 'Petani non-aktif',
 };
 
 export default function DummyGeneratorSection() {
@@ -25,23 +22,22 @@ export default function DummyGeneratorSection() {
     nPetani, setNPetani,
     nTransaksi, setNTransaksi,
     seed, setSeed,
-    kecamatan, setKecamatan,
+    kecamatan,
     skenario,
     loading, error, result,
     totalPct,
+    lastPreset,
     applyPreset,
     updatePct,
     handleGenerate,
     handleDiscardResult,
+    handleKecamatanChange,
   } = useGenerateDummy();
 
   const pctFields = [
     'pct_normal',
     'pct_over',
-    'pct_luar_rdkk',
     'pct_kurang',
-    'pct_tanpa_pengajuan',
-    'pct_nonaktif',
   ] as const;
 
   return (
@@ -97,7 +93,7 @@ export default function DummyGeneratorSection() {
           </label>
           <select
             value={kecamatan}
-            onChange={(e) => setKecamatan(e.target.value)}
+            onChange={(e) => handleKecamatanChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white dark:bg-slate-800 text-foreground"
           >
             <option>Semua Kecamatan</option>
@@ -116,19 +112,19 @@ export default function DummyGeneratorSection() {
         <div className="flex gap-2">
           <button
             onClick={() => applyPreset('normal')}
-            className="px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors bg-green-50 text-green-700 border-green-300 hover:bg-green-100"
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${lastPreset === 'normal' ? 'bg-green-200 text-green-800 border-green-500 ring-2 ring-green-500 ring-offset-1' : 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100'}`}
           >
             Normal
           </button>
           <button
             onClick={() => applyPreset('campuran')}
-            className="px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100"
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${lastPreset === 'campuran' ? 'bg-blue-200 text-blue-800 border-blue-500 ring-2 ring-blue-500 ring-offset-1' : 'bg-blue-50 text-blue-700 border-blue-300 hover:bg-blue-100'}`}
           >
             Campuran
           </button>
           <button
             onClick={() => applyPreset('anomali')}
-            className="px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors bg-red-50 text-red-700 border-red-300 hover:bg-red-100"
+            className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors ${lastPreset === 'anomali' ? 'bg-red-200 text-red-800 border-red-500 ring-2 ring-red-500 ring-offset-1' : 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100'}`}
           >
             Anomali
           </button>
@@ -140,7 +136,7 @@ export default function DummyGeneratorSection() {
         <label className="block text-sm font-semibold text-foreground mb-2">
           Proporsi Skenario (%)
         </label>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {pctFields.map((key) => (
             <div key={key}>
               <label className="block text-xs text-muted-foreground mb-1">

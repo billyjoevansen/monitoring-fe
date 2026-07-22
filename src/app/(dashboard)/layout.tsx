@@ -26,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </ReconcileProvider>
         </div>
       </main>
-      <FloatingDocButtonWrapper />
+      <FloatingDocButtonWrapper userId={user.id} userEmail={user.email} userName={user.nama} userRole={user.role} />
     </div>
   );
 }

@@ -180,6 +180,9 @@ export default function RdkkArchivesClient({
   const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
   const [editingRowData, setEditingRowData] = useState<Record<string, string | number> | null>(null);
 
+  // Row delete confirmation
+  const [deleteRowIndex, setDeleteRowIndex] = useState<number | null>(null);
+
   // Refs for handleSave — assigned during render (no useEffect needed)
   const viewingDocRef = useRef(viewingDoc);
   viewingDocRef.current = viewingDoc;
@@ -285,7 +288,9 @@ export default function RdkkArchivesClient({
   const handleRowEditSave = useCallback((updatedRow: Record<string, string | number>) => {
     if (editingRowIndex === null) return;
     setTableData((prev) =>
-      prev.map((row, ri) => (ri === editingRowIndex ? updatedRow : row)),
+      editingRowIndex === -1
+        ? [...prev, updatedRow]
+        : prev.map((row, ri) => (ri === editingRowIndex ? updatedRow : row)),
     );
     setEditingRowIndex(null);
     setEditingRowData(null);
@@ -300,11 +305,12 @@ export default function RdkkArchivesClient({
     const allCols = RDKK_GROUPS.flatMap((g) => g.columns.map((c) => c.key));
     const emptyRow: Record<string, string | number> = {};
     allCols.forEach((key) => { emptyRow[key] = ''; });
-    setTableData((prev) => [...prev, emptyRow]);
+    setEditingRowIndex(-1);
+    setEditingRowData(emptyRow);
   }, []);
 
   const handleDeleteRow = useCallback((rowIndex: number) => {
-    setTableData((prev) => prev.filter((_, i) => i !== rowIndex));
+    setDeleteRowIndex(rowIndex);
   }, []);
 
   if (!canAccess) {
@@ -391,7 +397,33 @@ export default function RdkkArchivesClient({
           onSave={handleRowEditSave}
           onCancel={handleRowEditCancel}
           saving={saving}
+          title={editingRowIndex === -1 ? 'Tambah Baris Baru' : 'Edit Data Baris'}
         />
+
+        <AlertDialog open={deleteRowIndex !== null} onOpenChange={(open) => !open && setDeleteRowIndex(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Hapus Baris?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Baris ini akan dihapus dari tampilan. Simpan perubahan untuk menyimpan ke dokumen.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Batal</AlertDialogCancel>
+              <AlertDialogAction
+                variant="destructive"
+                onClick={() => {
+                  if (deleteRowIndex !== null) {
+                    setTableData((prev) => prev.filter((_, i) => i !== deleteRowIndex));
+                    setDeleteRowIndex(null);
+                  }
+                }}
+              >
+                Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }

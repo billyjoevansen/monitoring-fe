@@ -3,6 +3,7 @@ import { manageClient } from '@/lib/supabase/client';
 import { logActivity } from '@/lib/auth-client';
 import { formatDate } from '@/lib/format';
 import { decryptNikArray } from '@/lib/api';
+import { getApiErrorMessage } from '@/lib/errors';
 
 import type { BaseArchive, BaseSummary, UseArchiveOptions } from '@/types';
 
@@ -81,7 +82,7 @@ export function useArchive<T extends BaseArchive<BaseSummary>>({
       setArchives((resolvedData as T[]) ?? []);
       setTotal(count ?? 0);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Fetch error');
+      setError(getApiErrorMessage(err));
       setArchives([]);
     } finally {
       setLoading(false);

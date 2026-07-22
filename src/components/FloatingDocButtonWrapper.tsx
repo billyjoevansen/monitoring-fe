@@ -1,22 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { manageClient } from '@/lib/supabase/client';
 import FloatingDocButton from '@/components/ui/FloatingDocButton';
 
-export default function FloatingDocButtonWrapper() {
-  const [userId, setUserId] = useState<string | null>(null);
+interface FloatingDocButtonWrapperProps {
+  userId: string;
+  userEmail: string;
+  userName: string;
+  userRole: string;
+}
 
-  useEffect(() => {
-    const supabase = manageClient();
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        setUserId(data.user.id);
-      }
-    });
-  }, []);
-
-  if (!userId) return null;
-
-  return <FloatingDocButton userId={userId} />;
+export default function FloatingDocButtonWrapper({ userId, userEmail, userName, userRole }: FloatingDocButtonWrapperProps) {
+  return <FloatingDocButton userId={userId} userEmail={userEmail} userName={userName} userRole={userRole} />;
 }

@@ -88,8 +88,7 @@ export function useClassify(user: User) {
       await logActivity('save_classification', `Menyimpan arsip klasifikasi: ${namaArsip}`);
       setSaved(true);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Gagal menyimpan.';
-      setError(message);
+      setError(getApiErrorMessage(err));
     } finally {
       setSaving(false);
     }

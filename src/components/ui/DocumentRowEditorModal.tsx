@@ -21,6 +21,7 @@ interface DocumentRowEditorModalProps {
   onSave: (updatedRow: Record<string, string | number>) => void;
   onCancel: () => void;
   saving?: boolean;
+  title?: string;
 }
 
 export default function DocumentRowEditorModal({
@@ -30,6 +31,7 @@ export default function DocumentRowEditorModal({
   onSave,
   onCancel,
   saving = false,
+  title = 'Edit Data Baris',
 }: DocumentRowEditorModalProps) {
   const initialDraft = useMemo(() => rowData ?? {}, [rowData]);
   const initialTab = useMemo(() => groups[0]?.label ?? '', [groups]);
@@ -51,7 +53,7 @@ export default function DocumentRowEditorModal({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onCancel()}>
       <DialogContent className="sm:max-w-2xl max-h-[85vh] flex flex-col bg-white dark:bg-slate-900 text-gray-900 dark:text-gray-100 border-gray-200 dark:border-gray-700">
         <DialogHeader>
-          <DialogTitle className="text-gray-900 dark:text-gray-100">Edit Data Baris</DialogTitle>
+          <DialogTitle className="text-gray-900 dark:text-gray-100">{title}</DialogTitle>
           <DialogDescription className="text-gray-500 dark:text-gray-400">
             Ubah data pada kolom yang tersedia, lalu klik Simpan.
           </DialogDescription>

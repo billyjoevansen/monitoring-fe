@@ -83,8 +83,7 @@ export function useReconcile(user: User, options: UseReconcileOptions) {
       );
       setSaved(true);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Gagal menyimpan.';
-      setError(message);
+      setError(getApiErrorMessage(err));
     } finally {
       setSaving(false);
     }

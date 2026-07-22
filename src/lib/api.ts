@@ -5,9 +5,26 @@ const api = axios.create({
   timeout: 120000,
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('[API Error]', {
+        message: error.message,
+        code: error.code,
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        data: error.response?.data,
+      });
+    }
+    return Promise.reject(error);
+  },
+);
+
 /** Health check */
-export async function healthCheck() {
-  const res = await api.get('/api/health');
+export async function healthCheck(signal?: AbortSignal) {
+  const res = await api.get('/api/health', { signal });
   return res.data;
 }
 
@@ -47,9 +64,8 @@ export async function getModelInfo() {
 }
 
 /** Konfigurasi */
-export async function getConfig() {
-  const res = await api.get('/api/config');
-  // console.log('Config:', res.data);
+export async function getConfig(signal?: AbortSignal) {
+  const res = await api.get('/api/config', { signal });
   return res.data;
 }
 
@@ -111,10 +127,7 @@ export interface GenerateDummyParams {
   seed?: number | null;
   pct_normal: number;
   pct_over: number;
-  pct_luar_rdkk: number;
   pct_kurang: number;
-  pct_tanpa_pengajuan: number;
-  pct_nonaktif: number;
   kecamatan?: string | null;
 }
 
@@ -154,7 +167,7 @@ export interface GlobalStatsData {
   };
 }
 
-export async function getGlobalStats(): Promise<GlobalStatsData> {
-  const res = await api.get('/api/stats/summary');
+export async function getGlobalStats(signal?: AbortSignal): Promise<GlobalStatsData> {
+  const res = await api.get('/api/stats/summary', { signal });
   return res.data;
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { manageClient } from '@/lib/supabase/client';
 import { logActivityWithUser } from '@/lib/auth-client';
 import { identifyKecamatan } from '@/lib/api';
+import { getApiErrorMessage } from '@/lib/errors';
 import type { User } from '@/types';
 
 export interface SupportingDocument {
@@ -74,8 +75,7 @@ export function useDocuments(
       setRdkkDocs(rdkk);
       setSivervalDocs(siverval);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Gagal memuat dokumen.';
-      setError(message);
+      setError(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -128,8 +128,7 @@ export function useDocuments(
         await listDocuments();
         return true;
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Gagal mengupload dokumen.';
-        setError(message);
+        setError(getApiErrorMessage(err));
         return null;
       } finally {
         setUploading(false);
@@ -160,8 +159,7 @@ export function useDocuments(
         await listDocuments();
         return true;
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Gagal menghapus dokumen.';
-        setError(message);
+        setError(getApiErrorMessage(err));
         return null;
       }
     },
@@ -195,8 +193,7 @@ export function useDocuments(
         await listDocuments();
         return true;
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Gagal menghapus dokumen.';
-        setError(message);
+        setError(getApiErrorMessage(err));
         return null;
       }
     },
@@ -223,8 +220,7 @@ export function useDocuments(
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Gagal mengunduh dokumen.';
-        setError(message);
+        setError(getApiErrorMessage(err));
         return null;
       }
     },
@@ -321,8 +317,7 @@ export function useDocuments(
 
         return true;
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Gagal menyimpan dokumen.';
-        setError(message);
+        setError(getApiErrorMessage(err));
         return false;
       }
     },

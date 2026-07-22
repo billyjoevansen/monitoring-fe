@@ -22,6 +22,7 @@ type ViewMode = 'daily' | 'hourly';
 const ACTION_CONFIG: Record<string, { label: string; color: string; gradientTo: string }> = {
   upload_document: { label: 'Upload', color: '#3b82f6', gradientTo: '#60a5fa' },
   delete_document: { label: 'Hapus', color: '#ef4444', gradientTo: '#f87171' },
+  edit_document: { label: 'Edit', color: '#f97316', gradientTo: '#fb923c' },
   reconcile: { label: 'Rekonsiliasi', color: '#22c55e', gradientTo: '#4ade80' },
   classify: { label: 'Klasifikasi', color: '#a855f7', gradientTo: '#c084fc' },
   login: { label: 'Login', color: '#64748b', gradientTo: '#94a3b8' },
@@ -30,7 +31,7 @@ const ACTION_CONFIG: Record<string, { label: string; color: string; gradientTo: 
   update_user: { label: 'Update User', color: '#f97316', gradientTo: '#fb923c' },
 };
 
-const BPP_ALLOWED_ACTIONS = ['reconcile', 'upload_document', 'delete_document'];
+const BPP_ALLOWED_ACTIONS = ['reconcile', 'upload_document', 'delete_document', 'edit_document'];
 
 const MONTH_NAMES = [
   'Jan',

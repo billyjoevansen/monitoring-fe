@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { BarChart3, CheckCircle2, FileSpreadsheet, Table, TrendingUp } from 'lucide-react';
 import { getGlobalStats, type GlobalStatsData } from '@/lib/api';
+import { getApiErrorMessage } from '@/lib/errors';
 
 function StatItem({
   icon,
@@ -39,20 +40,22 @@ export default function GlobalStats() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-    getGlobalStats()
+    const controller = new AbortController();
+
+    getGlobalStats(controller.signal)
       .then((data) => {
-        if (mounted) setStats(data);
+        setStats(data);
       })
-      .catch(() => {
-        if (mounted) setError(true);
+      .catch((err) => {
+        if (controller.signal.aborted) return;
+        console.error(getApiErrorMessage(err));
+        setError(true);
       })
       .finally(() => {
-        if (mounted) setLoading(false);
+        setLoading(false);
       });
-    return () => {
-      mounted = false;
-    };
+
+    return () => controller.abort();
   }, []);
 
   if (loading) {

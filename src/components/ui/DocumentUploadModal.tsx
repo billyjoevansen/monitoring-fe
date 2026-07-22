@@ -43,11 +43,14 @@ function formatFileSize(bytes: number): string {
 
 interface DocumentUploadModalProps {
   userId: string;
+  userEmail: string;
+  userName: string;
+  userRole: string;
   onClose: () => void;
 }
 
-export default function DocumentUploadModal({ userId, onClose }: DocumentUploadModalProps) {
-  const { uploading, error, uploadDocument } = useDocuments(userId);
+export default function DocumentUploadModal({ userId, userEmail, userName, userRole, onClose }: DocumentUploadModalProps) {
+  const { uploading, error, uploadDocument } = useDocuments(userId, userRole, undefined, userEmail, userName);
 
   const [stagedRdkk, setStagedRdkk] = useState<File | null>(null);
   const [stagedSiverval, setStagedSiverval] = useState<File | null>(null);
