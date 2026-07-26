@@ -40,23 +40,28 @@ const DarkModeToggle: React.FC = () => {
   if (!mounted) return <div className="p-1 w-9 h-9" />;
 
   return (
-    <button
-      onClick={toggleTheme}
-      aria-label="Toggle Dark Mode"
-      className="group relative p-1.5 w-9 h-9 flex items-center justify-center rounded-md overflow-hidden transition-all duration-300 
-             hover:bg-gray-200 dark:hover:bg-neutral-800 
-             border-2 border-foreground"
-    >
-      <Sun
-        className={`w-5 h-5 absolute transition-all duration-500 fill-current text-yellow-500
-      ${isDark ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}
-      />
+    <div className="relative group">
+      <button
+        onClick={toggleTheme}
+        aria-label="Toggle Dark Mode"
+        className="relative p-1.5 w-9 h-9 flex items-center justify-center rounded-md overflow-hidden transition-all duration-300 
+               hover:bg-gray-200 dark:hover:bg-neutral-800 
+               border-2 border-foreground"
+      >
+        <Sun
+          className={`w-5 h-5 absolute transition-all duration-500 fill-current text-yellow-500
+        ${isDark ? 'translate-y-10 opacity-0' : 'translate-y-0 opacity-100'}`}
+        />
 
-      <Moon
-        className={`w-5 h-5 absolute transition-all duration-500 fill-current text-white
-      ${isDark ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}
-      />
-    </button>
+        <Moon
+          className={`w-5 h-5 absolute transition-all duration-500 fill-current text-white
+        ${isDark ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0'}`}
+        />
+      </button>
+      <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-2 py-0.5 text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition bg-gray-900 text-white dark:bg-white dark:text-gray-900">
+        {isDark ? 'Terang' : 'Gelap'}
+      </span>
+    </div>
   );
 };
 

@@ -113,6 +113,7 @@ const Turnstile = forwardRef<TurnstileRef, TurnstileProps>(({ onVerify, onExpire
         existingScript.removeEventListener('load', init);
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <div ref={containerRef} className="flex justify-center" />;

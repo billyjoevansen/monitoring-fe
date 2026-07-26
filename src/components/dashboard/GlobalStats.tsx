@@ -107,17 +107,17 @@ export default function GlobalStats() {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         <StatItem
           icon={<FileSpreadsheet className="w-4 h-4 text-amber-600" />}
-          label="Dokumen RDKK"
-          value={rec.total_rdkk_docs}
-          sub={`${rec.total_petani.toLocaleString('id-ID')} petani`}
+          label="Jumlah Petani Terdata (RDKK)"
+          value={rec.total_petani.toLocaleString('id-ID')}
+          sub={`dari ${rec.total_rdkk_docs} arsip`}
           color="bg-amber-50 dark:bg-amber-900/20"
         />
 
         <StatItem
           icon={<Table className="w-4 h-4 text-purple-600" />}
-          label="Dokumen SIVerval"
-          value={cls.total_siverval_docs}
-          sub={`${cls.total_petani.toLocaleString('id-ID')} petani`}
+          label="Jumlah Petani Terdata (SIVerval)"
+          value={cls.total_petani.toLocaleString('id-ID')}
+          sub={`dari ${cls.total_siverval_docs} arsip`}
           color="bg-purple-50 dark:bg-purple-900/20"
         />
 

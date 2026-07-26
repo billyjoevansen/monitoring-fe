@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const publicPaths = ['/login', '/deactivated'];
+  const publicPaths = ['/login', '/deactivated', '/informasi'];
   const isPublicPath = publicPaths.some((path) => request.nextUrl.pathname.startsWith(path));
 
   // Belum login → redirect ke /login

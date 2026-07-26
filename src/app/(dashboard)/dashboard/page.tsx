@@ -47,6 +47,63 @@ export default async function DashboardPage() {
     activityQuery = activityQuery.eq('user_id', user.id);
   }
 
+  // Bangun query reconciliation + count (langsung, karena punya kolom kecamatan)
+  let recLatestBuilder = supabase
+    .from('reconciliation_archives')
+    .select('id, user_id, user_nama, nama_arsip, summary, detail, created_at')
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  let recCountQuery = supabase
+    .from('reconciliation_archives')
+    .select('*', { count: 'exact', head: true });
+
+  if (user.role === 'bpp' && user.kecamatan) {
+    recLatestBuilder = recLatestBuilder.eq('kecamatan', user.kecamatan);
+    recCountQuery = recCountQuery.eq('kecamatan', user.kecamatan);
+  }
+  const recLatestQuery = recLatestBuilder.maybeSingle();
+
+  // Bangun query classification (butuh sub-query reconciliation_id untuk BPP)
+  let clsLatestPromise;
+  let clsCountPromise;
+
+  if (user.role === 'bpp' && user.kecamatan) {
+    const { data: recIds } = await supabase
+      .from('reconciliation_archives')
+      .select('id')
+      .eq('kecamatan', user.kecamatan);
+
+    const ids = (recIds || []).map((r: { id: string }) => r.id);
+
+    if (ids.length > 0) {
+      clsLatestPromise = supabase
+        .from('classification_archives')
+        .select('id, user_nama, nama_arsip, summary, model_info, reconciliation_id, created_at')
+        .in('reconciliation_id', ids)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      clsCountPromise = supabase
+        .from('classification_archives')
+        .select('*', { count: 'exact', head: true })
+        .in('reconciliation_id', ids);
+    } else {
+      clsLatestPromise = Promise.resolve({ data: null });
+      clsCountPromise = Promise.resolve({ count: 0 });
+    }
+  } else {
+    clsLatestPromise = supabase
+      .from('classification_archives')
+      .select('id, user_nama, nama_arsip, summary, model_info, reconciliation_id, created_at')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    clsCountPromise = supabase
+      .from('classification_archives')
+      .select('*', { count: 'exact', head: true });
+  }
+
   const [
     classificationResult,
     reconciliationResult,
@@ -54,20 +111,10 @@ export default async function DashboardPage() {
     reconciliationCountResult,
     activityResult,
   ] = await Promise.allSettled([
-    supabase
-      .from('classification_archives')
-      .select('id, user_nama, nama_arsip, summary, model_info, reconciliation_id, created_at')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabase
-      .from('reconciliation_archives')
-      .select('id, user_id, user_nama, nama_arsip, summary, detail, created_at')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    supabase.from('classification_archives').select('*', { count: 'exact', head: true }),
-    supabase.from('reconciliation_archives').select('*', { count: 'exact', head: true }),
+    clsLatestPromise,
+    recLatestQuery,
+    clsCountPromise,
+    recCountQuery,
     activityQuery,
   ]);
 

@@ -25,6 +25,7 @@ export default function ChartViewer({ charts }: ChartViewerProps) {
             <h4 className="text-sm font-semibold text-muted-foreground mb-3">
               {chartTitles[key] || key}
             </h4>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`data:image/png;base64,${base64}`}
               alt={chartTitles[key] || key}

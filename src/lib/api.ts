@@ -8,6 +8,7 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (axios.isCancel(error)) return Promise.reject(error);
     if (process.env.NODE_ENV === 'development') {
       console.error('[API Error]', {
         message: error.message,
@@ -165,9 +166,65 @@ export interface GlobalStatsData {
     rata_rata_akurasi: number;
     rata_rata_persentase_normal: number;
   };
+  pupuk: {
+    per_jenis: Record<string, { diajukan_kg: number; ditebus_kg: number }>;
+    total_diajukan_kg: number;
+    total_ditebus_kg: number;
+    persentase_tebus: number;
+  };
+  demografi: {
+    rata_rata_luas_lahan: number;
+    rata_rata_mt: number;
+    distribusi_mt: Record<string, number>;
+  };
 }
 
 export async function getGlobalStats(signal?: AbortSignal): Promise<GlobalStatsData> {
   const res = await api.get('/api/stats/summary', { signal });
   return res.data;
+}
+
+/** Statistik per kecamatan */
+export interface PerKecamatanPupukDistribusi {
+  [jenis: string]: { diajukan_kg: number; ditebus_kg: number };
+}
+
+export interface PerKecamatanReconciliation {
+  total_arsip: number;
+  total_petani: number;
+  total_lengkap: number;
+  total_sebagian: number;
+  total_melebihi: number;
+  total_belum: number;
+  persentase_lengkap: number;
+  distribusi_pupuk: PerKecamatanPupukDistribusi;
+}
+
+export interface PerKecamatanClassification {
+  total_arsip: number;
+  total_petani: number;
+  total_normal: number;
+  total_tidak_normal: number;
+  persentase_normal: number;
+}
+
+export interface PerKecamatanData {
+  kecamatan: string;
+  data_terbatas: boolean;
+  reconciliation: PerKecamatanReconciliation;
+  classification: PerKecamatanClassification;
+}
+
+export interface PerKecamatanResponse {
+  data: PerKecamatanData[];
+}
+
+export async function getPerKecamatanStats(
+  kecamatan?: string,
+  signal?: AbortSignal,
+): Promise<PerKecamatanData[]> {
+  const params: Record<string, string> = {};
+  if (kecamatan) params.kecamatan = kecamatan;
+  const res = await api.get('/api/stats/per-kecamatan', { params, signal });
+  return res.data.data;
 }
