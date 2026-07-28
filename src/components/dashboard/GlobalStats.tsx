@@ -19,7 +19,7 @@ function StatItem({
   color: string;
 }) {
   return (
-    <div className="flex items-center gap-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 px-4 py-3 hover:shadow-md transition-shadow duration-200">
+    <div className="flex items-center gap-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-300 dark:border-gray-700 px-4 py-3 hover:shadow-md transition-shadow duration-200">
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
         {icon}
       </div>
@@ -73,7 +73,7 @@ export default function GlobalStats() {
 
   if (error || !stats) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 dark:border-gray-700 shadow-sm p-6">
         <div className="flex items-center gap-2 mb-3">
           <BarChart3 className="w-4 h-4 text-muted-foreground" />
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
@@ -96,7 +96,7 @@ export default function GlobalStats() {
   const { reconciliation: rec, classification: cls, pupuk } = stats;
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm p-6">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 dark:border-gray-700 shadow-sm p-6">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 className="w-4 h-4 text-muted-foreground" />
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
