@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { Loader2, Save, CheckCircle, Filter, MapPin } from 'lucide-react';
 import DownloadButtons from '@/components/ui/DownloadButtons';
 import { KECAMATAN_LIST } from '@/config/kecamatan';
@@ -21,6 +22,12 @@ export default function ReconcileArchiveSection({
 
   // BPP: kecamatan dikunci sesuai wilayah user
   const isBpp = userKecamatan !== null;
+
+  const handleDownload = useCallback(() => {
+    if (!saved && namaArsip.trim()) {
+      onSave();
+    }
+  }, [saved, namaArsip, onSave]);
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl border border-foreground p-4 shadow-sm mb-6">
@@ -48,7 +55,7 @@ export default function ReconcileArchiveSection({
                 </span>
               </div>
             )}
-            <DownloadButtons detail={downloadDetail} summary={result.summary} />
+            <DownloadButtons detail={downloadDetail} summary={result.summary} onDownload={handleDownload} />
           </div>
         </div>
       ) : (
@@ -113,7 +120,7 @@ export default function ReconcileArchiveSection({
                   </span>
                 </div>
               )}
-              <DownloadButtons detail={downloadDetail} summary={result.summary} />
+              <DownloadButtons detail={downloadDetail} summary={result.summary} onDownload={handleDownload} />
             </div>
           </div>
         </div>

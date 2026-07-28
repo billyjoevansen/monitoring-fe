@@ -3,7 +3,7 @@
 import { FileSpreadsheet, FileText } from 'lucide-react';
 import { DownloadButtonsProps, PUPUK_KEYS, ReconcileDetailItem } from '@/types';
 
-export default function DownloadButtons({ detail, summary }: DownloadButtonsProps) {
+export default function DownloadButtons({ detail, summary, onDownload }: DownloadButtonsProps) {
   /**
    * Handle ekspor ke format Excel (.xlsx)
    */
@@ -244,6 +244,7 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
     saveAs(blob, `rekonsiliasi_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    onDownload?.();
   };
 
   /**
@@ -348,6 +349,7 @@ export default function DownloadButtons({ detail, summary }: DownloadButtonsProp
     });
 
     doc.save(`rekonsiliasi_${new Date().toISOString().slice(0, 10)}.pdf`);
+    onDownload?.();
   };
 
   return (

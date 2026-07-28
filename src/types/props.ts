@@ -28,6 +28,7 @@ export interface SortConfig {
 export interface DownloadButtonsProps {
   detail: ReconcileDetailItem[];
   summary: ReconcileSummary;
+  onDownload?: () => void | Promise<void>;
 }
 
 export interface ResultTableProps {

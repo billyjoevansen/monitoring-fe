@@ -10,8 +10,10 @@ import {
   ChevronDown,
   ChevronRight,
   Info,
+  Eye,
 } from 'lucide-react';
 import ResultTable from '@/components/classify/ResultTable';
+import ReconcilePreviewDialog from '@/components/classify/ReconcilePreviewDialog';
 import SummarySortStrip from '@/components/ui/SummarySortStrip';
 import MiniCard from '@/components/ui/MiniCard';
 import ErrorBanner from '@/components/ui/ErrorBanner';
@@ -42,6 +44,7 @@ export default function ClassifyClient({ user }: { user: User }) {
   } = useClassify(user);
 
   const [sortKey, setSortKey] = useState<string | null>(null);
+  const [viewingReconcileId, setViewingReconcileId] = useState<string | null>(null);
 
   const handleResetWithSort = useCallback(() => {
     handleReset();
@@ -100,6 +103,7 @@ export default function ClassifyClient({ user }: { user: User }) {
                   isClassifying={classifying && selectedArchive?.id === archive.id}
                   onToggleExpand={() => toggleExpand(archive.id)}
                   onClassify={() => handleClassify(archive)}
+                  onViewReconcile={() => setViewingReconcileId(archive.id)}
                   formatDate={formatDate}
                 />
               ))}
@@ -168,6 +172,13 @@ export default function ClassifyClient({ user }: { user: User }) {
           <ResultTable columns={CLASSIFY_COLUMNS} data={result.detail} externalSortKey={sortKey} />
         </>
       )}
+
+      <ReconcilePreviewDialog
+        open={viewingReconcileId !== null}
+        onClose={() => setViewingReconcileId(null)}
+        archive={archives.find((a) => a.id === viewingReconcileId) ?? null}
+        formatDate={formatDate}
+      />
     </div>
   );
 }
@@ -191,6 +202,7 @@ interface ArchiveItemProps {
   isClassifying: boolean;
   onToggleExpand: () => void;
   onClassify: () => void;
+  onViewReconcile: () => void;
   formatDate: (dateStr: string) => string;
 }
 
@@ -200,6 +212,7 @@ function ArchiveItem({
   isClassifying,
   onToggleExpand,
   onClassify,
+  onViewReconcile,
   formatDate,
 }: ArchiveItemProps) {
   return (
@@ -221,18 +234,27 @@ function ArchiveItem({
             </p>
           </div>
         </div>
-        <button
-          onClick={onClassify}
-          disabled={isClassifying}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium disabled:opacity-50"
-        >
-          {isClassifying ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Tags className="w-4 h-4" />
-          )}
-          Klasifikasi
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onViewReconcile}
+            className="flex items-center gap-2 px-4 py-2 bg-background border border-border text-foreground rounded-lg hover:bg-muted transition-colors text-sm font-medium"
+          >
+            <Eye className="w-4 h-4" />
+            Lihat Data
+          </button>
+          <button
+            onClick={onClassify}
+            disabled={isClassifying}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium disabled:opacity-50"
+          >
+            {isClassifying ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Tags className="w-4 h-4" />
+            )}
+            Klasifikasi
+          </button>
+        </div>
       </div>
 
       {isExpanded && (
