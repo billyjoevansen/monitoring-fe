@@ -11,8 +11,6 @@ import ServerStatusBadge from '@/components/dashboard/ServerStatusBadge';
 import ActivityChart from '@/components/dashboard/ActivityChart';
 import GlobalStats from '@/components/dashboard/GlobalStats';
 import KecamatanChart from '@/components/dashboard/KecamatanChart';
-import FertilizerChart from '@/components/dashboard/FertilizerChart';
-import MTDistributionChart from '@/components/dashboard/MTDistributionChart';
 import ClassificationSlide from '@/components/dashboard/slides/ClassificationSlide';
 import ReconciliationSlide from '@/components/dashboard/slides/ReconciliationSlide';
 
@@ -49,12 +47,6 @@ export default function DashboardClient({
         <>
           {/* Ringkasan Global */}
           <GlobalStats />
-
-          {/* Distribusi Pupuk Global + Musim Tanam */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <FertilizerChart />
-            <MTDistributionChart />
-          </div>
 
           {/* Statistik Per Kecamatan */}
           <KecamatanChart user={user} />

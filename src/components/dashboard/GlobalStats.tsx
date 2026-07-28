@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart3, CheckCircle2, FileSpreadsheet, Table, TrendingUp } from 'lucide-react';
+import { BarChart3, CheckCircle2, FileSpreadsheet, FlaskConical, Table, TrendingUp, Percent } from 'lucide-react';
 import { getGlobalStats, type GlobalStatsData } from '@/lib/api';
 import { getApiErrorMessage } from '@/lib/errors';
 
@@ -19,16 +19,16 @@ function StatItem({
   color: string;
 }) {
   return (
-    <div className="flex items-center gap-3 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 px-4 py-3">
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
+    <div className="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-gray-800 px-3 py-2.5 min-w-[140px] snap-start">
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide truncate">
+        <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide truncate">
           {label}
         </p>
-        <p className="text-xl font-bold text-foreground leading-tight">{value}</p>
-        {sub && <p className="text-[11px] text-muted-foreground truncate">{sub}</p>}
+        <p className="text-base font-bold text-foreground leading-tight">{value}</p>
+        {sub && <p className="text-[10px] text-muted-foreground truncate">{sub}</p>}
       </div>
     </div>
   );
@@ -60,11 +60,11 @@ export default function GlobalStats() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {Array.from({ length: 5 }).map((_, i) => (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {Array.from({ length: 8 }).map((_, i) => (
           <div
             key={i}
-            className="h-20 rounded-xl bg-gray-100 dark:bg-slate-800 animate-pulse"
+            className="h-16 rounded-xl bg-gray-100 dark:bg-slate-800 animate-pulse"
           />
         ))}
       </div>
@@ -93,7 +93,7 @@ export default function GlobalStats() {
     );
   }
 
-  const { reconciliation: rec, classification: cls } = stats;
+  const { reconciliation: rec, classification: cls, pupuk } = stats;
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-4">
@@ -104,10 +104,10 @@ export default function GlobalStats() {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatItem
           icon={<FileSpreadsheet className="w-4 h-4 text-amber-600" />}
-          label="Jumlah Petani Terdata (RDKK)"
+          label="Petani RDKK"
           value={rec.total_petani.toLocaleString('id-ID')}
           sub={`dari ${rec.total_rdkk_docs} arsip`}
           color="bg-amber-50 dark:bg-amber-900/20"
@@ -115,7 +115,7 @@ export default function GlobalStats() {
 
         <StatItem
           icon={<Table className="w-4 h-4 text-purple-600" />}
-          label="Jumlah Petani Terdata (SIVerval)"
+          label="Petani Si-Verval"
           value={cls.total_petani.toLocaleString('id-ID')}
           sub={`dari ${cls.total_siverval_docs} arsip`}
           color="bg-purple-50 dark:bg-purple-900/20"
@@ -131,18 +131,42 @@ export default function GlobalStats() {
 
         <StatItem
           icon={<TrendingUp className="w-4 h-4 text-blue-600" />}
-          label="Rata-rata Akurasi"
+          label="Akurasi Model"
           value={`${cls.rata_rata_akurasi}%`}
-          sub="Model klasifikasi"
+          sub="Rata-rata klasifikasi"
           color="bg-blue-50 dark:bg-blue-900/20"
         />
 
         <StatItem
           icon={<TrendingUp className="w-4 h-4 text-emerald-600" />}
-          label="Rata-rata Normal"
+          label="Normal"
           value={`${cls.rata_rata_persentase_normal}%`}
-          sub="Dari seluruh klasifikasi"
+          sub="Rata-rata klasifikasi"
           color="bg-emerald-50 dark:bg-emerald-900/20"
+        />
+
+        <StatItem
+          icon={<FlaskConical className="w-4 h-4 text-cyan-600" />}
+          label="Diajukan"
+          value={`${(pupuk.total_diajukan_kg / 1000).toFixed(1)} ton`}
+          sub={`${pupuk.total_diajukan_kg.toLocaleString('id-ID')} kg`}
+          color="bg-cyan-50 dark:bg-cyan-900/20"
+        />
+
+        <StatItem
+          icon={<FlaskConical className="w-4 h-4 text-teal-600" />}
+          label="Ditebus"
+          value={`${(pupuk.total_ditebus_kg / 1000).toFixed(1)} ton`}
+          sub={`${pupuk.total_ditebus_kg.toLocaleString('id-ID')} kg`}
+          color="bg-teal-50 dark:bg-teal-900/20"
+        />
+
+        <StatItem
+          icon={<Percent className="w-4 h-4 text-orange-600" />}
+          label="Persentase Tebus"
+          value={`${pupuk.persentase_tebus}%`}
+          sub="Dari total diajukan"
+          color="bg-orange-50 dark:bg-orange-900/20"
         />
       </div>
     </div>
