@@ -27,12 +27,12 @@ export default function LoginPage() {
           <Link
             href="/informasi"
             className="relative p-1.5 w-9 h-9 flex items-center justify-center rounded-md overflow-hidden transition-all duration-300 hover:bg-gray-200 dark:hover:bg-neutral-800 border-2 border-foreground"
-            aria-label="Informasi Publik"
+            aria-label="Informasi Umum"
           >
             <Info className="w-5 h-5 text-foreground/70 group-hover:text-foreground transition-colors" />
           </Link>
           <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-2 py-0.5 text-xs rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition bg-gray-900 text-white dark:bg-white dark:text-gray-900">
-            Informasi Publik
+            Informasi Umum
           </span>
         </div>
       </div>

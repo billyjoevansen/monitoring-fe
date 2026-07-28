@@ -14,5 +14,5 @@ export function useSlider(total: number, duration: number) {
     };
   }, [total, duration]);
 
-  return current;
+  return { current, setCurrent };
 }

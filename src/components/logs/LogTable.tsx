@@ -175,7 +175,7 @@ export function LogTable({
           <Button
             onClick={() => onPageChange((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            variant="pagination"
+            variant="outline"
             size="sm"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -187,7 +187,7 @@ export function LogTable({
           <Button
             onClick={() => onPageChange((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            variant="pagination"
+            variant="outline"
             size="sm"
           >
             Next

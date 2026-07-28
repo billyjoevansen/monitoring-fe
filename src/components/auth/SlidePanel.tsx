@@ -4,7 +4,7 @@ import { SLIDES, FADE_DURATION, SLIDE_DURATION } from '@/config/slides';
 import { useSlider } from '@/hooks/useSlider';
 
 export default function SlidePanel() {
-  const current = useSlider(SLIDES.length, SLIDE_DURATION);
+  const { current } = useSlider(SLIDES.length, SLIDE_DURATION);
 
   return (
     <div className="hidden md:flex md:w-[55%] flex-col items-center justify-center relative overflow-hidden bg-gray-900">

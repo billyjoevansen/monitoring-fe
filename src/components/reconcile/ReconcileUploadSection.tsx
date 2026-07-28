@@ -87,7 +87,7 @@ export default function ReconcileUploadSection({
           )}
         </button>
         {hasResult && (
-          <Button variant="outline" size="xl" onClick={onReset}>
+          <Button variant="outline" size="lg" onClick={onReset}>
             Reset
           </Button>
         )}

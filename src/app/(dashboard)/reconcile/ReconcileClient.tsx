@@ -271,7 +271,7 @@ export default function ReconcileClient({
             <button
               type="button"
               onClick={() => setNoMatchDismissed(true)}
-              className={cn(buttonVariants({ variant: 'contrast', size: 'default' }))}
+              className={cn(buttonVariants({ variant: 'default', size: 'default' }))}
             >
               Mengerti
             </button>
