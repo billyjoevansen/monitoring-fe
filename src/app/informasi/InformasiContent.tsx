@@ -13,12 +13,7 @@ import {
 import Image from 'next/image';
 import { motion, useScroll, useTransform, type Variants } from 'framer-motion';
 import { usePullToRefresh } from '@/hooks/usePullToRefresh';
-import {
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-} from 'lucide-react';
+import { AlertCircle, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
 
 /* ── Helpers ── */
 function sumDitebus(p: PerKecamatanData['reconciliation']['distribusi_pupuk']): number {
@@ -136,7 +131,7 @@ function KecamatanCard({ k }: { k: PerKecamatanData }) {
 /* ── Skeleton Components ── */
 function SkeletonCard() {
   return (
-    <div className="flex-[0_0_70%] min-w-0 pl-4 first:pl-0 rounded-2xl bg-white/[0.04] border border-white/[0.08] p-5 sm:p-8 animate-pulse">
+    <div className="flex-[0_0_70%] min-w-0 pl-4 first:pl-0 rounded-2xl bg-white/4 border border-white/8 p-5 sm:p-8 animate-pulse">
       <div className="h-6 w-24 bg-white/10 rounded mb-5" />
       <div className="h-4 w-full bg-white/10 rounded mb-2" />
       <div className="h-4 w-3/4 bg-white/10 rounded" />
@@ -179,7 +174,13 @@ function ErrorInline({ message }: { message: string }) {
   );
 }
 
-function PullIndicator({ pullDistance, isRefreshing }: { pullDistance: number; isRefreshing: boolean }) {
+function PullIndicator({
+  pullDistance,
+  isRefreshing,
+}: {
+  pullDistance: number;
+  isRefreshing: boolean;
+}) {
   if (pullDistance <= 0 && !isRefreshing) return null;
   return (
     <div className="fixed top-16 left-0 right-0 z-50 flex justify-center pointer-events-none">
@@ -187,7 +188,15 @@ function PullIndicator({ pullDistance, isRefreshing }: { pullDistance: number; i
         className={`rounded-full bg-white/10 p-2 ${isRefreshing ? 'animate-spin' : ''}`}
         style={{ transform: `translateY(${pullDistance}px)` }}
       >
-        <svg className="w-5 h-5 text-[#8ab894]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          className="w-5 h-5 text-[#8ab894]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
           <path d="M21 3v5h-5" />
         </svg>
@@ -310,40 +319,38 @@ function CarouselSection({ data }: { data: PerKecamatanData[] }) {
 function HeroScrollAnimation() {
   const heroRef = useRef<HTMLDivElement>(null);
 
-  /**
-   * useScroll: track scroll position relative to the hero container
-   * offset: ["start start", "end start"] means:
-   * - Start tracking when top of hero hits top of viewport
-   * - Stop tracking when bottom of hero hits top of viewport
-   */
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   });
 
-  /**
-   * useTransform: map scroll progress to visual properties
-   * scrollYProgress range: 0 (top of hero at viewport top) → 1 (bottom of hero at viewport top)
-   *
-   * Text opacity: 1 → 0 (fade out as user scrolls)
-   * Text Y: 0 → -50px (geser naik sedikit saat fade)
-   * BG translateY: 0 → -200px (slide up like curtain)
-   */
-  const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const textY = useTransform(scrollYProgress, [0, 0.5], [0, -50]);
-  const bgY = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  // scrollYProgress 0 → 1: hero top at viewport top → hero bottom at viewport top
+  // Text fades out in first 20% (hero masih pinned, curtain mulai naik)
+  const textOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 0.2], [0, -80]);
+  // BG parallax agresif: hero bg naik 250px selama full scroll
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, -250]);
 
   return (
-    <div ref={heroRef} className="relative" style={{ height: '95vh' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden' }}>
+    <div ref={heroRef} className="relative" style={{ height: '250vh' }}>
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          height: '100vh',
+          zIndex: 1,
+        }}
+      >
         <motion.div className="absolute inset-0" style={{ y: bgY }}>
-          <Image
-            src="/images/bg-train-day-960.webp"
-            alt="Shinkansen melewati sawah dengan latar belakang pegunungan"
-            fill
-            className="object-cover object-center"
-            priority
-          />
+          <div className="absolute inset-0 overflow-hidden">
+            <Image
+              src="/images/bg-train-day-960.webp"
+              alt="Shinkansen melewati sawah dengan latar belakang pegunungan"
+              fill
+              className="object-cover object-center"
+              priority
+            />
+          </div>
           <div className="absolute inset-0 bg-linear-to-r from-[#0a0a1a] via-[#0a0a1a]/80 to-transparent" />
           <div className="absolute inset-0 bg-linear-to-t from-[#0a0a1a] via-transparent to-transparent" />
           <div
@@ -443,8 +450,19 @@ export default function InformasiContent() {
       {/* ── Hero with Scroll Animation ── */}
       <HeroScrollAnimation />
 
-      {/* ── Latar Belakang (statis) ── */}
-      <section id="latar-belakang" className="relative z-10 px-4 sm:px-6 py-2">
+      {/* ── Latar Belakang (curtain overlay) ── */}
+      <section
+        id="latar-belakang"
+        className="relative bg-transparent px-4 sm:px-6 py-2"
+        style={{ marginTop: '-100vh', zIndex: 20 }}
+      >
+        {/* Curtain edge — gradient tepi atas tirai */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
+          style={{
+            background: 'linear-gradient(to top, #0a0a1a 0%, #0a0a1a 30%, transparent 100%)',
+          }}
+        />
         <div className="relative overflow-hidden rounded-2xl bg-white/4 border border-white/8">
           {/* Background image + gradient overlay */}
           <div className="absolute inset-0 overflow-hidden">
@@ -487,13 +505,17 @@ export default function InformasiContent() {
               informasi monitoring penebusan pupuk bersubsidi yang lebih terstruktur dan berbasis
               data.
             </motion.p>
+            <span id="kecamatan" />
           </div>
         </div>
       </section>
-
       {/* ── Carousel Per Kecamatan (dinamis) ── */}
       <section id="kecamatan" className="relative z-10 bg-[#13111C]">
-        {carouselError && <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8"><ErrorInline message={carouselError} /></div>}
+        {carouselError && (
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
+            <ErrorInline message={carouselError} />
+          </div>
+        )}
         {perKec && perKec.length > 0 ? (
           <CarouselSection data={perKec} />
         ) : !carouselError ? (
