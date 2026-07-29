@@ -145,7 +145,7 @@ export default function ReconciliationArchivesClient({
           />
         </div>
 
-        <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-xl border border-foreground px-4 py-3 shadow-sm mb-6">
+        <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-xl border border-border px-4 py-3 shadow-sm mb-6">
           <div className="flex items-center gap-2">
             <Download className="w-4 h-4 text-muted-foreground" />
             {isFiltered ? (

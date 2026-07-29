@@ -110,12 +110,29 @@ export default async function DashboardPage() {
     classificationCountResult,
     reconciliationCountResult,
     activityResult,
+    overallClassificationResult,
   ] = await Promise.allSettled([
     clsLatestPromise,
     recLatestQuery,
     clsCountPromise,
     recCountQuery,
     activityQuery,
+    (async () => {
+      let query = supabaseAdmin.from('classification_archives').select('summary');
+      if (user.role === 'bpp' && user.kecamatan) {
+        const { data: recIds } = await supabase
+          .from('reconciliation_archives')
+          .select('id')
+          .eq('kecamatan', user.kecamatan);
+        const ids = (recIds || []).map((r: { id: string }) => r.id);
+        if (ids.length > 0) {
+          query = query.in('reconciliation_id', ids);
+        } else {
+          return { data: [] };
+        }
+      }
+      return query;
+    })(),
   ]);
 
   const latestClassification =
@@ -129,6 +146,21 @@ export default async function DashboardPage() {
   const activities =
     activityResult.status === 'fulfilled' ? activityResult.value.data ?? [] : [];
 
+  let overallClassification = null;
+  if (overallClassificationResult.status === 'fulfilled') {
+    const rows = overallClassificationResult.value.data ?? [];
+    let totalNormal = 0;
+    let totalTidakNormal = 0;
+    for (const row of rows) {
+      const s = row.summary as Record<string, unknown> | null;
+      if (s) {
+        totalNormal += (s.normal as number) ?? 0;
+        totalTidakNormal += (s.tidak_normal as number) ?? 0;
+      }
+    }
+    overallClassification = { normal: totalNormal, tidak_normal: totalTidakNormal };
+  }
+
   return (
     <DashboardClient
       user={user as User}
@@ -136,6 +168,7 @@ export default async function DashboardPage() {
       latestReconciliation={(latestReconciliation as ReconciliationArchive) || null}
       totalClassifications={totalClassifications ?? 0}
       totalReconciliations={totalReconciliations ?? 0}
+      overallClassification={overallClassification}
       activities={activities}
     />
   );

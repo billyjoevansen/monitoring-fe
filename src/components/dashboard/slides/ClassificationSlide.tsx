@@ -15,7 +15,13 @@ import MetaInfoGrid from '@/components/dashboard/MetaInfoGrid';
 import ModelPerformancePanel from '@/components/dashboard/ModelPerformancePanel';
 import EmptySlide from './EmptySlide';
 
-export default function ClassificationSlide({ data }: { data: ClassificationArchive | null }) {
+export default function ClassificationSlide({
+  data,
+  overall,
+}: {
+  data: ClassificationArchive | null;
+  overall: { normal: number; tidak_normal: number } | null;
+}) {
   if (!data) {
     return (
       <EmptySlide
@@ -42,9 +48,14 @@ export default function ClassificationSlide({ data }: { data: ClassificationArch
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-2 transition-shadow duration-300 hover:shadow-md h-full flex flex-col justify-center">
           <div className="flex bg-gray-100 dark:bg-slate-800 items-center rounded-lg gap-2 mb-6 p-1">
             <BarChart3 className="w-4.5 h-4.5 text-foreground" />
-            <h3 className="text-sm font-bold text-foreground">Distribusi Klasifikasi</h3>
+            <h3 className="text-sm font-bold text-foreground">
+              Distribusi Klasifikasi Keseluruhan
+            </h3>
           </div>
-          <DonutChart normal={cls.normal} tidakNormal={cls.tidak_normal} />
+          <DonutChart
+            normal={overall?.normal ?? cls.normal}
+            tidakNormal={overall?.tidak_normal ?? cls.tidak_normal}
+          />
         </div>
 
         {/* Detail */}

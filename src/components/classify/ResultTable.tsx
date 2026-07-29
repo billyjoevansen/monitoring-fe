@@ -113,10 +113,10 @@ export default function ResultTable({
     if (effectiveSortConfig.key !== key) {
       return <ChevronUp className="w-3 h-3 text-muted-foreground/40" />;
     }
-    return effectiveSortConfig.direction === 'asc' ? (
-      <ChevronUp className="w-3 h-3 text-indigo-500" />
+      return effectiveSortConfig.direction === 'asc' ? (
+      <ChevronUp className="w-3 h-3 text-green-500" />
     ) : (
-      <ChevronDown className="w-3 h-3 text-indigo-500" />
+      <ChevronDown className="w-3 h-3 text-green-500" />
     );
   };
 
@@ -184,7 +184,7 @@ export default function ResultTable({
                   onClick={() => setPage(p)}
                   className={`min-w-8 h-8 rounded-lg text-xs font-medium transition-colors ${
                     page === p
-                      ? 'bg-indigo-600 text-white shadow-sm'
+                      ? 'bg-green-600 text-white shadow-sm'
                       : 'text-muted-foreground hover:bg-gray-200 dark:hover:bg-slate-700'
                   }`}
                 >
@@ -221,7 +221,7 @@ export default function ResultTable({
             placeholder="Cari nama, NIK, poktan, atau status..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full pl-10 pr-4 py-2 border border-input rounded-lg text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div className="flex items-center gap-3">
@@ -233,7 +233,7 @@ export default function ResultTable({
                 setPageSize(Number(e.target.value));
                 setPage(1);
               }}
-              className="px-2 py-1.5 border border-input rounded-lg text-xs bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="px-2 py-1.5 border border-input rounded-lg text-xs bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {PAGE_SIZE_OPTIONS.map((opt) => (
                 <option key={opt} value={opt}>

@@ -158,6 +158,7 @@ export interface DashboardClientProps {
   latestReconciliation: ReconciliationArchive | null;
   totalClassifications: number;
   totalReconciliations: number;
+  overallClassification: { normal: number; tidak_normal: number } | null;
   activities: Array<{ id: number; action: string; created_at: string }>;
 }
 

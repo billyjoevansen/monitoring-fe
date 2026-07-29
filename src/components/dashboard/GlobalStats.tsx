@@ -1,7 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BarChart3, CheckCircle2, FileSpreadsheet, FlaskConical, Table, TrendingUp, Percent } from 'lucide-react';
+import {
+  BarChart3,
+  CheckCircle2,
+  FileSpreadsheet,
+  FlaskConical,
+  Table,
+  TrendingUp,
+  Percent,
+} from 'lucide-react';
 import { getGlobalStats, type GlobalStatsData } from '@/lib/api';
 import { getApiErrorMessage } from '@/lib/errors';
 
@@ -62,10 +70,7 @@ export default function GlobalStats() {
     return (
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-20 rounded-xl bg-gray-100 dark:bg-slate-800 animate-pulse"
-          />
+          <div key={i} className="h-20 rounded-xl bg-gray-100 dark:bg-slate-800 animate-pulse" />
         ))}
       </div>
     );
@@ -95,6 +100,8 @@ export default function GlobalStats() {
 
   const { reconciliation: rec, classification: cls, pupuk } = stats;
 
+  const hasPupuk = pupuk && pupuk.total_diajukan_kg > 0;
+
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-6">
       <div className="flex items-center gap-2 mb-4">
@@ -107,7 +114,7 @@ export default function GlobalStats() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatItem
           icon={<FileSpreadsheet className="w-5 h-5 text-amber-600" />}
-          label="Petani RDKK"
+          label="Petani terdaftar RDKK"
           value={rec.total_petani.toLocaleString('id-ID')}
           sub={`dari ${rec.total_rdkk_docs} arsip`}
           color="bg-amber-50 dark:bg-amber-900/20"
@@ -115,7 +122,7 @@ export default function GlobalStats() {
 
         <StatItem
           icon={<Table className="w-5 h-5 text-purple-600" />}
-          label="Petani Si-Verval"
+          label="Petani terdata Si-Verval"
           value={cls.total_petani.toLocaleString('id-ID')}
           sub={`dari ${cls.total_siverval_docs} arsip`}
           color="bg-purple-50 dark:bg-purple-900/20"
@@ -123,7 +130,7 @@ export default function GlobalStats() {
 
         <StatItem
           icon={<CheckCircle2 className="w-5 h-5 text-green-600" />}
-          label="Transaksi Lengkap"
+          label="Transaksi Lengkap oleh Petani"
           value={rec.total_lengkap.toLocaleString('id-ID')}
           sub={`${rec.persentase_lengkap}% dari total`}
           color="bg-green-50 dark:bg-green-900/20"
@@ -139,35 +146,39 @@ export default function GlobalStats() {
 
         <StatItem
           icon={<TrendingUp className="w-5 h-5 text-emerald-600" />}
-          label="Normal"
+          label="Transaksi Normal"
           value={`${cls.rata_rata_persentase_normal}%`}
           sub="Rata-rata klasifikasi"
           color="bg-emerald-50 dark:bg-emerald-900/20"
         />
 
-        <StatItem
-          icon={<FlaskConical className="w-5 h-5 text-cyan-600" />}
-          label="Diajukan"
-          value={`${(pupuk.total_diajukan_kg / 1000).toFixed(1)} ton`}
-          sub={`${pupuk.total_diajukan_kg.toLocaleString('id-ID')} kg`}
-          color="bg-cyan-50 dark:bg-cyan-900/20"
-        />
+        {hasPupuk && (
+          <>
+            <StatItem
+              icon={<FlaskConical className="w-5 h-5 text-cyan-600" />}
+              label="Total Pupuk Diajukan"
+              value={`${(pupuk.total_diajukan_kg / 1000).toFixed(1)} ton`}
+              sub={`${pupuk.total_diajukan_kg.toLocaleString('id-ID')} kg`}
+              color="bg-cyan-50 dark:bg-cyan-900/20"
+            />
 
-        <StatItem
-          icon={<FlaskConical className="w-5 h-5 text-teal-600" />}
-          label="Ditebus"
-          value={`${(pupuk.total_ditebus_kg / 1000).toFixed(1)} ton`}
-          sub={`${pupuk.total_ditebus_kg.toLocaleString('id-ID')} kg`}
-          color="bg-teal-50 dark:bg-teal-900/20"
-        />
+            <StatItem
+              icon={<FlaskConical className="w-5 h-5 text-teal-600" />}
+              label="Total Pupuk Ditebus"
+              value={`${(pupuk.total_ditebus_kg / 1000).toFixed(1)} ton`}
+              sub={`${pupuk.total_ditebus_kg.toLocaleString('id-ID')} kg`}
+              color="bg-teal-50 dark:bg-teal-900/20"
+            />
 
-        <StatItem
-          icon={<Percent className="w-5 h-5 text-orange-600" />}
-          label="Persentase Tebus"
-          value={`${pupuk.persentase_tebus}%`}
-          sub="Dari total diajukan"
-          color="bg-orange-50 dark:bg-orange-900/20"
-        />
+            <StatItem
+              icon={<Percent className="w-5 h-5 text-orange-600" />}
+              label="Persentase Penebusan"
+              value={`${pupuk.persentase_tebus}%`}
+              sub="Dari total diajukan"
+              color="bg-orange-50 dark:bg-orange-900/20"
+            />
+          </>
+        )}
       </div>
     </div>
   );

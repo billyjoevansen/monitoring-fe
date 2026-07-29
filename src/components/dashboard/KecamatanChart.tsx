@@ -3,7 +3,14 @@
 import { useEffect, useState } from 'react';
 import { MapPin, BarChart3, AlertCircle } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
 } from 'recharts';
 import { getPerKecamatanStats, type PerKecamatanData } from '@/lib/api';
 import { KECAMATAN_LIST } from '@/config/kecamatan';
@@ -47,15 +54,16 @@ export default function KecamatanChart({ user }: KecamatanChartProps) {
   };
 
   const current = allData.find((d) => d.kecamatan === selected);
-  const pupukData = current && current.reconciliation.distribusi_pupuk
-    ? Object.entries(current.reconciliation.distribusi_pupuk)
-        .filter(([, v]) => v.diajukan_kg > 0 || v.ditebus_kg > 0)
-        .map(([key, val]) => ({
-          name: FERTILIZER_LABELS[key] || key,
-          Diajukan: val.diajukan_kg,
-          Ditebus: val.ditebus_kg,
-        }))
-    : [];
+  const pupukData =
+    current && current.reconciliation.distribusi_pupuk
+      ? Object.entries(current.reconciliation.distribusi_pupuk)
+          .filter(([, v]) => v.diajukan_kg > 0 || v.ditebus_kg > 0)
+          .map(([key, val]) => ({
+            name: FERTILIZER_LABELS[key] || key,
+            Diajukan: val.diajukan_kg,
+            Ditebus: val.ditebus_kg,
+          }))
+      : [];
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-300 shadow-sm p-4">
@@ -80,7 +88,9 @@ export default function KecamatanChart({ user }: KecamatanChartProps) {
               className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm bg-background appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {KECAMATAN_LIST.map((k) => (
-                <option key={k} value={k}>{k}</option>
+                <option key={k} value={k}>
+                  {k}
+                </option>
               ))}
             </select>
           )}
@@ -113,19 +123,29 @@ export default function KecamatanChart({ user }: KecamatanChartProps) {
           {/* Status Penebusan */}
           <div className="grid grid-cols-4 gap-2">
             <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-green-700 dark:text-green-400">{current.reconciliation.total_lengkap}</p>
+              <p className="text-lg font-bold text-green-700 dark:text-green-400">
+                {current.reconciliation.total_lengkap}
+              </p>
               <p className="text-[10px] text-green-600 dark:text-green-500 font-medium">Lengkap</p>
             </div>
             <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-yellow-700 dark:text-yellow-400">{current.reconciliation.total_sebagian}</p>
-              <p className="text-[10px] text-yellow-600 dark:text-yellow-500 font-medium">Sebagian</p>
+              <p className="text-lg font-bold text-yellow-700 dark:text-yellow-400">
+                {current.reconciliation.total_sebagian}
+              </p>
+              <p className="text-[10px] text-yellow-600 dark:text-yellow-500 font-medium">
+                Sebagian
+              </p>
             </div>
             <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-red-700 dark:text-red-400">{current.reconciliation.total_melebihi}</p>
+              <p className="text-lg font-bold text-red-700 dark:text-red-400">
+                {current.reconciliation.total_melebihi}
+              </p>
               <p className="text-[10px] text-red-600 dark:text-red-500 font-medium">Melebihi</p>
             </div>
             <div className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-orange-700 dark:text-orange-400">{current.reconciliation.total_belum}</p>
+              <p className="text-lg font-bold text-orange-700 dark:text-orange-400">
+                {current.reconciliation.total_belum}
+              </p>
               <p className="text-[10px] text-orange-600 dark:text-orange-500 font-medium">Belum</p>
             </div>
           </div>
@@ -156,7 +176,7 @@ export default function KecamatanChart({ user }: KecamatanChartProps) {
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-[180px] text-xs text-muted-foreground">
+                <div className="flex items-center justify-center h-45 text-xs text-muted-foreground">
                   Belum ada data distribusi pupuk
                 </div>
               )}
@@ -174,7 +194,7 @@ export default function KecamatanChart({ user }: KecamatanChartProps) {
                   size={160}
                 />
               ) : (
-                <div className="flex items-center justify-center h-[180px] text-xs text-muted-foreground">
+                <div className="flex items-center justify-center h-45 text-xs text-muted-foreground">
                   Belum ada klasifikasi
                 </div>
               )}

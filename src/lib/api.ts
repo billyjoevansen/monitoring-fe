@@ -163,16 +163,18 @@ export interface GlobalStatsData {
   classification: {
     total_siverval_docs: number;
     total_petani: number;
+    total_normal: number;
+    total_tidak_normal: number;
     rata_rata_akurasi: number;
     rata_rata_persentase_normal: number;
   };
-  pupuk: {
+  pupuk?: {
     per_jenis: Record<string, { diajukan_kg: number; ditebus_kg: number }>;
     total_diajukan_kg: number;
     total_ditebus_kg: number;
     persentase_tebus: number;
   };
-  demografi: {
+  demografi?: {
     rata_rata_luas_lahan: number;
     rata_rata_mt: number;
     distribusi_mt: Record<string, number>;

@@ -18,6 +18,7 @@ export default function DashboardClient({
   user,
   latestClassification,
   latestReconciliation,
+  overallClassification,
   activities,
 }: DashboardClientProps) {
   const { serverStatus, canViewDashboard, canViewApiStatus } = useDashboard(user);
@@ -53,7 +54,7 @@ export default function DashboardClient({
 
           {/* Arsip Terakhir */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-stretch">
-            <ClassificationSlide data={latestClassification} />
+            <ClassificationSlide data={latestClassification} overall={overallClassification} />
             <ReconciliationSlide data={latestReconciliation} />
           </div>
 

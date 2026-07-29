@@ -7,7 +7,7 @@ interface ModelPerformancePanelProps {
 function ProgressBar({ label, value, color }: { label: string; value: number; color: string }) {
   const pct = (value * 100).toFixed(1);
   return (
-    <div className="flex-1 min-w-[120px]">
+    <div className="flex-1 min-w-30">
       <div className="flex items-center justify-between mb-1.5">
         <p className="text-xs text-gray-500">{label}</p>
         <p className="text-xs font-bold text-gray-800">{pct}%</p>

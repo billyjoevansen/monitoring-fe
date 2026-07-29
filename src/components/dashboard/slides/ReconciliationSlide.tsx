@@ -1,21 +1,6 @@
-import {
-  FileStack,
-  Users as UsersIcon,
-  ArrowRight,
-  Clock,
-  MapPin,
-  BarChart3,
-} from 'lucide-react';
+import { FileStack, Users as UsersIcon, ArrowRight, Clock, MapPin, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { formatDate } from '@/lib/format';
 import type { ReconciliationArchive } from '@/types';
 
@@ -44,7 +29,7 @@ interface CustomTooltipProps {
 function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl px-4 py-3 min-w-[140px]">
+    <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl px-4 py-3 min-w-35">
       <p className="text-xs font-bold text-foreground mb-2 pb-2 border-b border-gray-100 dark:border-gray-700">
         {label}
       </p>
@@ -62,7 +47,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       ))}
     </div>
   );
-};
+}
 
 export default function ReconciliationSlide({ data }: { data: ReconciliationArchive | null }) {
   if (!data) {
@@ -164,19 +149,56 @@ export default function ReconciliationSlide({ data }: { data: ReconciliationArch
 
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 16, left: 10, bottom: 5 }} barCategoryGap="25%">
+                <BarChart
+                  data={chartData}
+                  layout="vertical"
+                  margin={{ top: 5, right: 16, left: 10, bottom: 5 }}
+                  barCategoryGap="25%"
+                >
                   <defs>
                     {STATUS_CONFIG.map((s) => (
-                      <linearGradient key={`grad-${s.key}`} id={`grad-${s.key}`} x1="0" y1="0" x2="1" y2="0">
+                      <linearGradient
+                        key={`grad-${s.key}`}
+                        id={`grad-${s.key}`}
+                        x1="0"
+                        y1="0"
+                        x2="1"
+                        y2="0"
+                      >
                         <stop offset="0%" stopColor={s.color} />
                         <stop offset="100%" stopColor={s.gradientTo} />
                       </linearGradient>
                     ))}
                   </defs>
-                  <XAxis type="number" tick={{ fontSize: 11, fill: '#9ca3af' }} axisLine={false} tickLine={false} allowDecimals={false} />
-                  <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: '#9ca3af', fontWeight: 500 }} axisLine={false} tickLine={false} width={80} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(59, 130, 246, 0.06)', radius: 6 }} />
-                  <Bar dataKey="value" name="Petani" radius={[0, 6, 6, 0]} barSize={24} cursor="pointer" isAnimationActive={true} animationDuration={1000} animationEasing="ease-out">
+                  <XAxis
+                    type="number"
+                    tick={{ fontSize: 11, fill: '#9ca3af' }}
+                    axisLine={false}
+                    tickLine={false}
+                    allowDecimals={false}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    tick={{ fontSize: 12, fill: '#9ca3af', fontWeight: 500 }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={80}
+                  />
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ fill: 'rgba(59, 130, 246, 0.06)', radius: 6 }}
+                  />
+                  <Bar
+                    dataKey="value"
+                    name="Petani"
+                    radius={[0, 6, 6, 0]}
+                    barSize={24}
+                    cursor="pointer"
+                    isAnimationActive={true}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
+                  >
                     {chartData.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={`url(#grad-${STATUS_CONFIG[index].key})`} />
                     ))}

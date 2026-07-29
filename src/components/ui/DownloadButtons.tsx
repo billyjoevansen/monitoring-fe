@@ -356,14 +356,14 @@ export default function DownloadButtons({ detail, summary, onDownload }: Downloa
     <div className="flex gap-2">
       <button
         onClick={handleExcel}
-        className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium"
+        className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-600 shadow-sm hover:shadow-md transition-all text-sm font-medium"
       >
         <FileSpreadsheet className="w-4 h-4" />
         Excel
       </button>
       <button
         onClick={handlePdf}
-        className="flex items-center gap-1.5 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+        className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-lg hover:from-red-700 hover:to-red-600 shadow-sm hover:shadow-md transition-all text-sm font-medium"
       >
         <FileText className="w-4 h-4" />
         PDF
